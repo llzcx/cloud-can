@@ -1,0 +1,18 @@
+{
+  "properties": [
+    {
+      "name": "myoss.ftp.ip",
+      "type": "java.lang.String",
+      "description": "Description for myoss.ftp.ip."
+    },
+    {
+      "name": "myoss.ftp.port",
+      "type": "java.lang.String",
+      "description": "Description for myoss.ftp.port."
+    },
+    {
+      "name": "myoss.package.controller",
+      "type": "java.lang.String",
+      "description": "Description for myoss.package.controller."
+    }
+  ] }

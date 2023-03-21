@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: oss-gateway-server  # 服务名称
+  profiles:
+    active: dev #开发环境，这里是dev
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848 # Nacos地址
+      config:
+        file-extension: yaml # 文件后缀名
+        username: nacos
+        password: nacos
+      discovery:
+        ephemeral: true
+
+dubbo:
+  protocol:
+    id: dubbo
+    name: dubbo
+    port: 8085
+  scan:
+    basePackages: ccw.serviceinnovation.ossgateway
+  cloud:
+    subscribed-services: oss-data-provide
+  application:
+    #可选值 interface、instance、all，默认是 interface，即只注册接口级地址
+    register-mode: all
+    #只消费应用级
+    service-discovery:
+      # FORCE_INTERFACE，只消费接口级地址，如无地址则报错，单订阅 2.x 地址
+      # APPLICATION_FIRST，智能决策接口级/应用级地址，双订阅
+      # FORCE_APPLICATION，只消费应用级地址，如无地址则报错，单订阅 3.x 地址
+      migration: APPLICATION_FIRST
+    name: oss-gateway-consumer
+  registry:
+    address: nacos://127.0.0.1:8848

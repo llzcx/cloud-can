@@ -1,0 +1,216 @@
+/*
+SQLyog Ultimate v12.09 (64 bit)
+MySQL - 8.0.31 : Database - oss
+*********************************************************************
+*/
+
+/*!40101 SET NAMES utf8 */;
+
+/*!40101 SET SQL_MODE=''*/;
+
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/`oss` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+
+USE `oss`;
+
+/*Table structure for table `api` */
+
+DROP TABLE IF EXISTS `api`;
+
+CREATE TABLE `api` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '唯一ID',
+  `name` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '接口名字',
+  `description` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '接口描述',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UNIQUE1` (`name`),
+  UNIQUE KEY `UNIQUE2` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1074 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `api` */
+
+insert  into `api`(`id`,`name`,`description`) values (1060,'putAuthorize','1');
+insert  into `api`(`id`,`name`,`description`) values (1063,'listBuckets','1');
+insert  into `api`(`id`,`name`,`description`) values (1064,'createBucket','1');
+insert  into `api`(`id`,`name`,`description`) values (1065,'deleteBucket','1');
+insert  into `api`(`id`,`name`,`description`) values (1066,'getBucketInfo','1');
+insert  into `api`(`id`,`name`,`description`) values (1067,'getObject','1');
+insert  into `api`(`id`,`name`,`description`) values (1068,'listObjects','1');
+insert  into `api`(`id`,`name`,`description`) values (1069,'putFolder','1');
+insert  into `api`(`id`,`name`,`description`) values (1070,'putBigObject','1');
+insert  into `api`(`id`,`name`,`description`) values (1071,'putSmallObject','1');
+insert  into `api`(`id`,`name`,`description`) values (1072,'getObjectInfo','1');
+insert  into `api`(`id`,`name`,`description`) values (1073,'deleteObject','1');
+
+/*Table structure for table `authorize` */
+
+DROP TABLE IF EXISTS `authorize`;
+
+CREATE TABLE `authorize` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '授权策略唯一ID',
+  `user_is_all` bit(1) DEFAULT NULL COMMENT '授权用户是否是全局',
+  `path_is_all` bit(1) DEFAULT NULL COMMENT '授权资源是否是全部',
+  `operation` int DEFAULT NULL COMMENT '操作',
+  `bucket_id` bigint DEFAULT NULL COMMENT '桶唯一ID',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `authorize` */
+
+/*Table structure for table `authorize_path` */
+
+DROP TABLE IF EXISTS `authorize_path`;
+
+CREATE TABLE `authorize_path` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `authorize_id` bigint DEFAULT NULL COMMENT '授权ID',
+  `path` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '路径',
+  `bucket_id` bigint DEFAULT NULL COMMENT '桶id',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `PATHKEY` (`path`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `authorize_path` */
+
+/*Table structure for table `authorize_user` */
+
+DROP TABLE IF EXISTS `authorize_user`;
+
+CREATE TABLE `authorize_user` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `authorize_id` bigint DEFAULT NULL COMMENT '授权用户id',
+  `user_id` bigint DEFAULT NULL COMMENT '授权id',
+  `bucket_id` bigint DEFAULT NULL COMMENT '桶id',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `authorize_user` */
+
+/*Table structure for table `bucket` */
+
+DROP TABLE IF EXISTS `bucket`;
+
+CREATE TABLE `bucket` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '桶ID',
+  `name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '桶名字',
+  `user_id` bigint DEFAULT NULL COMMENT '用户ID',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `version_control` bit(1) DEFAULT NULL COMMENT '是否开启版本控制',
+  `storage_level` bigint DEFAULT NULL COMMENT '存储等级',
+  `watermark` bit(1) DEFAULT NULL COMMENT '图片是否需要加水印',
+  `encryption` bit(1) DEFAULT NULL COMMENT '是否需要加密存储',
+  `bucket_acl` int DEFAULT NULL COMMENT '桶读写权限ACL',
+  `secret` varchar(128) DEFAULT NULL COMMENT '加密方式',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `NAME` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `bucket` */
+
+insert  into `bucket`(`id`,`name`,`user_id`,`create_time`,`update_time`,`version_control`,`storage_level`,`watermark`,`encryption`,`bucket_acl`,`secret`) values (6,'mybucket',3,'2023-02-06 16:10:37','2023-02-06 16:10:37',NULL,1,NULL,NULL,5,NULL);
+
+/*Table structure for table `history` */
+
+DROP TABLE IF EXISTS `history`;
+
+CREATE TABLE `history` (
+  `user_id` bigint NOT NULL COMMENT '用户ID',
+  `bucket_id` bigint NOT NULL COMMENT '桶ID',
+  `create_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`user_id`,`bucket_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `history` */
+
+/*Table structure for table `object_tag` */
+
+DROP TABLE IF EXISTS `object_tag`;
+
+CREATE TABLE `object_tag` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '对象标签唯一ID',
+  `key` varchar(1024) DEFAULT NULL COMMENT '标签键',
+  `value` varchar(1024) DEFAULT NULL COMMENT '标签值',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `object_tag` */
+
+/*Table structure for table `object_tag_object` */
+
+DROP TABLE IF EXISTS `object_tag_object`;
+
+CREATE TABLE `object_tag_object` (
+  `object_id` bigint NOT NULL COMMENT '对象ID',
+  `tag_id` bigint NOT NULL COMMENT '标签ID',
+  PRIMARY KEY (`object_id`,`tag_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `object_tag_object` */
+
+/*Table structure for table `oss_object` */
+
+DROP TABLE IF EXISTS `oss_object`;
+
+CREATE TABLE `oss_object` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '唯一ID',
+  `object_key` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '指向真实数据的key',
+  `name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '对象名字',
+  `bucket_id` bigint DEFAULT NULL COMMENT '桶ID',
+  `ext` varchar(128) DEFAULT NULL COMMENT '文件扩展名',
+  `md5` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '文件的MD5值',
+  `size` bigint DEFAULT NULL COMMENT '文件总大小',
+  `is_folder` bit(1) DEFAULT b'0' COMMENT '是否为文件夹',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `last_update_time` datetime DEFAULT NULL COMMENT '最近更新时间',
+  `parent` bigint DEFAULT NULL COMMENT '父级对象id',
+  `object_acl` int DEFAULT NULL COMMENT '对象访问控制权限',
+  `secret` int DEFAULT NULL COMMENT '加密方式',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `PATHKEY` (`bucket_id`,`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `oss_object` */
+
+insert  into `oss_object`(`id`,`object_key`,`name`,`bucket_id`,`ext`,`md5`,`size`,`is_folder`,`create_time`,`last_update_time`,`parent`,`object_acl`,`secret`) values (2,NULL,'page1/',6,NULL,NULL,NULL,'','2023-02-06 16:18:26','2023-02-06 16:18:26',NULL,NULL,NULL);
+
+/*Table structure for table `user` */
+
+DROP TABLE IF EXISTS `user`;
+
+CREATE TABLE `user` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '用户唯一标识',
+  `username` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '用户名',
+  `password` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '用户密码',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `phone` varchar(256) DEFAULT NULL COMMENT '电话',
+  `parent` bigint DEFAULT NULL COMMENT '父级id',
+  PRIMARY KEY (`id`),
+  KEY `id` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `user` */
+
+insert  into `user`(`id`,`username`,`password`,`create_time`,`update_time`,`phone`,`parent`) values (1,'123','123','2023-01-04 10:36:41','2023-01-31 10:36:44','1123',NULL);
+insert  into `user`(`id`,`username`,`password`,`create_time`,`update_time`,`phone`,`parent`) values (2,'1234','1234','2023-02-06 13:41:35','2023-02-06 13:41:36','123',NULL);
+insert  into `user`(`id`,`username`,`password`,`create_time`,`update_time`,`phone`,`parent`) values (3,'1','1','2023-02-06 13:45:45','2023-02-06 13:45:45','1',NULL);
+
+/*Table structure for table `user_favorite` */
+
+DROP TABLE IF EXISTS `user_favorite`;
+
+CREATE TABLE `user_favorite` (
+  `user_id` bigint NOT NULL COMMENT '用户id',
+  `bucket_id` bigint NOT NULL COMMENT 'bucket_id',
+  PRIMARY KEY (`user_id`,`bucket_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `user_favorite` */
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;

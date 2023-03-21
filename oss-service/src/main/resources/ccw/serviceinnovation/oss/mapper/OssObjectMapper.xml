@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ccw.serviceinnovation.oss.mapper.OssObjectMapper">
+
+    <insert id="putObject">
+        INSERT INTO oss_object(name, bucket_id, ext, etag, size, is_folder, create_time, last_update_time, parent,object_acl)
+         VALUE(#{name},#{bucketId},#{ext},#{md5},#{size},#{isFolder},#{createTime},#{lastUpdateTime},
+               #{parent},#{objectAcl}) ON DUPLICATE KEY UPDATE name=#{name},bucket_id=#{bucketId},ext=#{ext},etag=#{etag},
+               size=#{size},is_folder=#{isFolder},create_time=#{createTime},last_update_time=#{lastUpdateTime},parent=#{parent},object_acl=#{objectAcl}
+    </insert>
+
+    <insert id="putFolder">
+        INSERT INTO oss_object(name, bucket_id, is_folder, create_time, last_update_time, parent)
+            VALUE(#{name},#{bucketId},#{isFolder},#{createTime},#{lastUpdateTime},
+                  #{parent}) ON DUPLICATE KEY UPDATE name=#{name},bucket_id=#{bucketId},is_folder=#{isFolder},
+                  create_time=#{createTime},last_update_time=#{lastUpdateTime},parent=#{parent}
+    </insert>
+
+    <select id="selectObjectIdByName" resultType="java.lang.Long">
+        select id from oss_object where name = #{objectName} and bucket_id = (select id from bucket where name = #{bucketName})
+    </select>
+
+    <select id="selectObjectByName" resultType="ccw.serviceinnovation.common.entity.OssObject">
+        select * from oss_object where name = #{objectName} and bucket_id = (select id from bucket where name = #{bucketName})
+    </select>
+
+
+
+    <select id="selectObjectList" resultType="ccw.serviceinnovation.oss.pojo.vo.ObjectVo">
+        select * from oss_object where bucket_id=(select id from bucket where bucket.name=#{bucketName})
+        <if test="key != null">
+            and name like #{key}
+        </if>
+        <if test="parentObjectId != null">
+            and parent = #{parentObjectId}
+        </if>
+        <if test="offset != null and size != null">
+            limit ${offset}, ${size}
+        </if>
+
+    </select>
+    <select id="selectObjectListLength" resultType="java.lang.Integer">
+        select count(*) from oss_object where bucket_id=(select id from bucket where bucket.name=#{bucketName})
+        <if test="key != null">
+            and name like #{key}
+        </if>
+    </select>
+    <select id="getOssObjectByEtag" resultType="ccw.serviceinnovation.common.entity.OssObject">
+        select `group_id` from oss_object where etag = #{etag} limit 0,1
+    </select>
+</mapper>

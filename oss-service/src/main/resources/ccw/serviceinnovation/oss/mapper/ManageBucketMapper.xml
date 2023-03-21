@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ccw.serviceinnovation.oss.mapper.ManageBucketMapper">
+
+
+    <select id="getBucketList" resultType="ccw.serviceinnovation.common.entity.Bucket">
+        SELECT * FROM bucket
+        <if test="offset != null and size != null">
+            LIMIT ${offset}, ${size}
+        </if>
+    </select>
+    <select id="selectAllCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM bucket;
+    </select>
+    <select id="getBucketListById" resultType="ccw.serviceinnovation.common.entity.Bucket">
+        SELECT * FROM bucket WHERE user_id = #{userId}
+        <if test="offset != null and size != null">
+            LIMIT ${offset}, ${size}
+        </if>
+    </select>
+</mapper>

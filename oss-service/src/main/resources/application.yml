@@ -1,0 +1,97 @@
+server:
+  port: 8080
+  servlet:
+    multipart:
+      max-request-size: 5GB
+      max-file-size: 1GB
+  address: 0.0.0.0
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    druid:
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://101.35.43.156:3306/oss?useSSL=false&amp&serverTimezone=UTC
+      username: root
+      password: 123abc456
+  redis:
+    redisson:
+      config: |
+        singleServerConfig:
+          password:
+          address: "redis://127.0.0.1:6379"
+          database: 1
+        threads: 0
+        nettyThreads: 0
+        codec: !<org.redisson.codec.FstCodec> {}
+        transportMode: "NIO"
+    host: 127.0.0.1
+    port: 6379
+    timeout: 1000
+    password:
+    lettuce:
+      pool:
+        minIdle: 5
+        maxIdle: 200
+        maxWait: 10000
+        maxActive: 8
+  application:
+    name: oss-service
+
+
+mybatis-plus:
+  global-config:
+    db-config:
+      table-prefix:
+      id-type:
+    banner: false
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+
+
+logging:
+  level:
+    ccw.serviceinnovation.oss.mapper: debug
+
+myoss:
+  package: ccw.serviceinnovation.oss
+  controller: ccw.serviceinnovation.oss.controller
+  apiBatPath: D:\API文档\api\upload.bat
+  ftp:
+    ip: 101.35.43.156
+    port: 21
+    username: ftpuser
+    password: 123456
+    base-path: /root/ftp/ftpuser
+    postman_token: PMAK-63d8f9ef8e04bf3923326ae4-3f74d135145deba97df9e4b5702717d81f
+  location:
+    production: D:\OSS\production
+    place_on_file: D:\OSS\place_on_file
+    backups: D:\OSS\backups
+
+dubbo:
+  protocol:
+    id: dubbo
+    name: dubbo
+    port: 8085
+  scan:
+    basePackages: ccw.serviceinnovation.oss
+  application:
+    #可选值 interface、instance、all，默认是 interface，即只注册接口级地址
+    register-mode: all
+    #只消费应用级
+    service-discovery:
+      # FORCE_INTERFACE，只消费接口级地址，如无地址则报错，单订阅 2.x 地址
+      # APPLICATION_FIRST，智能决策接口级/应用级地址，双订阅
+      # FORCE_APPLICATION，只消费应用级地址，如无地址则报错，单订阅 3.x 地址
+      migration: APPLICATION_FIRST
+    name: oss-service
+  registry:
+    address: nacos://127.0.0.1:8848

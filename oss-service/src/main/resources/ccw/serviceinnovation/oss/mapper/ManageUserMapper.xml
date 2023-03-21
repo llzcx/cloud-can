@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ccw.serviceinnovation.oss.mapper.ManageUserMapper">
+
+
+    <select id="selectUserListByName" resultType="ccw.serviceinnovation.common.entity.User">
+        SELECT * FROM user WHERE username = #{username}
+        <if test="offset != null and size != null">
+            LIMIT ${offset}, ${size}
+        </if>
+    </select>
+    <select id="selectUserList" resultType="ccw.serviceinnovation.common.entity.User">
+        SELECT * FROM user
+        <if test="offset != null and size != null">
+            LIMIT ${offset}, ${size}
+        </if>
+    </select>
+    <select id="selectAllCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM user;
+    </select>
+    <select id="selectSubUsers" resultType="ccw.serviceinnovation.common.entity.User">
+        SELECT * FROM user WHERE parent = #{userId}
+        <if test="offset != null and size != null">
+            LIMIT ${offset}, ${size}
+        </if>
+    </select>
+
+</mapper>

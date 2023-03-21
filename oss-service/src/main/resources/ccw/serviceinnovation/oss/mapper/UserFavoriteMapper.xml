@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ccw.serviceinnovation.oss.mapper.UserFavoriteMapper">
+
+    <insert id="putUserFavorite">
+        INSERT INTO user_favorite (user_id, bucket_id) values (#{userId}, #{bucketId}) ON DUPLICATE KEY UPDATE user_id = #{userId}, bucket_id = #{bucketId};
+    </insert>
+
+</mapper>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ccw.serviceinnovation.oss.mapper.AuthorizeMapper">
+    <select id="selectAuthorize" resultType="ccw.serviceinnovation.oss.pojo.bo.AuthorizeBo">
+        SELECT tb2.authorize_id, user_is_all, path_is_all, operation, user_id, path
+        FROM (SELECT id, user_is_all, path_is_all, operation, bucket_id
+              FROM authorize
+              WHERE `bucket_id` = #{bucketId}) as tb1
+                 LEFT JOIN (select authorize_id, path
+                            from authorize_path
+                            where bucket_id=#{bucketId} and CONCAT((select name from bucket where id = #{bucketId}), '/', #{path}) like path) tb3
+                           ON tb1.`id` = tb3.`authorize_id`
+                 LEFT JOIN (select authorize_id, user_id from authorize_user where bucket_id=#{bucketId} and user_id = #{userId}) as tb2
+                           ON tb1.`id` = tb2.`authorize_id`
+    </select>
+</mapper>

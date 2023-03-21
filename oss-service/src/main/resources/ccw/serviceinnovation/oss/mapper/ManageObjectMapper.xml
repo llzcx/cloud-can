@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ccw.serviceinnovation.oss.mapper.ManageObjectMapper">
+
+    <select id="selectObjectList" resultType="ccw.serviceinnovation.common.entity.OssObject">
+        SELECT * FROM oss_object WHERE
+        <if test="bucketId != null">bucket_id = #{bucketId}</if>
+        <if test="bucketName != null">or bucket_id = #{bucketName}</if>
+        <if test="offset != null and size != null">
+            LIMIT ${offset}, ${size}
+        </if>
+    </select>
+    <select id="selectObjectCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM oss_object WHERE
+        <if test="bucketId != null">bucket_id = #{bucketId}</if>
+        <if test="bucketName != null">or bucket_id = #{bucketName}</if>
+    </select>
+
+
+</mapper>
