@@ -1,21 +1,16 @@
-package ccw.serviceinnovation.oss.manager.nacos;
+package ccw.serviceinnovation.common.nacos;
 
 import ccw.serviceinnovation.common.util.http.HttpUtils;
 import com.alibaba.fastjson.JSONObject;
-import lombok.Data;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static ccw.serviceinnovation.oss.constant.OssApplicationConstant.NACOS_SERVER_ADDR;
-
 /**
  * @author 陈翔
  */
-@Component
 public class TrackerService {
 
 
@@ -23,9 +18,9 @@ public class TrackerService {
      * 获取存储服务列表
      * @return
      */
-    public List<Host> getAllOssDataList(){
+    public static List<Host> getAllOssDataList(String nacosPath){
         try {
-            String response = HttpUtils.request("http://"+NACOS_SERVER_ADDR + "/nacos/v1/ns/instance/list?serviceName=oss-data-provide");
+            String response = HttpUtils.request("http://"+nacosPath + "/nacos/v1/ns/instance/list?serviceName=oss-data-provide");
             return  JSONObject.parseObject(response, Response.class).getHosts();
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -37,9 +32,9 @@ public class TrackerService {
      * 获取Jraft服务列表
      * @return
      */
-    public Map<String,List<Host>> getAllJraftList(){
+    public static Map<String,List<Host>> getAllJraftList(String nacosPath){
         try {
-            String response = HttpUtils.request("http://"+NACOS_SERVER_ADDR + "/nacos/v1/ns/instance/list?serviceName=raft-rpc");
+            String response = HttpUtils.request("http://"+nacosPath + "/nacos/v1/ns/instance/list?serviceName=raft-rpc");
             List<Host> hosts = JSONObject.parseObject(response, Response.class).getHosts();
             Map<String,List<Host>> newHosts = new HashMap<>();
             for (Host host : hosts) {

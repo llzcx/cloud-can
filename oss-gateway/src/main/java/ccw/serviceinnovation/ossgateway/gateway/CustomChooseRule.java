@@ -1,32 +1,26 @@
 package ccw.serviceinnovation.ossgateway.gateway;
 
 import ccw.serviceinnovation.common.entity.LocationVo;
-import ccw.serviceinnovation.common.entity.OssObject;
 import ccw.serviceinnovation.common.exception.OssException;
+import ccw.serviceinnovation.common.nacos.Host;
+import ccw.serviceinnovation.common.nacos.TrackerService;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.common.util.http.HttpUtils;
-import ccw.serviceinnovation.common.util.mybatis.MPUtil;
-import ccw.serviceinnovation.oss.manager.nacos.TrackerService;
-import ccw.serviceinnovation.ossgateway.OssGatewayApplication;
-import ccw.serviceinnovation.ossgateway.gateway.manager.http.Host;
-import ccw.serviceinnovation.ossgateway.mapper.OssObjectMapper;
+import ccw.serviceinnovation.ossgateway.constant.GateWayConstant;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.ReferenceConfig;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.rpc.cluster.specifyaddress.Address;
 import org.apache.dubbo.rpc.cluster.specifyaddress.UserSpecifiedAddressUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.http.server.RequestPath;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import service.StorageObjectService;
+import service.raft.client.RaftRpcRequest;
 
 import java.net.URI;
 import java.util.List;
@@ -49,51 +43,46 @@ public class CustomChooseRule implements ICustomRule {
     private StorageObjectService storageObjectService;
 
 
-    private ServiceInstance getServiceInstance(List<ServiceInstance> serviceInstances, String etag) {
-        if (storageObjectService == null) {
-            synchronized (this) {
-                if (storageObjectService == null) {
-                    ReferenceConfig<StorageObjectService> reference = new ReferenceConfig<>();
-                    reference.setInterface(StorageObjectService.class);
-                    reference.setGroup("object");
-                    reference.setVersion("1.0.0");
-                    reference.setTimeout(3000);
-                    reference.setCheck(false);
-                    reference.setServices("oss-data-provide");
-                    storageObjectService = reference.get();
-                    System.out.println("storageObjectService:"+storageObjectService);
-                }
+    private ServiceInstance getServiceInstance(List<ServiceInstance> serviceInstances, String group,String etag) throws Exception{
+        Map<String, List<Host>> allJraftList = TrackerService.getAllJraftList(GateWayConstant.NACOS_SERVER_ADDR);
+        List<Host> hosts = allJraftList.get(group);
+        if(hosts!=null){
+            for (Host host : hosts) {
+                RaftRpcRequest.RaftRpcRequestBo leader = RaftRpcRequest.getLeader(GateWayConstant.NACOS_SERVER_ADDR, group);
+                LocationVo locationVo = RaftRpcRequest.get(leader.getCliClientService(), leader.getPeerId(), etag);
+                log.info("{}的group:{}(leader:{})的定位:{}",etag, group,leader.getPeerId(),JSONObject.toJSONString(locationVo));
+               if(locationVo!=null){
+                   //拿到了HTTP(springboot服务的ip和端口号)
+                   Integer port = host.getMetadata().getPort();
+                   for (ServiceInstance serviceInstance : serviceInstances) {
+                       log.info("比较{}和{}",serviceInstance.getHost()+":" +serviceInstance.getPort(),JSONObject.toJSONString(host));
+                       //HTTP服务和RPC服务的IP必然相同 端口号不同
+                       //这里要拿HTTP的端口号比较
+                       if(serviceInstance.getPort()==port){
+                           return serviceInstance;
+                       }
+                   }
+                   //数据丢失
+                   throw new OssException(ResultCode.DATA_NOT_FOUND);
+               }else{
+                   //文件不存在
+                   throw new OssException(ResultCode.OBJECT_IS_DEFECT);
+               }
             }
-        }
-        List<Host> allOssDataList = TrackerService.getAllOssDataList();
-        for (Host host : allOssDataList) {
-            log.info("服务提供者:{}", JSONObject.toJSONString(host));
-            UserSpecifiedAddressUtil.setAddress(new Address(host.getIp(), host.getPort(), true));
-            LocationVo location = storageObjectService.location(etag);
-            if(location!=null){
-                String locationAddr = location.getIp() + ":" + location.getPort();
-                System.out.println("locationAddr:"+locationAddr);
-                for (ServiceInstance serviceInstance : serviceInstances) {
-                    String addr = serviceInstance.getHost()+":"+serviceInstance.getPort();
-                    System.out.println("serviceInstance:"+addr);
-                    if(locationAddr.equals(addr)){
-                        return serviceInstance;
-                    }else{
-                        System.out.println("check error");
-                    }
-                }
-            }else{
-                System.out.println("location为空");
-            }
+        }else{
+            //数据服务器异常
+            throw new OssException(ResultCode.SERVER_EXCEPTION);
         }
         return null;
     }
 
 
     @Override
-    public ServiceInstance choose(ServerWebExchange exchange, DiscoveryClient discoveryClient) {
+    public ServiceInstance choose(ServerWebExchange exchange, DiscoveryClient discoveryClient) throws Exception {
         URI originalUrl = exchange.getAttribute(GATEWAY_REQUEST_URL_ATTR);
         String path = exchange.getRequest().getPath().toString();
+        URI uri = exchange.getRequest().getURI();
+        String[] pathParams = HttpUtils.getPathParams(uri);
         Map<String, String> stringStringMap = exchange.getRequest().getQueryParams().toSingleValueMap();
         System.out.println("stringStringMap:" + stringStringMap);
         String instancesId = originalUrl.getHost();
@@ -103,7 +92,7 @@ public class CustomChooseRule implements ICustomRule {
         //获取body中的数据
         //String body = FilterRequestResponseUtil.resolveBodyFromRequest(dataBufferFlux);
 
-        //所有服务数据
+        //所有服务数据(Springboot的下载服务)
         List<ServiceInstance> instances = discoveryClient.getInstances(instancesId);
         for (ServiceInstance instance : instances) {
             log.info("{}", instance);
@@ -112,15 +101,15 @@ public class CustomChooseRule implements ICustomRule {
 
         //拦截nacos-provide服务也可拦截服务中特定url
         if ("oss-data-server".equals(instancesId)) {
-            if (path.contains("/object/download/")) {
+            if ("object".equals(pathParams[0]) && "download".equals(pathParams[1])) {
                 //下载文件请求
-                //根据objectName解析出ossObject 拿到etag
-                String objectName = exchange.getRequest().getQueryParams().getFirst("name");
-                System.out.println("objectName:"+objectName);
-                String etag = HttpUtils.getLastPathParams(path);
+                //获取group和etag
+                String group = pathParams[2];
+                String etag = pathParams[3];
+                System.out.println("group:"+group);
                 System.out.println("etag:"+etag);
                 //根据etag去OssData找
-                ServiceInstance serviceInstance = getServiceInstance(instances, etag);
+                ServiceInstance serviceInstance = getServiceInstance(instances,group, etag);
                 if(serviceInstance!=null){
                     return serviceInstance;
                 }else{

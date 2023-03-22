@@ -38,6 +38,8 @@ public enum ResultCode {
     THE_FILE_IS_CORRUPT(2005,"文件损坏"),
     DELETE_ERROR(2006,"删除失败"),
     CANT_SYNC(2007,"同步失败"),
+    SERVER_EXCEPTION(2008,"数据服务异常"),
+    DATA_NOT_FOUND(2009,"数据丢失"),
 
     /* 业务异常 */
     UPLOAD_ERROR(3005,"上传失败"),
@@ -58,6 +60,8 @@ public enum ResultCode {
     BLOCK_TOKEN_CHECK_ERROR(3020,"分块上传事件校验异常"),
     CLIENT_ETAG_ERROR(3021,"客户端Etag计算错误"),
     FILE_IS_EMPTY(3022,"文件不存在"),
+    UPLOAD_EVENT_EXPIRATION(3023,"上传事件过期或者不存在"),
+
     ;
     private Integer code;
     private String message;

@@ -34,7 +34,6 @@ public class DataOperation implements Serializable {
 
     /** Get value */
     public static final byte SAVE = 0x01;
-
     public static final byte DEL = 0x02;
     public static final byte GET = 0x03;
     private byte op;

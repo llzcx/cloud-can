@@ -4,13 +4,13 @@ import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.entity.LocationVo;
 import ccw.serviceinnovation.common.entity.OssObject;
 import ccw.serviceinnovation.common.exception.OssException;
+import ccw.serviceinnovation.common.nacos.Host;
+import ccw.serviceinnovation.common.nacos.TrackerService;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.common.util.hash.QETag;
 import ccw.serviceinnovation.oss.common.util.MPUtil;
+import ccw.serviceinnovation.oss.constant.OssApplicationConstant;
 import ccw.serviceinnovation.oss.manager.consistenthashing.ConsistentHashing;
-import ccw.serviceinnovation.oss.manager.nacos.Host;
-import ccw.serviceinnovation.oss.manager.nacos.TrackerService;
-import ccw.serviceinnovation.oss.manager.raft.client.RaftRpcRequest;
 import ccw.serviceinnovation.oss.manager.redis.ChunkRedisService;
 import ccw.serviceinnovation.oss.manager.redis.DuplicateRemovalService;
 import ccw.serviceinnovation.oss.mapper.BucketMapper;
@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import service.StorageObjectService;
 import service.StorageTempObjectService;
+import service.raft.client.RaftRpcRequest;
 
 import java.io.IOException;
 import java.util.*;
@@ -66,8 +67,6 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
     @Autowired
     private ChunkRedisService chunkRedisService;
 
-    @Autowired
-    private TrackerService trackerService;
 
     @Autowired
     private DuplicateRemovalService duplicateRemovalPrefix;
@@ -78,8 +77,6 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
     @Autowired
     ConsistentHashing consistentHashing;
 
-    @Autowired
-    RaftRpcRequest raftRpcRequest;
 
 
     @Override
@@ -90,8 +87,8 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
         //删除元数据
         int delete = ossObjectMapper.delete(MPUtil.queryWrapperEq("name", ossObject.getName(), "bucket_id", ossObject.getBucketId()));
         //删除真实数据
-        RaftRpcRequest.RaftRpcRequestBo leader = raftRpcRequest.getLeader(ossObject.getGroupId());
-        raftRpcRequest.del(leader.getCliClientService(), leader.getPeerId(), ossObject.getEtag());
+        RaftRpcRequest.RaftRpcRequestBo leader = RaftRpcRequest.getLeader(OssApplicationConstant.NACOS_SERVER_ADDR,ossObject.getGroupId());
+        RaftRpcRequest.del(leader.getCliClientService(), leader.getPeerId(), ossObject.getEtag());
         return true;
     }
 
@@ -104,7 +101,7 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
             if (duplicateRemovalPrefix.isExist(etag)) {
                 return true;
             } else {
-                List<Host> allOssDataList = trackerService.getAllOssDataList();
+                List<Host> allOssDataList = TrackerService.getAllOssDataList(OssApplicationConstant.NACOS_SERVER_ADDR);
                 int index = Math.abs(new Random().nextInt());
                 Host host = allOssDataList.get(allOssDataList.size() % index);
                 String token = UUID.randomUUID().toString();
@@ -167,10 +164,14 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
     @Override
     public Boolean mergeObjectChunk(String blockToken) throws Exception {
         ChunkBo chunkBo = chunkRedisService.getObjectPosition(blockToken);
+        if(chunkBo==null){
+            throw new OssException(ResultCode.UPLOAD_EVENT_EXPIRATION);
+        }
         long size = chunkBo.getSize();
         String etag = chunkBo.getEtag();
         String ip = chunkBo.getIp();
         Integer port = chunkBo.getPort();
+        String ObjectName = chunkBo.getName();
         OssObject ossObject = new OssObject();
         //文件校验
         if (chunkRedisService.isUploaded(blockToken)) {
@@ -201,12 +202,12 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
                     //没有重复 -> 转正缓存 (让该group内所有节点去拉取这个缓存,转正的一个过程)
                     //UserSpecifiedAddressUtil.setAddress(new Address(chunkBo.getIp(), chunkBo.getPort(), true));
                     //storageTempObjectService.blockBecomeFullMember(blockToken,etag);
-                    RaftRpcRequest.RaftRpcRequestBo leader = raftRpcRequest.getLeader(chunkBo.getGroupId());
+                    RaftRpcRequest.RaftRpcRequestBo leader = RaftRpcRequest.getLeader(OssApplicationConstant.NACOS_SERVER_ADDR,chunkBo.getGroupId());
                     String url = "http://" + ip + ":" + port + "/object/download_temp/" + blockToken;
                     LocationVo locationVo = new LocationVo(ip, port);
                     locationVo.setPath(url);
                     locationVo.setToken(blockToken);
-                    if (raftRpcRequest.save(leader.getCliClientService(), leader.getPeerId(), etag, locationVo)) {
+                    if (RaftRpcRequest.save(leader.getCliClientService(), leader.getPeerId(), etag, locationVo)) {
                         System.out.println("所有节点完成同步!");
 //                        duplicateRemovalService.saveKey(etag, chunkBo.getIp(),chunkBo.getPort());
                     }else{
@@ -227,7 +228,15 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
                 ossObject.setName(chunkBo.getName());
                 ossObject.setExt(storageObjectService.getExt(etag));
                 ossObject.setParent(parentObjectId);
-                ossObjectMapper.insert(ossObject);
+                Long id = ossObjectMapper.selectObjectIdByIdAndName(bucketId, ObjectName);
+                if(id!=null){
+                    //存在则更新
+                    ossObjectMapper.updateById(ossObject);
+                }else{
+                    //不存在则插入
+                    ossObjectMapper.insert(ossObject);
+                }
+
                 return true;
             }
         } else {
@@ -255,8 +264,8 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
             //拿到对象的key
             String etag = ossObject.getEtag();
             //删除真实数据
-            RaftRpcRequest.RaftRpcRequestBo leader = raftRpcRequest.getLeader(ossObject.getGroupId());
-            raftRpcRequest.del(leader.getCliClientService(), leader.getPeerId(), etag);
+            RaftRpcRequest.RaftRpcRequestBo leader = RaftRpcRequest.getLeader(OssApplicationConstant.NACOS_SERVER_ADDR,ossObject.getGroupId());
+            RaftRpcRequest.del(leader.getCliClientService(), leader.getPeerId(), etag);
             //删除元数据
             ossObjectMapper.delete(MPUtil.queryWrapperEq("name", ossObject.getName(), "bucket_id", ossObject.getBucketId()));
 

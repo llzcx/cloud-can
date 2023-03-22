@@ -17,6 +17,8 @@
 package ccw.serviceinnovation.ossdata.manager.raft.server.service;
 
 import ccw.serviceinnovation.common.entity.LocationVo;
+import ccw.serviceinnovation.common.util.net.NetUtil;
+import ccw.serviceinnovation.ossdata.constant.OssDataConstant;
 import ccw.serviceinnovation.ossdata.manager.raft.server.DataOperation;
 import ccw.serviceinnovation.ossdata.manager.raft.server.DataServer;
 import ccw.serviceinnovation.ossdata.manager.raft.server.DataClosure;
@@ -33,7 +35,10 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 
 /**
@@ -94,6 +99,10 @@ public class DataServiceImpl implements DataService {
         return this.dataServer.getFsm().getValue(etag);
     }
 
+
+    public static void main(String[] args) {
+        System.out.println(NetUtil.getLANAddressOnWindows().getHostAddress());
+    }
     @Override
     public void get(boolean readOnlySafe, String etag, DataClosure closure) {
         if(!readOnlySafe){
@@ -102,18 +111,26 @@ public class DataServiceImpl implements DataService {
             closure.run(Status.OK());
             return;
         }
+        //线性读取readIndex
         this.dataServer.getNode().readIndex(BytesUtil.EMPTY_BYTES, new ReadIndexClosure() {
             @Override
             public void run(Status status, long index, byte[] reqCtx) {
                 if(status.isOk()){
-                    closure.success(getValue(etag));
+                    String value = getValue(etag);
+                    if(value!=null){
+                        LOG.info("本地存在该文件:{},在{}",etag,value);
+                        //NetUtil.getLANAddressOnWindows().getHostAddress()
+                        closure.success(new LocationVo(NetUtil.getIP(),Integer.valueOf(OssDataConstant.PORT)));
+                    }else{
+                        LOG.info("本地不存在该文件:{}",etag);
+                        closure.success(null);
+                    }
                     closure.run(Status.OK());
                     return;
                 }
                 DataServiceImpl.this.readIndexExecutor.execute(() -> {
                     if(isLeader()){
                         LOG.debug("Fail to get value with 'ReadIndex': {}, try to applying to the state machine.", status);
-                        //线性读取需要经过状态机
                         applyOperation(DataOperation.createGet(readOnlySafe,etag), closure);
                     }else {
                         handlerNotLeaderError(closure);

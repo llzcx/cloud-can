@@ -1,8 +1,6 @@
 package ccw.serviceinnovation.oss;
 
 import ccw.serviceinnovation.oss.common.util.RedisUtil;
-import ccw.serviceinnovation.oss.manager.nacos.Host;
-import ccw.serviceinnovation.oss.manager.nacos.TrackerService;
 import org.apache.dubbo.config.ReferenceConfig;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.junit.jupiter.api.Test;
@@ -24,8 +22,6 @@ class OssApplicationTests {
     @Autowired
     public RedisUtil redisUtil;
 
-    @Autowired
-    TrackerService trackerService;
 
 
 

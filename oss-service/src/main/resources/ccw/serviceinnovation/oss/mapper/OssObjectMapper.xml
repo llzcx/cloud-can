@@ -48,4 +48,7 @@
     <select id="getOssObjectByEtag" resultType="ccw.serviceinnovation.common.entity.OssObject">
         select `group_id` from oss_object where etag = #{etag} limit 0,1
     </select>
+    <select id="selectObjectIdByIdAndName" resultType="java.lang.Long">
+        select id from oss_object where bucket_id=#{bucketId} and name=#{objectName}
+    </select>
 </mapper>

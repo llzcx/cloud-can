@@ -12,6 +12,6 @@ import org.springframework.web.server.ServerWebExchange;
 public interface ICustomRule {
 
     
-    ServiceInstance choose(ServerWebExchange exchange, DiscoveryClient discoveryClient);
+    ServiceInstance choose(ServerWebExchange exchange, DiscoveryClient discoveryClient)  throws Exception;
 
 }

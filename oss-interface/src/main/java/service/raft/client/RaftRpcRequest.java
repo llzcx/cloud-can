@@ -1,40 +1,31 @@
-package ccw.serviceinnovation.oss.manager.raft.client;
+package service.raft.client;
 
 import ccw.serviceinnovation.common.entity.LocationVo;
-import ccw.serviceinnovation.oss.manager.nacos.Host;
-import ccw.serviceinnovation.oss.manager.nacos.TrackerService;
+import ccw.serviceinnovation.common.nacos.Host;
+import ccw.serviceinnovation.common.nacos.TrackerService;
 import com.alipay.sofa.jraft.RouteTable;
 import com.alipay.sofa.jraft.conf.Configuration;
 import com.alipay.sofa.jraft.entity.PeerId;
 import com.alipay.sofa.jraft.error.RemotingException;
-import com.alipay.sofa.jraft.example.ne.NeGrpcHelper;
 import com.alipay.sofa.jraft.option.CliOptions;
-import com.alipay.sofa.jraft.rpc.InvokeCallback;
 import com.alipay.sofa.jraft.rpc.impl.cli.CliClientServiceImpl;
 import com.alipay.sofa.jraft.util.Endpoint;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+
 import service.raft.request.DelRequest;
 import service.raft.request.GetRequest;
 import service.raft.request.SaveRequest;
 import service.raft.rpc.RpcResponse;
 
-import javax.xml.stream.Location;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executor;
 import java.util.concurrent.TimeoutException;
 
 /**
  * @author 陈翔
  */
-@Component
 public class RaftRpcRequest {
 
-    @Autowired
-    TrackerService trackerService;
 
     @Data
     public static class RaftRpcRequestBo{
@@ -42,9 +33,9 @@ public class RaftRpcRequest {
         private PeerId peerId;
     }
 
-    public RaftRpcRequestBo getLeader(String groupId){
+    public static RaftRpcRequestBo getLeader(String naocosPath,String groupId){
         RaftRpcRequestBo raftRpcRequestBo = new RaftRpcRequestBo();
-        Map<String, List<Host>> allJraftList = trackerService.getAllJraftList();
+        Map<String, List<Host>> allJraftList = TrackerService.getAllJraftList(naocosPath);
         StringBuilder addr_list = new StringBuilder();
         List<Host> list = allJraftList.get(groupId);
         for (int i = 0; i < list.size(); i++) {
@@ -89,7 +80,7 @@ public class RaftRpcRequest {
      * @throws RemotingException
      * @throws InterruptedException
      */
-    public boolean save(final CliClientServiceImpl cliClientService, final PeerId leader, String etag, LocationVo locationVo) throws RemotingException, InterruptedException {
+    public static boolean save(final CliClientServiceImpl cliClientService, final PeerId leader, String etag, LocationVo locationVo) throws RemotingException, InterruptedException {
         Endpoint endpoint = leader.getEndpoint();
         SaveRequest saveRequest = new SaveRequest(etag,locationVo);
         RpcResponse rpcResponse = (RpcResponse)cliClientService.getRpcClient().invokeSync(endpoint, saveRequest, 5000);
@@ -97,16 +88,17 @@ public class RaftRpcRequest {
         return rpcResponse.getSuccess();
     }
 
-    public LocationVo get(final CliClientServiceImpl cliClientService, final PeerId leader, String etag) throws RemotingException, InterruptedException {
+    public static LocationVo get(final CliClientServiceImpl cliClientService, final PeerId leader, String etag) throws RemotingException, InterruptedException {
         Endpoint endpoint = leader.getEndpoint();
         GetRequest getRequest = new GetRequest(true,etag);
         RpcResponse rpcResponse = (RpcResponse)cliClientService.getRpcClient().invokeSync(endpoint, getRequest, 5000);
+        System.out.println("getData:"+rpcResponse.getData());
         LocationVo data = (LocationVo)rpcResponse.getData();
         System.out.println("result:"+rpcResponse);
         return data;
     }
 
-    public boolean del(final CliClientServiceImpl cliClientService, final PeerId leader, String etag) throws RemotingException, InterruptedException {
+    public static boolean del(final CliClientServiceImpl cliClientService, final PeerId leader, String etag) throws RemotingException, InterruptedException {
         Endpoint endpoint = leader.getEndpoint();
         DelRequest delRequest = new DelRequest(etag);
         RpcResponse rpcResponse = (RpcResponse)cliClientService.getRpcClient().invokeSync(endpoint, delRequest, 5000);

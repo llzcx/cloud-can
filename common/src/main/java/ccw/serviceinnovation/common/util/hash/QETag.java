@@ -170,7 +170,7 @@ public class QETag {
 
     public static void main(String[] args) {
         try {
-            System.out.println(calcETag("D:\\OSS\\01\\position\\TMP_BLOCK&846aee3c_4196_4721_ab30_b52d153b6a82"));
+//            System.out.println(calcETag("D:\\OSS\\01\\position\\TMP_BLOCK&846aee3c_4196_4721_ab30_b52d153b6a82"));
             System.out.println(calcETag("D:\\OSS\\BWhosOpposite.exe"));
         } catch (Exception e) {
             e.printStackTrace();

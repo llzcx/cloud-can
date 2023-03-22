@@ -13,9 +13,9 @@ import service.raft.request.GetRequest;
  */
 public class GetRequestProcessor implements RpcProcessor<GetRequest> {
     private final DataService dataService;
-    public GetRequestProcessor(DataService neService) {
+    public GetRequestProcessor(DataService dataService) {
         super();
-        this.dataService = neService;
+        this.dataService = dataService;
     }
     @Override
     public void handleRequest(RpcContext rpcCtx, GetRequest request) {

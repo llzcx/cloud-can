@@ -40,7 +40,12 @@ public class CustomLoadBalancerFilter extends LoadBalancerClientFilter   {
             Iterator<ICustomRule> iChooseRuleIterator = chooseRules.iterator();
             while (iChooseRuleIterator.hasNext()){
                 ICustomRule chooseRule = iChooseRuleIterator.next();
-                ServiceInstance choose = chooseRule.choose(exchange,discoveryClient);
+                ServiceInstance choose = null;
+                try {
+                    choose = chooseRule.choose(exchange,discoveryClient);
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
                 if(choose != null){
                     return choose;
                 }

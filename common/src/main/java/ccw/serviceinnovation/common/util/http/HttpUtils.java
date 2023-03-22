@@ -1,13 +1,15 @@
 package ccw.serviceinnovation.common.util.http;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -83,11 +85,53 @@ public class HttpUtils {
         }
         return name;
     }
+    public static String[] getPathParams(String urlPath){
+        String[] split = new String[0];
+        try {
+            URL url = new URL(urlPath);
+            return url.getPath().substring(1).split("/");
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return split;
+    }
+    public static String[] getPathParams(URI url){
+        String[] split = new String[0];
+        try {
+            return url.getPath().substring(1).split("/");
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return split;
+    }
+    public static void getSftpInfo() throws Exception {
+        String ftpAddr = "http://blog.csdn.net:60000/jungsagacity/article/details/7645580";  //address中包含用户名和密码
+        try {
+            URL url = new URL(ftpAddr);
+            String userInfo = url.getUserInfo();
+            System.err.println("用户信息：" + userInfo);
+            if (userInfo != null) {
+                int index = userInfo.indexOf(":");
+                String userName = userInfo.substring(0, index);
+                System.err.println("用户名：" + userName);
+                String password = userInfo.substring(index + 1);
+                System.err.println("密码：" + password);
+            }
+            int port = url.getPort();
+            System.err.println("端口号：" + port);
+            String host = url.getHost();
+            System.err.println("host：" + host);
+            String path = url.getPath();
+            System.err.println("远程路径：" + path);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public static void main(String[] args) {
         try {
-            String s = requestTo("http://127.0.0.1:8848/nacos/v1/ns/instance?serviceName=raft-rpc&ip=127.0.0.1&port=8031&groupName=group1&metadata=group=group1", "PUT");
-            System.out.println(s);
+            System.out.println(Arrays.toString(getPathParams("http://127.0.0.1:8848/object/download/mybucket/myobject?serviceName=raft-rpc&ip=127.0.0.1&port=8031&metadata=group=group1,port=8021")));
         } catch (Exception exception) {
             exception.printStackTrace();
         }

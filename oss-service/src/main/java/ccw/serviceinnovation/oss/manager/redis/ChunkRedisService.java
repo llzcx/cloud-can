@@ -4,8 +4,6 @@ import ccw.serviceinnovation.common.entity.LocationVo;
 import ccw.serviceinnovation.common.util.hash.QETag;
 import ccw.serviceinnovation.oss.common.util.RedisUtil;
 import ccw.serviceinnovation.oss.manager.consistenthashing.ConsistentHashing;
-import ccw.serviceinnovation.oss.manager.nacos.Host;
-import ccw.serviceinnovation.oss.manager.nacos.TrackerService;
 import ccw.serviceinnovation.oss.pojo.bo.ChunkBo;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +33,6 @@ public class ChunkRedisService {
     @Autowired
     RedisUtil redisUtil;
 
-    @Autowired
-    TrackerService trackerService;
 
 
     @Autowired

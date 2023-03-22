@@ -45,19 +45,6 @@ public class OssObjectController {
         return ApiResp.ifResponse(object!=null,object,ResultCode.COMMON_FAIL);
     }
 
-//    /**
-//     * 从桶中获取一个对象的真实数据
-//     * param objectId 对象ID
-//     */
-//    @GetMapping("/getObject")
-//    @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_READ,name = "getObject",description = "从桶中获取一个对象的真实数据")
-//    public void getObject(@RequestParam("objectName") String objectName, @RequestParam("bucketName") String bucketName, HttpServletResponse response) throws Exception{
-//        GetObjectBo objectBo = objectService.getObject(bucketName, objectName);
-//        ControllerUtils.loadResource(response, objectBo.getInputStream(),objectBo.getOssObject().getName(),true,
-//                objectBo.getOssObject().getSecret());
-//    }
-
-
     /**
      * 在桶中添加一个文件夹
      * @param bucketName 桶名称

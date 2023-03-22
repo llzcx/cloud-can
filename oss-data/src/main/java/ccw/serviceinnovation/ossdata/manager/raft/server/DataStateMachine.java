@@ -18,6 +18,7 @@ package ccw.serviceinnovation.ossdata.manager.raft.server;
 
 import ccw.serviceinnovation.common.entity.LocationVo;
 import ccw.serviceinnovation.common.util.http.FileUtil;
+import ccw.serviceinnovation.common.util.net.NetUtil;
 import ccw.serviceinnovation.ossdata.constant.OssDataConstant;
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.remoting.exception.CodecException;
@@ -105,12 +106,17 @@ public class DataStateMachine extends StateMachineAdapter {
                 }
             }
             if (dataOperation != null) {
+                LOG.info("此次操作:{}",dataOperation.getOp());
                 String etag = dataOperation.getEtag();
                 switch (dataOperation.getOp()) {
                     case GET:
-                        LocationVo locationVo1 = new LocationVo(OssDataConstant.ADDRESS,Integer.valueOf(OssDataConstant.PORT));
+                        //返回HTTP接口位置
+                        LocationVo locationVo1 = new LocationVo(NetUtil.getIP(),Integer.valueOf(OssDataConstant.PORT));
                         if(dataMap.get(etag)!=null){
                             returnData = locationVo1;
+                        }else{
+                            returnData = locationVo1;
+                            System.out.println("文件不存在,要求重定向");
                         }
                         LOG.info("Get path={} at logIndex={}", JSONObject.toJSONString(locationVo1), iter.getIndex());
                         break;

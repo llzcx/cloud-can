@@ -1,7 +1,7 @@
 package ccw.serviceinnovation.oss.manager.redis;
 
+import ccw.serviceinnovation.common.nacos.Host;
 import ccw.serviceinnovation.oss.common.util.RedisUtil;
-import ccw.serviceinnovation.oss.manager.nacos.Host;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

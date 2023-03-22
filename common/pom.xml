@@ -30,13 +30,6 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.62</version>
         </dependency>
-        <!--lombok注解开发-->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.12</version>
-            <scope>provided</scope>
-        </dependency>
         <!--工具类库hutool-->
         <dependency>
             <groupId>cn.hutool</groupId>

@@ -24,6 +24,14 @@ public interface OssObjectMapper extends BaseMapper<OssObject> {
     Long selectObjectIdByName(@Param("bucketName")String bucketName,@Param("bucketName")String objectName);
 
     /**
+     * 根据桶名字查找对象id
+     * @param bucketId
+     * @param objectName
+     * @return
+     */
+    Long selectObjectIdByIdAndName(@Param("bucketId")Long bucketId,@Param("objectName")String objectName);
+
+    /**
      * 根据桶名字查找对象
      * @param bucketName
      * @param objectName
@@ -72,4 +80,5 @@ public interface OssObjectMapper extends BaseMapper<OssObject> {
      * @return
      */
     OssObject getOssObjectByEtag(String etag);
+
 }

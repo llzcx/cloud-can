@@ -1,11 +1,13 @@
 package ccw.serviceinnovation.oss.common;
 
+import ccw.serviceinnovation.common.nacos.Host;
+import ccw.serviceinnovation.common.nacos.TrackerService;
+import ccw.serviceinnovation.oss.constant.OssApplicationConstant;
 import ccw.serviceinnovation.oss.manager.consistenthashing.ConsistentHashing;
-import ccw.serviceinnovation.oss.manager.nacos.Host;
-import ccw.serviceinnovation.oss.manager.nacos.TrackerService;
 import com.alipay.sofa.jraft.example.ne.NeGrpcHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import service.raft.rpc.DataGrpcHelper;
 
 import java.util.List;
 import java.util.Map;
@@ -24,9 +26,7 @@ public class InitApplication {
     public static void beforeSpring(){
 
     }
-    
-    @Autowired
-    TrackerService trackerService;
+
 
     @Autowired
     ConsistentHashing consistentHashing;
@@ -42,8 +42,8 @@ public class InitApplication {
 //            //一致性hash
 //            ConsistentHashing.physicalNodes.add(host.getIp()+":"+host.getPort());
 //        }
-        NeGrpcHelper.initGRpc();
-        Map<String, List<Host>> mp = trackerService.getAllJraftList();
+        DataGrpcHelper.initGRpc();
+        Map<String, List<Host>> mp = TrackerService.getAllJraftList(OssApplicationConstant.NACOS_SERVER_ADDR);
         System.out.println("一致性hash初始化:");
         for (Map.Entry<String, List<Host>> stringListEntry : mp.entrySet()) {
             ConsistentHashing.physicalNodes.add(stringListEntry.getKey());

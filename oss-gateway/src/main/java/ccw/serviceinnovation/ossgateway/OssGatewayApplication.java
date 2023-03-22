@@ -1,5 +1,6 @@
 package ccw.serviceinnovation.ossgateway;
 
+import ccw.serviceinnovation.ossgateway.gateway.manager.init.Init;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,6 +17,7 @@ public class OssGatewayApplication {
 
     public static void main(String[] args) {
         cac = SpringApplication.run(OssGatewayApplication.class, args);
+        Init.afterBeanInitialize();
     }
 
     public static <T> T getBean(Class<T> tClass){

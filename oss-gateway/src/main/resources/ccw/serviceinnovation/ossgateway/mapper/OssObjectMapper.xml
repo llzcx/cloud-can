@@ -2,4 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ccw.serviceinnovation.ossgateway.mapper.OssObjectMapper">
 
+    <select id="selectObjectIdByName" resultType="ccw.serviceinnovation.common.entity.OssObject">
+        select * from oss_object where name = #{objectName} and bucket_id = (select id from bucket where name = #{bucketName})
+    </select>
 </mapper>

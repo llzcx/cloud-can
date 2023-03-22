@@ -1,15 +1,16 @@
 package ccw.serviceinnovation.oss.manager.consistenthashing;
 
 import ccw.serviceinnovation.common.entity.LocationVo;
-import ccw.serviceinnovation.oss.manager.nacos.Host;
-import ccw.serviceinnovation.oss.manager.nacos.TrackerService;
-import ccw.serviceinnovation.oss.manager.raft.client.RaftRpcRequest;
+import ccw.serviceinnovation.common.nacos.Host;
+import ccw.serviceinnovation.common.nacos.TrackerService;
+import ccw.serviceinnovation.oss.constant.OssApplicationConstant;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.rpc.cluster.specifyaddress.Address;
 import org.apache.dubbo.rpc.cluster.specifyaddress.UserSpecifiedAddressUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import service.StorageObjectService;
+import service.raft.client.RaftRpcRequest;
 
 import java.util.*;
 
@@ -20,14 +21,10 @@ import java.util.*;
 @Component
 public class ConsistentHashing {
 
-    @Autowired
-    TrackerService trackerService;
 
     @DubboReference(version = "1.0.0", group = "object")
     private StorageObjectService storageObjectService;
 
-    @Autowired
-    RaftRpcRequest raftRpcRequest;
 
 
     // 物理节点
@@ -91,8 +88,8 @@ public class ConsistentHashing {
      * @return 返回节点存储位置 不存在则返回null
      */
     public LocationVo getObjectNode(String etag, String groupId) throws Exception {
-        RaftRpcRequest.RaftRpcRequestBo leader = raftRpcRequest.getLeader(groupId);
-        LocationVo locationVo = raftRpcRequest.get(leader.getCliClientService(), leader.getPeerId(), etag);
+        RaftRpcRequest.RaftRpcRequestBo leader = RaftRpcRequest.getLeader(OssApplicationConstant.NACOS_SERVER_ADDR,groupId);
+        LocationVo locationVo = RaftRpcRequest.get(leader.getCliClientService(), leader.getPeerId(), etag);
         return locationVo;
     }
 
@@ -107,9 +104,9 @@ public class ConsistentHashing {
         SortedMap<Long, String> tailMap = virtualNodes.tailMap(hash); // 所有大于 hash 的节点
         Long key = tailMap.isEmpty() ? virtualNodes.firstKey() : tailMap.firstKey();
         String addr = virtualNodes.get(key);
-        RaftRpcRequest.RaftRpcRequestBo leader = raftRpcRequest.getLeader(addr);
+        RaftRpcRequest.RaftRpcRequestBo leader = RaftRpcRequest.getLeader(OssApplicationConstant.NACOS_SERVER_ADDR,addr);
         //查找leader-group对应的端口信息
-        Map<String, List<Host>> allJraftList = trackerService.getAllJraftList();
+        Map<String, List<Host>> allJraftList = TrackerService.getAllJraftList(OssApplicationConstant.NACOS_SERVER_ADDR);
         List<Host> list = allJraftList.get(addr);
         Integer applicationPort = null;
         for (Host host : list) {

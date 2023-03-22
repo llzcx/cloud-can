@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Base64;
 
+import static ccw.serviceinnovation.ossdata.constant.FilePrefixConstant.FILE_NOR;
 import static ccw.serviceinnovation.ossdata.constant.FilePrefixConstant.FILE_TMP_BLOCK;
 
 /**
@@ -90,9 +91,9 @@ public class OssObjectController {
      * @param response
      * @throws Exception
      */
-    @GetMapping("/download/{etag}")
-    public void download(String name,@PathVariable String etag, HttpServletResponse response) throws Exception {
-        FileInputStream fis = new FileInputStream(OssDataConstant.POSITION +"/"+FILE_TMP_BLOCK+etag);
+    @GetMapping("/download/{group}/{etag}")
+    public void download(String name, @PathVariable String etag, HttpServletResponse response, @PathVariable String group) throws Exception {
+        FileInputStream fis = new FileInputStream(OssDataConstant.POSITION +"\\"+FILE_NOR+etag);
         ControllerUtils.loadResource(response, fis,name,true,
                 null);
     }
@@ -105,12 +106,12 @@ public class OssObjectController {
      */
     @GetMapping("/download_temp/{token}")
     public void downloadTemp(@PathVariable String token,HttpServletResponse response) throws Exception {
-        File file = new File(OssDataConstant.POSITION +"/"+FILE_TMP_BLOCK+token);
+        File file = new File(OssDataConstant.POSITION +"\\"+FILE_TMP_BLOCK+token);
         if(!file.exists()){
-            System.out.println("文件未找到:"+OssDataConstant.POSITION +"/"+FILE_TMP_BLOCK+token);
+            System.out.println("文件未找到:"+OssDataConstant.POSITION +"\\"+FILE_TMP_BLOCK+token);
             throw new OssException(ResultCode.FILE_IS_EMPTY);
         }else{
-            System.out.println("文件已经找到:"+OssDataConstant.POSITION +"/"+FILE_TMP_BLOCK+token);
+            System.out.println("文件已经找到:"+OssDataConstant.POSITION +"\\"+FILE_TMP_BLOCK+token);
         }
         FileInputStream fis = new FileInputStream(file);
         ControllerUtils.loadResource(response, fis,file.getName(),true,

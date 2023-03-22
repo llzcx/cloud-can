@@ -1,5 +1,6 @@
 package ccw.serviceinnovation.ossdata.dubboservice.impl;
 import ccw.serviceinnovation.common.entity.LocationVo;
+import ccw.serviceinnovation.common.util.net.NetUtil;
 import ccw.serviceinnovation.ossdata.manager.raft.server.DataStateMachine;
 import ccw.serviceinnovation.ossdata.util.FileUtil;
 import cn.hutool.core.io.FileTypeUtil;
@@ -67,7 +68,7 @@ public class StorageObjectServiceImpl implements StorageObjectService {
         String path = DataStateMachine.dataMap.get(etag);
         if(path!=null){
             try {
-                return new LocationVo("192.168.88.1", Integer.valueOf(port));
+                return new LocationVo(NetUtil.getIP(), Integer.valueOf(port));
             } catch (Exception e) {
                 e.printStackTrace();
             }
