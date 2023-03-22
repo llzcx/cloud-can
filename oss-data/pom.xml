@@ -35,10 +35,6 @@
             <scope>test</scope>
         </dependency>
         <!--RPC-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-actuator</artifactId>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>org.apache.dubbo</groupId>
             <artifactId>dubbo-spring-boot-starter</artifactId>

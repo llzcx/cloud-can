@@ -108,7 +108,9 @@ public interface IObjectService extends IService<OssObject> {
      * @param key
      * @return
      */
-    RPage<ObjectVo> listObjects(String bucketName, Integer pageNum, Integer size, String key,Long parentObjectId);
+    RPage<ObjectVo> listObjects(String bucketName, Integer pageNum, Integer size, String key,Long parentObjectId,Boolean isImages);
+
+
 
 
 

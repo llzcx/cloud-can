@@ -1,5 +1,6 @@
 package ccw.serviceinnovation.oss.service.impl;
 
+import ccw.serviceinnovation.common.constant.FileTypeConstant;
 import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.entity.LocationVo;
 import ccw.serviceinnovation.common.entity.OssObject;
@@ -22,6 +23,7 @@ import ccw.serviceinnovation.oss.pojo.vo.OssObjectVo;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import ccw.serviceinnovation.oss.service.IObjectService;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.FileTypeUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -107,7 +109,8 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
                 String token = UUID.randomUUID().toString();
                 UserSpecifiedAddressUtil.setAddress(new Address(host.getIp(), host.getPort(), true));
                 storageObjectService.save(bytes, etag);
-                String type = storageObjectService.getExt(etag);
+                Integer type = 0;
+//                        storageObjectService.getExt(etag);
                 if (type != null) {
                     //保存到redis
                     duplicateRemovalPrefix.saveKey(etag, host.getIp(), host.getPort());
@@ -226,7 +229,8 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
                 ossObject.setSize(size);
                 ossObject.setEtag(etag);
                 ossObject.setName(chunkBo.getName());
-                ossObject.setExt(storageObjectService.getExt(etag));
+                //storageObjectService.getExt(etag)
+                ossObject.setExt(FileTypeConstant.OTHER);
                 ossObject.setParent(parentObjectId);
                 Long id = ossObjectMapper.selectObjectIdByIdAndName(bucketId, ObjectName);
                 if(id!=null){
@@ -280,8 +284,19 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
     }
 
     @Override
-    public RPage<ObjectVo> listObjects(String bucketName, Integer pageNum, Integer size, String key, Long parentObjectId) {
-        return null;
+    public RPage<ObjectVo> listObjects(String bucketName, Integer pageNum, Integer size, String key, Long parentObjectId,Boolean isImages) {
+        Integer offset = null;
+        if(pageNum!=null){
+            offset = (pageNum-1)*size;
+        }
+        Integer type = null;
+        if(isImages!=null){
+            type = FileTypeConstant.IMG;
+        }
+        List<ObjectVo> list = ossObjectMapper.selectObjectList(bucketName,  offset,  size,  key,parentObjectId,type);
+        RPage<ObjectVo> rPage = new RPage<>(pageNum,size,list);
+        rPage.setTotalCountAndTotalPage(ossObjectMapper.selectObjectListLength(bucketName, key));
+        return rPage;
     }
 
 

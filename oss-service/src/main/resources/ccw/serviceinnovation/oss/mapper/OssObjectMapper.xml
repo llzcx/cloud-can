@@ -34,6 +34,9 @@
         <if test="parentObjectId != null">
             and parent = #{parentObjectId}
         </if>
+        <if test="type != null">
+            and ext = #{type}
+        </if>
         <if test="offset != null and size != null">
             limit ${offset}, ${size}
         </if>

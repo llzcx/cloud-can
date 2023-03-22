@@ -64,7 +64,7 @@ public interface OssObjectMapper extends BaseMapper<OssObject> {
      * @return
      */
     List<ObjectVo> selectObjectList(@Param("bucketName") String bucketName,@Param("pageNum") Integer pageNum,
-                                    @Param("size") Integer size, @Param("key") String key,@Param("parentObjectId")Long parentObjectId);
+                                    @Param("size") Integer size, @Param("key") String key,@Param("parentObjectId")Long parentObjectId,@Param("type")Integer type);
 
     /**
      * 分页获取对象列表的大小

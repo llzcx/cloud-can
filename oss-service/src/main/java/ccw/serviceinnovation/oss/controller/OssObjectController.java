@@ -2,6 +2,7 @@ package ccw.serviceinnovation.oss.controller;
 
 import ccw.serviceinnovation.common.constant.AuthorityConstant;
 import ccw.serviceinnovation.common.entity.OssObject;
+import ccw.serviceinnovation.common.exception.OssException;
 import ccw.serviceinnovation.common.request.ApiResp;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.oss.common.util.ControllerUtils;
@@ -33,7 +34,6 @@ public class OssObjectController {
     IObjectService objectService;
 
     /**
-     *
      * 从桶中获取一个对象的元数据
      * param objectId 对象ID
      * @return 返回添加的桶对象
@@ -43,6 +43,17 @@ public class OssObjectController {
     public ApiResp<OssObject> getObjectInfo(@RequestParam("objectName") String objectName, @RequestParam("bucketName") String bucketName) throws Exception{
         OssObject object = objectService.getObjectInfo(bucketName,objectName);
         return ApiResp.ifResponse(object!=null,object,ResultCode.COMMON_FAIL);
+    }
+
+    /**
+     * 下载文件[此接口的ip为网关层,在service服务没有实现]
+     * param objectId 对象ID
+     * @return 返回添加的桶对象
+     */
+    @PostMapping("/object/download/{bucketName}/{objectName}")
+    @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_READ,name = "getObjectInfo",description = "从桶中获取一个对象的真实数据")
+    public ApiResp<OssObject> getObject(@PathVariable String bucketName, @PathVariable String objectName,Boolean download) throws Exception{
+       throw new OssException(ResultCode.REQUEST_ADDRESS_ERROR);
     }
 
     /**
@@ -133,16 +144,18 @@ public class OssObjectController {
     /**
      * 获取对象列表
      * @param bucketName
-     * @return 返回添加的桶对象
+     * @return
      * @throws Exception
      */
     @GetMapping("/listObjects")
     @OssApi(target = AuthorityConstant.API_BUCKET,type = AuthorityConstant.API_LIST,name = "listObjects",description = "获取对象列表")
     public ApiResp<RPage<ObjectVo>> listObjects(@RequestParam("bucketName") String bucketName,@RequestParam("key") String key,
                                                 @RequestParam("pagenum") Integer pageNum, @RequestParam("size") Integer size,
-                                                @RequestParam("parentObjectId") Long parentObjectId) throws Exception{
-        RPage<ObjectVo> rPage = objectService.listObjects(bucketName, pageNum, size, key,parentObjectId);
+                                                @RequestParam("parentObjectId") Long parentObjectId,@RequestParam("isImages") Boolean isImages) throws Exception{
+        RPage<ObjectVo> rPage = objectService.listObjects(bucketName, pageNum, size, key,parentObjectId,isImages);
         return ApiResp.success(rPage);
     }
+
+
 }
 

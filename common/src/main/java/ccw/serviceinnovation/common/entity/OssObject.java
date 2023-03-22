@@ -40,7 +40,7 @@ public class OssObject implements Serializable {
     /**
      * 文件扩展名
      */
-    private String ext;
+    private Integer ext;
 
     /**
      * 文件的MD5值
@@ -92,7 +92,7 @@ public class OssObject implements Serializable {
 
     }
 
-    public OssObject(String objectName, Long bucketId, String etag, String ext, String createTime, String lastUpdateTime) {
+    public OssObject(String objectName, Long bucketId, String etag, Integer ext, String createTime, String lastUpdateTime) {
         this.name = objectName;
         this.bucketId = bucketId;
         this.etag = etag;

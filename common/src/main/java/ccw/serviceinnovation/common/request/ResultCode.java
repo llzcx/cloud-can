@@ -61,7 +61,7 @@ public enum ResultCode {
     CLIENT_ETAG_ERROR(3021,"客户端Etag计算错误"),
     FILE_IS_EMPTY(3022,"文件不存在"),
     UPLOAD_EVENT_EXPIRATION(3023,"上传事件过期或者不存在"),
-
+    REQUEST_ADDRESS_ERROR(3023,"请求地址错误,该实现在其他服务"),
     ;
     private Integer code;
     private String message;

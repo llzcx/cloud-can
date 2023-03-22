@@ -1,7 +1,7 @@
 package ccw.serviceinnovation.ossdata.manager.init;
 
 import ccw.serviceinnovation.common.util.IpUtils;
-import ccw.serviceinnovation.common.util.file.FileUtil;
+import ccw.serviceinnovation.common.util.http.FileUtil;
 import ccw.serviceinnovation.ossdata.constant.OssDataConstant;
 import ccw.serviceinnovation.ossdata.manager.nacos.TrackerService;
 import ccw.serviceinnovation.ossdata.manager.raft.server.DataServer;

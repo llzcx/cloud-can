@@ -9,10 +9,6 @@ import ccw.serviceinnovation.common.util.http.HttpUtils;
 import ccw.serviceinnovation.ossgateway.constant.GateWayConstant;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.dubbo.config.ReferenceConfig;
-import org.apache.dubbo.config.annotation.DubboReference;
-import org.apache.dubbo.rpc.cluster.specifyaddress.Address;
-import org.apache.dubbo.rpc.cluster.specifyaddress.UserSpecifiedAddressUtil;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -37,10 +33,6 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.G
 public class CustomChooseRule implements ICustomRule {
 
     private AtomicInteger atomicInteger = new AtomicInteger(0);
-
-
-    @DubboReference(version = "1.0.0", group = "object")
-    private StorageObjectService storageObjectService;
 
 
     private ServiceInstance getServiceInstance(List<ServiceInstance> serviceInstances, String group,String etag) throws Exception{

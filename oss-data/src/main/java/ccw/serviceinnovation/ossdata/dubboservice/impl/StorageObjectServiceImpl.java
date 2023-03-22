@@ -1,8 +1,8 @@
 package ccw.serviceinnovation.ossdata.dubboservice.impl;
 import ccw.serviceinnovation.common.entity.LocationVo;
+import ccw.serviceinnovation.common.util.http.FileUtil;
 import ccw.serviceinnovation.common.util.net.NetUtil;
 import ccw.serviceinnovation.ossdata.manager.raft.server.DataStateMachine;
-import ccw.serviceinnovation.ossdata.util.FileUtil;
 import cn.hutool.core.io.FileTypeUtil;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Value;

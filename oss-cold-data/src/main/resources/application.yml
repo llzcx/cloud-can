@@ -1,0 +1,47 @@
+server:
+  port: ${server.port:8021}
+  address: 0.0.0.0
+
+
+position:
+
+spring:
+  profiles:
+    active: dev
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    druid:
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://101.35.43.156:3306/oss?useSSL=false&amp&serverTimezone=UTC
+      username: root
+      password: 123abc456
+  redis:
+    redisson:
+      config: |
+        singleServerConfig:
+          password:
+          address: "redis://127.0.0.1:6379"
+          database: 1
+        threads: 0
+        nettyThreads: 0
+        codec: !<org.redisson.codec.FstCodec> {}
+        transportMode: "NIO"
+    host: 127.0.0.1
+    port: 6379
+    timeout: 1000
+    password:
+    lettuce:
+      pool:
+        minIdle: 5
+        maxIdle: 200
+        maxWait: 10000
+        maxActive: 8
+  application:
+    name: oss-data-server
+
+
