@@ -246,6 +246,11 @@ public class RedisUtil {
       return stringRedisTemplate.opsForHash().entries(key);
    }
 
+   // hash 结构的计数
+   public long hincr(String key, String field, long value) {
+      return redisTemplate.opsForHash().increment(key, field, value);
+   }
+
    // List（列表）
 
    /**

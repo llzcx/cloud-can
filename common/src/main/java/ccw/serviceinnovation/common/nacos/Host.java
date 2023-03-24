@@ -11,6 +11,7 @@ public class Host{
         public static class Metadata{
                 public String group;
                 public Integer port;
+                public String cold_storage_name;
 
         }
         private String ip;

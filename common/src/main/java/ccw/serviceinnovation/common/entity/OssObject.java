@@ -83,9 +83,9 @@ public class OssObject implements Serializable {
     private Integer secret;
 
     /**
-     * 属于哪个group
+     * 存储水平
      */
-    private String groupId;
+    private Integer storageLevel;
 
 
     public OssObject(){

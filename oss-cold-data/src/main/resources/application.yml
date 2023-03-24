@@ -3,7 +3,7 @@ server:
   address: 0.0.0.0
 
 
-position:
+position: D:\OSS\cold_01
 
 spring:
   profiles:

@@ -10,17 +10,9 @@ public enum StorageTypeEnum {
      */
     STANDARD(1,"标准存储"),
     /**
-     * 低频访问存储 低频访问：数据长期存储、较少访问，存储单价低于标准类型。
-     */
-    LOW_FREQUENCY_ACCESS(2,"低频访问存储"),
-    /**
      * 归档存储 归档：数据长期存储、基本不访问，存储单价低于低频访问型。
      */
     ARCHIVAL(3,"归档存储"),
-    /**
-     * 冷归档存储 冷归档：数据长期存储、基本不访问，存储单价低于归档访问型。
-     */
-    COLD_ARCHIVE(4,"冷归档存储"),
     ;
     private Integer code;
     private String message;

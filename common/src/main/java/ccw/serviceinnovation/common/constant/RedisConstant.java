@@ -21,6 +21,27 @@ public interface RedisConstant {
     String DUPLICATE_REMOVAL = "DUPLICATE_REMOVAL:";
 
     /**
+     * 正常数据去重
+     */
+    String NOR_GROUP = "NOR_GROUP:";
+
+    /**
+     *
+     */
+    String NOR_COUNT = "NOR_COUNT:";
+
+
+    /**
+     * 归档数据去重
+     */
+    String COLD_NAME = "COLD_NAME:";
+
+    /**
+     * 归档数据去重
+     */
+    String COLD_COUNT = "COLD:";
+
+    /**
      * 文件服务器 etag=>address
      */
     String OBJECT_ADDR = "OBJECT_ADDR:";
@@ -39,6 +60,14 @@ public interface RedisConstant {
      */
     String BLOCK_TOKEN = "BLOCK_TOKEN:";
 
+    /**
+     * 文件归档事件 etag=>hash
+     */
+    String FREEZE = "FREEZE:";
 
+    /**
+     * 对象目前的状态
+     */
+    String OBJECT_STATE = "OBJECT_STATE:";
 
 }

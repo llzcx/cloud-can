@@ -45,16 +45,7 @@ public class OssObjectController {
         return ApiResp.ifResponse(object!=null,object,ResultCode.COMMON_FAIL);
     }
 
-    /**
-     * 下载文件[此接口的ip为网关层,在service服务没有实现]
-     * param objectId 对象ID
-     * @return 返回添加的桶对象
-     */
-    @PostMapping("/object/download/{bucketName}/{objectName}")
-    @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_READ,name = "getObjectInfo",description = "从桶中获取一个对象的真实数据")
-    public ApiResp<OssObject> getObject(@PathVariable String bucketName, @PathVariable String objectName,Boolean download) throws Exception{
-       throw new OssException(ResultCode.REQUEST_ADDRESS_ERROR);
-    }
+
 
     /**
      * 在桶中添加一个文件夹
@@ -156,6 +147,31 @@ public class OssObjectController {
         return ApiResp.success(rPage);
     }
 
+
+    /**
+     * 归档一个文件
+     * @param bucketName
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/freeze")
+    @OssApi(target = AuthorityConstant.API_BUCKET,type = AuthorityConstant.API_LIST,name = "listObjects",description = "获取对象列表")
+    public ApiResp<Boolean> freeze(@RequestParam("bucketName") String bucketName,@RequestParam("objectName") String objectName) throws Exception{
+        return ApiResp.success(objectService.freeze(bucketName, objectName));
+    }
+
+
+    /**
+     * 解冻一个文件
+     * @param bucketName
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/unfreeze")
+    @OssApi(target = AuthorityConstant.API_BUCKET,type = AuthorityConstant.API_LIST,name = "listObjects",description = "获取对象列表")
+    public ApiResp<Boolean> unfreeze(@RequestParam("bucketName") String bucketName,@RequestParam("objectName") String objectName) throws Exception{
+        return ApiResp.success(objectService.unfreeze(bucketName, objectName));
+    }
 
 }
 

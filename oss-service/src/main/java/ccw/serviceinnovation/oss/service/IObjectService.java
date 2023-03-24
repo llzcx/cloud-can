@@ -111,7 +111,20 @@ public interface IObjectService extends IService<OssObject> {
     RPage<ObjectVo> listObjects(String bucketName, Integer pageNum, Integer size, String key,Long parentObjectId,Boolean isImages);
 
 
+    /**
+     * 归档一个对象
+     * @param bucketName
+     * @param objectName
+     * @return
+     */
+    Boolean freeze(String bucketName, String objectName) throws Exception;
 
 
-
+    /**
+     * 解冻一个对象
+     * @param bucketName
+     * @param objectName
+     * @return
+     */
+    Boolean unfreeze(String bucketName, String objectName) throws Exception;
 }

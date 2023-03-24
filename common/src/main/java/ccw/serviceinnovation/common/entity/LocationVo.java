@@ -16,4 +16,8 @@ public class LocationVo implements Serializable {
         this.ip = ip;
         this.port = port;
     }
+
+    public LocationVo(String path) {
+        this.path = path;
+    }
 }

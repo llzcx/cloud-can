@@ -5,25 +5,37 @@ import ccw.serviceinnovation.common.nacos.TrackerService;
 import ccw.serviceinnovation.oss.constant.OssApplicationConstant;
 import ccw.serviceinnovation.oss.manager.consistenthashing.ConsistentHashing;
 import com.alipay.sofa.jraft.example.ne.NeGrpcHelper;
+import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
+import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
+import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
+import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
+import org.apache.rocketmq.client.producer.DefaultMQProducer;
+import org.apache.rocketmq.client.producer.SendResult;
+import org.apache.rocketmq.common.message.Message;
+import org.apache.rocketmq.common.message.MessageExt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import service.raft.rpc.DataGrpcHelper;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 /**
  * 初始化方法
+ *
  * @author 陈翔
  */
 @Component
 public class InitApplication {
 
+    public static DefaultMQProducer producer;
+
 
     /**
      * 在容器初始化之前执行
      */
-    public static void beforeSpring(){
+    public static void beforeSpring() {
 
     }
 
@@ -35,22 +47,51 @@ public class InitApplication {
     /**
      * 在容器初始化之后执行
      */
-    public void afterSpring(){
-        //初始化
-//        List<Host> allOssDataList = trackerService.getAllOssDataList();
-//        for (Host host : allOssDataList) {
-//            //一致性hash
-//            ConsistentHashing.physicalNodes.add(host.getIp()+":"+host.getPort());
-//        }
+    public void afterSpring() throws Exception {
         DataGrpcHelper.initGRpc();
         Map<String, List<Host>> mp = TrackerService.getAllJraftList(OssApplicationConstant.NACOS_SERVER_ADDR);
         System.out.println("一致性hash初始化:");
         for (Map.Entry<String, List<Host>> stringListEntry : mp.entrySet()) {
             ConsistentHashing.physicalNodes.add(stringListEntry.getKey());
-            System.out.println("添加:"+stringListEntry.getKey());
+            System.out.println("添加:" + stringListEntry.getKey());
         }
         for (String nodeIp : ConsistentHashing.physicalNodes) {
             consistentHashing.addPhysicalNode(nodeIp);
         }
+
+        //创建一个消息生产者，传入的是消息组名称
+        producer = new DefaultMQProducer("oss-group");
+        //输入nameserver服务的地址
+        producer.setNamesrvAddr("127.0.0.1:9876");
+        producer.setInstanceName("cold-producer");
+        //启动生产者
+        producer.start();
+        System.out.println("producer started.");
+        try {
+            for (int i = 0; i < 10; i++) {
+                Thread.sleep(1000);  //每秒发送一次MQ
+                //创建消息
+                Message msg = new Message("Topic-cold",// topic
+                        "coldTag",// tag
+                        (new Date() + " RocketMQ test msg " + i).getBytes()// body
+                );
+
+                //发送，返回结果对象
+                SendResult sendResult = producer.send(msg);
+
+                System.out.println(sendResult.getMsgId()); //消息id
+                System.out.println(sendResult.getMessageQueue()); //队列信息
+                System.out.println(sendResult.getSendStatus());  //发送结果
+                System.out.println(sendResult.getOffsetMsgId()); //下一个要消费的消息的偏移量
+                System.out.println(sendResult.getQueueOffset());  //队列消息偏移量
+                System.out.println();
+                System.out.println("================================================");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        producer.shutdown();
+
+
     }
 }

@@ -9,8 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @author 杨世博
  * 获取用户对象存储可展示数据的接口
+ * @author 杨世博
+ *
  */
 @RestController
 @RequestMapping("/allBucketMessage")

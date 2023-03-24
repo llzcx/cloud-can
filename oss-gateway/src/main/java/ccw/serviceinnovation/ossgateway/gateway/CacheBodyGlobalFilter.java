@@ -2,6 +2,7 @@ package ccw.serviceinnovation.ossgateway.gateway;
 
 import ccw.serviceinnovation.common.entity.OssObject;
 import ccw.serviceinnovation.common.util.http.HttpUtils;
+import ccw.serviceinnovation.ossgateway.manager.redis.NorDuplicateRemovalService;
 import ccw.serviceinnovation.ossgateway.mapper.OssObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,9 @@ public class CacheBodyGlobalFilter implements Ordered, GlobalFilter {
     @Autowired
     private OssObjectMapper ossObjectMapper;
 
+    @Autowired
+    NorDuplicateRemovalService norDuplicateRemovalService;
+
 
 
     @Override
@@ -44,8 +48,8 @@ public class CacheBodyGlobalFilter implements Ordered, GlobalFilter {
 
             OssObject ossObject = ossObjectMapper.selectObjectIdByName(bucketName,objectName);
             String etag = ossObject.getEtag();
-            String group = ossObject.getGroupId();
-            String newPath = "/object/download/"+ group + "/" + etag + "?name=" + objectName + "." + ossObject.getExt();
+            String group = norDuplicateRemovalService.getGroup(etag);
+            String newPath = "/object/download/"+ group + "/" + etag + "?name=" + objectName;
             System.out.println("newPath:" + newPath);
             //将请求格式改变重新路由 /object/download/{etag}?name={objectName}
             ServerHttpRequest newRequest = exchange.getRequest().mutate()

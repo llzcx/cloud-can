@@ -29,7 +29,7 @@ public class TrackerService {
     }
 
     /**
-     * 获取Jraft服务列表
+     * 获取Jraft服务列表(GRPC)
      * @return
      */
     public static Map<String,List<Host>> getAllJraftList(String nacosPath){
@@ -50,6 +50,41 @@ public class TrackerService {
             return  newHosts;
         } catch (Exception exception) {
             exception.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 获取归档服务列表(HTTP)
+     * @return
+     */
+    public static List<Host> getColdList(String nacosPath){
+        try {
+            String response = HttpUtils.request("http://"+nacosPath + "/nacos/v1/ns/instance/list?serviceName=oss-cold-data");
+            List<Host> hosts = JSONObject.parseObject(response, Response.class).getHosts();
+            return hosts;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     *
+     * @param nacosPath
+     * @param name 归档存储名
+     * @return
+     */
+    public static Host getCold(String nacosPath,String name){
+        List<Host> coldList = getColdList(nacosPath);
+        if(coldList==null){
+            return null;
+        }
+        for (Host host : coldList) {
+            String name1 = host.getMetadata().getCold_storage_name();
+            if(name1.equals(name)){
+                return host;
+            }
         }
         return null;
     }

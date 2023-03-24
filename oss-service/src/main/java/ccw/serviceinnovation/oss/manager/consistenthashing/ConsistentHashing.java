@@ -21,12 +21,6 @@ import java.util.*;
 @Component
 public class ConsistentHashing {
 
-
-    @DubboReference(version = "1.0.0", group = "object")
-    private StorageObjectService storageObjectService;
-
-
-
     // 物理节点
     public static Set<String> physicalNodes = new TreeSet<String>();
 
@@ -36,7 +30,7 @@ public class ConsistentHashing {
     // 物理节点至虚拟节点的复制倍数
     private final int VIRTUAL_COPIES = 1048576;
     // 哈希值 => 物理节点
-    private TreeMap<Long, String> virtualNodes = new TreeMap<>();
+    private static TreeMap<Long, String> virtualNodes = new TreeMap<>();
 
     // 32位的 Fowler-Noll-Vo 哈希算法
     // https://en.wikipedia.org/wiki/Fowler–Noll–Vo_hash_function
@@ -87,10 +81,28 @@ public class ConsistentHashing {
      * @param etag
      * @return 返回节点存储位置 不存在则返回null
      */
-    public LocationVo getObjectNode(String etag, String groupId) throws Exception {
+    public static LocationVo getObjectNode(String etag, String groupId) throws Exception {
         RaftRpcRequest.RaftRpcRequestBo leader = RaftRpcRequest.getLeader(OssApplicationConstant.NACOS_SERVER_ADDR,groupId);
         LocationVo locationVo = RaftRpcRequest.get(leader.getCliClientService(), leader.getPeerId(), etag);
         return locationVo;
+    }
+
+    /**
+     * 查看ossdata是否存在一个etag
+     * @param etag
+     * @return
+     * @throws Exception
+     */
+    public static LocationVo getObjectNode(String etag) throws Exception {
+        Map<String, List<Host>> allJraftList = TrackerService.getAllJraftList(OssApplicationConstant.NACOS_SERVER_ADDR);
+        for (Map.Entry<String, List<Host>> stringListEntry : allJraftList.entrySet()) {
+            String group = stringListEntry.getKey();
+            LocationVo objectNode = getObjectNode(etag, group);
+            if(objectNode!=null){
+                return objectNode;
+            }
+        }
+        return null;
     }
 
     /**
@@ -99,7 +111,7 @@ public class ConsistentHashing {
      * @param object
      * @return
      */
-    public LocationVo getStorageObjectNode(String object) {
+    public static LocationVo getStorageObjectNode(String object) {
         long hash = FNVHash(object);
         SortedMap<Long, String> tailMap = virtualNodes.tailMap(hash); // 所有大于 hash 的节点
         Long key = tailMap.isEmpty() ? virtualNodes.firstKey() : tailMap.firstKey();

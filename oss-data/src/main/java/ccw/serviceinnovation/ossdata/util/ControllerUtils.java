@@ -3,15 +3,21 @@ import ccw.serviceinnovation.common.constant.SecretEnum;
 import ccw.serviceinnovation.common.request.ApiResp;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.common.util.sm4.SM4Utils;
+import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 import static ccw.serviceinnovation.common.constant.FileConstant.READ_WRITER_SIZE;
@@ -97,5 +103,24 @@ public class ControllerUtils {
         in.close();
         os.flush();
         os.close();
+    }
+
+    public static void previewVideo(HttpServletRequest request, HttpServletResponse response,NoStaticResourceHttpRequestHandler handler,String filePath){
+        try {
+            File file = new File(filePath);
+            if(file.exists()){
+                request.setAttribute(NoStaticResourceHttpRequestHandler.ATTR_FILE, filePath);
+                handler.handleRequest(request, response);
+            }else{
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
+            }
+
+        } catch (ServletException e) {
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -41,6 +41,7 @@ public enum ResultCode {
     SERVER_EXCEPTION(2008,"数据服务异常"),
     DATA_NOT_FOUND(2009,"数据丢失"),
 
+
     /* 业务异常 */
     UPLOAD_ERROR(3005,"上传失败"),
     NO_SUCH_DATA(3006,"无此数据"),
@@ -61,7 +62,9 @@ public enum ResultCode {
     CLIENT_ETAG_ERROR(3021,"客户端Etag计算错误"),
     FILE_IS_EMPTY(3022,"文件不存在"),
     UPLOAD_EVENT_EXPIRATION(3023,"上传事件过期或者不存在"),
-    REQUEST_ADDRESS_ERROR(3023,"请求地址错误,该实现在其他服务"),
+    REQUEST_ADDRESS_ERROR(3024,"请求地址错误,该实现在其他服务"),
+    NOT_STANDARD_STORAGE(3025,"该对象不为标准存储"),
+    STANDARD_STORAGE(3025,"该对象已经为标准存储"),
     ;
     private Integer code;
     private String message;

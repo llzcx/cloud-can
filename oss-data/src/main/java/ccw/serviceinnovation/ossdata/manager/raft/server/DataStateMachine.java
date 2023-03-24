@@ -112,6 +112,7 @@ public class DataStateMachine extends StateMachineAdapter {
                     case GET:
                         //返回HTTP接口位置
                         LocationVo locationVo1 = new LocationVo(NetUtil.getIP(),Integer.valueOf(OssDataConstant.PORT));
+                        locationVo1.setGroup(OssDataConstant.GROUP);
                         if(dataMap.get(etag)!=null){
                             returnData = locationVo1;
                         }else{

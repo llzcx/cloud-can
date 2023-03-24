@@ -103,7 +103,7 @@ public class ChunkRedisService {
 
 
     public void saveBlockToken(String blockToken,String etag,Long userId,Long bucketId,Long size,Long parentObjectId,String name){
-        LocationVo location = consistentHashing.getStorageObjectNode(etag);
+        LocationVo location = ConsistentHashing.getStorageObjectNode(etag);
         ChunkBo chunkBo = new ChunkBo(0,etag,userId,bucketId,size,location.getIp(),location.getPort(),parentObjectId,name,location.getGroup());
         redisUtil.set(BLOCK_TOKEN_PREFIX +blockToken,JSONObject.toJSONString(chunkBo));
     }

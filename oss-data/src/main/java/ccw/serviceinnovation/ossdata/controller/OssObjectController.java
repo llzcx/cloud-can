@@ -9,6 +9,7 @@ import ccw.serviceinnovation.ossdata.constant.OssDataConstant;
 import ccw.serviceinnovation.ossdata.manager.redis.ChunkRedisService;
 import ccw.serviceinnovation.ossdata.mapper.OssObjectMapper;
 import ccw.serviceinnovation.ossdata.util.ControllerUtils;
+import ccw.serviceinnovation.ossdata.util.NoStaticResourceHttpRequestHandler;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +97,36 @@ public class OssObjectController {
         FileInputStream fis = new FileInputStream(OssDataConstant.POSITION +"\\"+FILE_NOR+etag);
         ControllerUtils.loadResource(response, fis,name,true,
                 null);
+    }
+
+
+    @Autowired
+    NoStaticResourceHttpRequestHandler resourceHttpRequestHandler;
+
+    /**
+     * 预览视频
+     * @param etag /卷名/.../对象etag
+     * @param response
+     * @throws Exception
+     */
+    @GetMapping("/preview-video/{group}/{etag}")
+    public void previewVideo(String name, @PathVariable String etag, HttpServletResponse response, @PathVariable String group) throws Exception {
+        FileInputStream fis = new FileInputStream(OssDataConstant.POSITION +"\\"+FILE_NOR+etag);
+        ControllerUtils.loadResource(response, fis,name,false,
+                null);
+    }
+
+
+    /**
+     * 预览图片
+     * @param etag /卷名/.../对象etag
+     * @param response
+     * @throws Exception
+     */
+    @GetMapping("/preview-image/{group}/{etag}")
+    public void previewImage(String name, @PathVariable String etag, HttpServletResponse response, @PathVariable String group) throws Exception {
+        String path = OssDataConstant.POSITION +"\\"+FILE_NOR+etag;
+        ControllerUtils.previewVideo(request,response,resourceHttpRequestHandler, path);
     }
 
     /**

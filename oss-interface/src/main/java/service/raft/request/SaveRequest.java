@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
+ * 保存文件请求
  * @author 陈翔
  */
 @Data

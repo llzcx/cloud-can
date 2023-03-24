@@ -11,7 +11,7 @@ spring:
         username: nacos
         password: nacos
       discovery:
-        metadata.cold-storage-name: cold-storage1
+        metadata.cold_storage_name: cold-storage1
         ephemeral: true
 #        namespace: public #
 
