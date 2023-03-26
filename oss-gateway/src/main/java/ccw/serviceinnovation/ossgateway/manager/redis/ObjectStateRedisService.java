@@ -1,6 +1,7 @@
-package ccw.serviceinnovation.oss.manager.redis;
+package ccw.serviceinnovation.ossgateway.manager.redis;
 
-import ccw.serviceinnovation.oss.common.util.RedisUtil;
+
+import ccw.serviceinnovation.ossgateway.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +29,7 @@ public class ObjectStateRedisService {
         redisUtil.hdel(STATE_PREFIX,bucketName+"/"+objectName);
         return true;
     }
-    public Integer getState(String bucketName,String objectName){
-        return Integer.valueOf(redisUtil.hget(STATE_PREFIX,bucketName+"/"+objectName));
+    public String getState(String bucketName,String objectName){
+        return redisUtil.hget(STATE_PREFIX,bucketName+"/"+objectName);
     }
 }

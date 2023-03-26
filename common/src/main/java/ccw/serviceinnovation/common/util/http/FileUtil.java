@@ -46,8 +46,7 @@ public class FileUtil {
     }
 
     public static void main(String[] args) throws IOException {
-        String s = "D:\\oss\\1.jpg";
-        System.out.println(lastName(s));
+
     }
 
     /**

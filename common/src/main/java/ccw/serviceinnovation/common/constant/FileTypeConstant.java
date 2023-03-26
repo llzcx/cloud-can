@@ -3,7 +3,7 @@ package ccw.serviceinnovation.common.constant;
 /**
  * @author 陈翔
  */
-public class FileTypeConstant {
+public interface FileTypeConstant {
     /**
      * 文本类型
      */

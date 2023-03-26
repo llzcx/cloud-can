@@ -65,6 +65,7 @@ public enum ResultCode {
     REQUEST_ADDRESS_ERROR(3024,"请求地址错误,该实现在其他服务"),
     NOT_STANDARD_STORAGE(3025,"该对象不为标准存储"),
     STANDARD_STORAGE(3025,"该对象已经为标准存储"),
+    OBJECT_STATE_EXCEPTION(3026,"对象状态异常"),
     ;
     private Integer code;
     private String message;

@@ -2,6 +2,7 @@ package ccw.serviceinnovation.oss.service;
 
 import ccw.serviceinnovation.common.entity.OssObject;
 import ccw.serviceinnovation.oss.pojo.bo.GetObjectBo;
+import ccw.serviceinnovation.oss.pojo.vo.ObjectStateVo;
 import ccw.serviceinnovation.oss.pojo.vo.ObjectVo;
 import ccw.serviceinnovation.oss.pojo.vo.OssObjectVo;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
@@ -127,4 +128,8 @@ public interface IObjectService extends IService<OssObject> {
      * @return
      */
     Boolean unfreeze(String bucketName, String objectName) throws Exception;
+
+
+    ObjectStateVo getState(String bucketName,String objectName);
+
 }

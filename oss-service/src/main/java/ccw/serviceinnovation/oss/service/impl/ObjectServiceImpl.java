@@ -1,6 +1,7 @@
 package ccw.serviceinnovation.oss.service.impl;
 
 import ccw.serviceinnovation.common.constant.FileTypeConstant;
+import ccw.serviceinnovation.common.constant.ObjectStateConstant;
 import ccw.serviceinnovation.common.constant.StorageTypeEnum;
 import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.entity.ColdStorage;
@@ -18,10 +19,12 @@ import ccw.serviceinnovation.oss.constant.OssApplicationConstant;
 import ccw.serviceinnovation.oss.manager.consistenthashing.ConsistentHashing;
 import ccw.serviceinnovation.oss.manager.redis.ChunkRedisService;
 import ccw.serviceinnovation.oss.manager.redis.NorDuplicateRemovalService;
+import ccw.serviceinnovation.oss.manager.redis.ObjectStateRedisService;
 import ccw.serviceinnovation.oss.mapper.BucketMapper;
 import ccw.serviceinnovation.oss.mapper.ColdStorageMapper;
 import ccw.serviceinnovation.oss.mapper.OssObjectMapper;
 import ccw.serviceinnovation.oss.pojo.bo.ChunkBo;
+import ccw.serviceinnovation.oss.pojo.vo.ObjectStateVo;
 import ccw.serviceinnovation.oss.pojo.vo.ObjectVo;
 import ccw.serviceinnovation.oss.pojo.vo.OssObjectVo;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
@@ -40,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import service.StorageObjectService;
 import service.StorageTempObjectService;
+import service.bo.FilePrehandleBo;
 import service.raft.client.RaftRpcRequest;
 
 import java.nio.charset.StandardCharsets;
@@ -80,7 +84,16 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
     @Autowired
     ColdStorageMapper coldStorageMapper;
 
+    @Autowired
+    ObjectStateRedisService objectStateRedisService;
 
+
+    @Override
+    public ObjectStateVo getState(String bucketName, String objectName) {
+        OssObject ossObject = ossObjectMapper.selectObjectByName(bucketName,objectName);
+
+        return null;
+    }
 
 
     @Override
@@ -191,6 +204,11 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
             } else {
                 //校验成功
                 log.info("校验成功");
+                FilePrehandleBo filePrehandleBo = storageTempObjectService.preHandle(blockToken);
+                ossObject.setExt(filePrehandleBo.getFileType());
+                if(filePrehandleBo.getEtag()!=null){
+                    etag = filePrehandleBo.getEtag();
+                }
                 //去redis查这个文件是否存在
                 String group = norDuplicateRemovalService.getGroup(etag);
                 //文件去重
@@ -220,7 +238,6 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
                 chunkRedisService.removeChunk(blockToken);
                 //删除缓存数据
                 storageTempObjectService.deleteBlockObject(blockToken);
-
                 // 持久化元数据
                 ossObject.setBucketId(bucketId);
                 String time = DateUtil.now();
@@ -305,6 +322,7 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
 
     @Override
     public Boolean freeze(String bucketName, String objectName) throws Exception{
+        objectStateRedisService.setState(bucketName, objectName, ObjectStateConstant.FREEZE);
         OssObject ossObject = ossObjectMapper.selectObjectByName(bucketName, objectName);
         String etag = ossObject.getEtag();
         if(!ossObject.getStorageLevel().equals(StorageTypeEnum.STANDARD.getCode())){
@@ -319,6 +337,7 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
 
     @Override
     public Boolean unfreeze(String bucketName, String objectName)throws Exception {
+        objectStateRedisService.setState(bucketName, objectName, ObjectStateConstant.UNFREEZE);
         OssObject ossObject = ossObjectMapper.selectObjectByName(bucketName, objectName);
         String etag = ossObject.getEtag();
         if(ossObject.getStorageLevel().equals(StorageTypeEnum.STANDARD.getCode())){

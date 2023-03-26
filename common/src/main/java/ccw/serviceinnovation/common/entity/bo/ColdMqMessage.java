@@ -12,6 +12,7 @@ public class ColdMqMessage implements Serializable {
     private Long objectId;
     private String etag;
 
+
     public ColdMqMessage(Long objectId, String etag) {
         this.objectId = objectId;
         this.etag = etag;

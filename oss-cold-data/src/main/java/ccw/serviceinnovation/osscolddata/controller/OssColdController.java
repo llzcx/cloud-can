@@ -1,4 +1,5 @@
 package ccw.serviceinnovation.osscolddata.controller;
+import ccw.serviceinnovation.common.constant.RedisConstant;
 import ccw.serviceinnovation.common.entity.LocationVo;
 import ccw.serviceinnovation.common.exception.OssException;
 import ccw.serviceinnovation.common.nacos.TrackerService;
@@ -9,6 +10,8 @@ import ccw.serviceinnovation.common.util.http.FileUtil;
 import ccw.serviceinnovation.common.util.http.HttpUtils;
 import ccw.serviceinnovation.osscolddata.constant.OssColdDataConstant;
 import ccw.serviceinnovation.osscolddata.util.ControllerUtils;
+import ccw.serviceinnovation.osscolddata.util.RedisUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +21,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static ccw.serviceinnovation.common.constant.RedisConstant.OBJECT_STATE;
+import static ccw.serviceinnovation.common.constant.RedisConstant.OSS;
 import static ccw.serviceinnovation.osscolddata.constant.FilePrefixConstant.FILE_COLD;
 import static ccw.serviceinnovation.osscolddata.constant.FilePrefixConstant.FILE_COLD_TMP;
 
@@ -31,8 +37,9 @@ public class OssColdController {
     public static ConcurrentHashMap<String,String> data = new ConcurrentHashMap<>();
 
 
+
     /**
-     * oss-data调用此接口 将oss-cold-data 数据解冻到 oss-data
+     * oss-service调用此接口 将oss-data 数据归档 oss-cold-data
      * @param etag
      * @return
      */

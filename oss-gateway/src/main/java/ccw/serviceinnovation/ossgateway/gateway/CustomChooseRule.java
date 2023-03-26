@@ -111,7 +111,6 @@ public class CustomChooseRule implements ICustomRule {
                 String lastPathParams = HttpUtils.getLastPathParams(path);
                 System.out.println("lastPathParams:" + lastPathParams);
             }
-
         } else {
             /*
              * 别的服务采用轮训

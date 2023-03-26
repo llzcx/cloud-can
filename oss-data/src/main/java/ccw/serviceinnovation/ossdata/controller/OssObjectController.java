@@ -157,5 +157,13 @@ public class OssObjectController {
         return JSONObject.toJSONString(location);
     }
 
+    @GetMapping("/compress/{etag}")
+    public String compress(@PathVariable String etag) throws Exception {
+        LocationVo location = storageObjectService.location(etag);
+        System.out.println("返回地址=>"+location.getIp()+":"+location.getPort());
+        return JSONObject.toJSONString(location);
+    }
+
+
 }
 

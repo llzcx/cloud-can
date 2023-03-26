@@ -1,6 +1,6 @@
 package service;
 
-import ccw.serviceinnovation.common.entity.LocationVo;
+import service.bo.FilePrehandleBo;
 
 import java.io.IOException;
 
@@ -39,6 +39,13 @@ public interface StorageTempObjectService {
      */
     Boolean saveBlock(String blockToken, Long targetSize, byte[] bytes, Long srcSize, Integer chunks, Integer chunk) throws IOException;
 
+
+    /**
+     * 对文件进行压缩 返回压缩的etag
+     * @param objectKey
+     * @return
+     */
+    FilePrehandleBo preHandle(String objectKey) throws Exception;
 
     /**
      * 获取端口号

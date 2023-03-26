@@ -1,6 +1,7 @@
 package ccw.serviceinnovation.oss.manager.mq;
 
 import ccw.serviceinnovation.common.constant.StorageTypeEnum;
+import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.entity.ColdStorage;
 import ccw.serviceinnovation.common.entity.LocationVo;
 import ccw.serviceinnovation.common.entity.OssObject;
@@ -11,14 +12,14 @@ import ccw.serviceinnovation.common.nacos.TrackerService;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.common.util.http.HttpUtils;
 import ccw.serviceinnovation.oss.constant.OssApplicationConstant;
-import ccw.serviceinnovation.oss.manager.consistenthashing.ConsistentHashing;
 import ccw.serviceinnovation.oss.manager.redis.ColdDuplicateRemovalService;
 import ccw.serviceinnovation.oss.manager.redis.NorDuplicateRemovalService;
+import ccw.serviceinnovation.oss.manager.redis.ObjectStateRedisService;
+import ccw.serviceinnovation.oss.mapper.BucketMapper;
 import ccw.serviceinnovation.oss.mapper.ColdStorageMapper;
 import ccw.serviceinnovation.oss.mapper.OssObjectMapper;
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.sofa.jraft.entity.PeerId;
-import com.alipay.sofa.jraft.error.RemotingException;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
@@ -44,6 +45,9 @@ public class ColdConsumer {
     OssObjectMapper ossObjectMapper;
 
     @Autowired
+    BucketMapper bucketMapper;
+
+    @Autowired
     ColdStorageMapper coldStorageMapper;
 
     @Autowired
@@ -51,6 +55,9 @@ public class ColdConsumer {
 
     @Autowired
     ColdDuplicateRemovalService coldDuplicateRemovalService;
+
+    @Autowired
+    ObjectStateRedisService objectStateRedisService;
 
     public void initMqUnfreeze() throws Exception {
         //消费解冻:oss-data拿到oss-old-data
@@ -73,6 +80,7 @@ public class ColdConsumer {
                         Long objectId = coldMqMessage.getObjectId();
                         String etag = coldMqMessage.getEtag();
                         OssObject ossObject = ossObjectMapper.selectById(objectId);
+                        Bucket bucket = bucketMapper.selectById(ossObject.getBucketId());
                         //检查oss-data是否已经存在这个etag
                         String group = norDuplicateRemovalService.getGroup(etag);
                         //检查oss-cold是否存在这个文件
@@ -110,7 +118,7 @@ public class ColdConsumer {
                         }
                         ossObject.setStorageLevel(StorageTypeEnum.STANDARD.getCode());
                         ossObjectMapper.updateById(ossObject);
-
+                        objectStateRedisService.delState(bucket.getName(),ossObject.getName());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -142,6 +150,7 @@ public class ColdConsumer {
                         Long objectId = coldMqMessage.getObjectId();
                         String etag = coldMqMessage.getEtag();
                         OssObject ossObject = ossObjectMapper.selectById(objectId);
+                        Bucket bucket = bucketMapper.selectById(ossObject.getBucketId());
                         //检查oss-data是否已经存在这个etag
                         String group = norDuplicateRemovalService.getGroup(etag);
                         //检查oss-cold是否存在这个文件
@@ -177,6 +186,7 @@ public class ColdConsumer {
                         }
                         ossObject.setStorageLevel(StorageTypeEnum.ARCHIVAL.getCode());
                         ossObjectMapper.updateById(ossObject);
+                        objectStateRedisService.delState(bucket.getName(),ossObject.getName());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
