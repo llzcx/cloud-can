@@ -87,6 +87,11 @@ public class OssObject implements Serializable {
      */
     private Integer storageLevel;
 
+    /**
+     * 是否为备份文件
+     */
+    private Boolean isBackup;
+
 
     public OssObject(){
 

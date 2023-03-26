@@ -130,6 +130,34 @@ public interface IObjectService extends IService<OssObject> {
     Boolean unfreeze(String bucketName, String objectName) throws Exception;
 
 
+    /**
+     * 获取当前对象的状态
+     * @param bucketName
+     * @param objectName
+     * @return
+     */
     ObjectStateVo getState(String bucketName,String objectName);
+
+
+    /**
+     * 将bucketName的对象objectName 备份到 bucketNameBackup
+     * @param sourceBucketName
+     * @param targetBucketName
+     * @param objectName
+     * @param newObjectName
+     * @return
+     */
+    Boolean backup(String sourceBucketName,String targetBucketName,String objectName,String newObjectName);
+
+
+    /**
+     * 复原数据
+     * @param bucketName 桶名字
+     * @param objectName 对象名字
+     * @return
+     */
+    Boolean backupRecovery(String bucketName,String objectName);
+
+
 
 }

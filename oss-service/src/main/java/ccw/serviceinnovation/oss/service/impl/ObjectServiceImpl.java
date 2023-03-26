@@ -1,12 +1,10 @@
 package ccw.serviceinnovation.oss.service.impl;
 
 import ccw.serviceinnovation.common.constant.FileTypeConstant;
+import ccw.serviceinnovation.common.constant.ObjectACLEnum;
 import ccw.serviceinnovation.common.constant.ObjectStateConstant;
 import ccw.serviceinnovation.common.constant.StorageTypeEnum;
-import ccw.serviceinnovation.common.entity.Bucket;
-import ccw.serviceinnovation.common.entity.ColdStorage;
-import ccw.serviceinnovation.common.entity.LocationVo;
-import ccw.serviceinnovation.common.entity.OssObject;
+import ccw.serviceinnovation.common.entity.*;
 import ccw.serviceinnovation.common.entity.bo.ColdMqMessage;
 import ccw.serviceinnovation.common.exception.OssException;
 import ccw.serviceinnovation.common.nacos.Host;
@@ -20,6 +18,7 @@ import ccw.serviceinnovation.oss.manager.consistenthashing.ConsistentHashing;
 import ccw.serviceinnovation.oss.manager.redis.ChunkRedisService;
 import ccw.serviceinnovation.oss.manager.redis.NorDuplicateRemovalService;
 import ccw.serviceinnovation.oss.manager.redis.ObjectStateRedisService;
+import ccw.serviceinnovation.oss.mapper.BackupMapper;
 import ccw.serviceinnovation.oss.mapper.BucketMapper;
 import ccw.serviceinnovation.oss.mapper.ColdStorageMapper;
 import ccw.serviceinnovation.oss.mapper.OssObjectMapper;
@@ -31,6 +30,7 @@ import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import ccw.serviceinnovation.oss.service.IObjectService;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.alipay.sofa.jraft.rhea.storage.StorageType;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -87,12 +87,72 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
     @Autowired
     ObjectStateRedisService objectStateRedisService;
 
+    @Autowired
+    BackupMapper backupMapper;
+
 
     @Override
     public ObjectStateVo getState(String bucketName, String objectName) {
         OssObject ossObject = ossObjectMapper.selectObjectByName(bucketName,objectName);
 
         return null;
+    }
+
+    @Override
+    public Boolean backup(String sourceBucketName,String targetBucketName,String objectName,String newObjectName) {
+        String backupObjectName;
+        if(newObjectName==null){
+            backupObjectName = newObjectName;
+        }else{
+            backupObjectName = "backupData-"+sourceBucketName+"-"+objectName;
+        }
+
+        OssObject SourceOssObject = ossObjectMapper.selectObjectByName(sourceBucketName, objectName);
+        Long id = bucketMapper.selectBucketIdByName(targetBucketName);
+        String etag = SourceOssObject.getEtag();
+        //引用次数+1
+        String group = norDuplicateRemovalService.getGroup(etag);
+        norDuplicateRemovalService.save(etag,group);
+        OssObject ossObject = new OssObject();
+        ossObject.setIsBackup(true);
+        //设置备份名字
+        ossObject.setName(backupObjectName);
+        ossObject.setStorageLevel(StorageTypeEnum.STANDARD.getCode());
+        String time = DateUtil.now();
+        ossObject.setCreateTime(time);
+        ossObject.setLastUpdateTime(time);
+        ossObject.setBucketId(id);
+        ossObject.setEtag(etag);
+        ossObject.setIsFolder(false);
+        ossObject.setObjectAcl(ObjectACLEnum.DEFAULT.getCode());
+        ossObject.setParent(null);
+        ossObject.setSize(SourceOssObject.getSize());
+        ossObject.setSecret(null);
+        ossObjectMapper.insert(ossObject);
+        Backup backup = new Backup();
+        backup.setSourceObjectId(SourceOssObject.getId());
+        backup.setTargetObjectId(ossObject.getId());
+        backup.setCreateTime(time);
+        backupMapper.insert(backup);
+        return true;
+    }
+
+    @Override
+    public Boolean backupRecovery(String bucketName,String objectName) {
+        Backup backups = backupMapper.selectBackup(bucketName, objectName);
+        Long targetObjectId = backups.getTargetObjectId();
+        OssObject sourceOssObject = ossObjectMapper.selectById(backups.getSourceObjectId());
+        String sourceGroup = norDuplicateRemovalService.getGroup(sourceOssObject.getEtag());
+        OssObject targetOssObject = ossObjectMapper.selectById(targetObjectId);
+        String targetGroup = norDuplicateRemovalService.getGroup(targetOssObject.getEtag());
+        OssObject ossObject = new OssObject();
+        ossObject.setEtag(targetOssObject.getEtag());
+        ossObject.setId(backups.getSourceObjectId());
+        //改变原来的数据的引用
+        ossObjectMapper.updateById(ossObject);
+        norDuplicateRemovalService.save(targetOssObject.getEtag(),targetGroup);
+        norDuplicateRemovalService.del(sourceOssObject.getEtag());
+        return true;
     }
 
 
@@ -349,6 +409,7 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
         InitApplication.producer.send(msg);
         return true;
     }
+
 
 
 }

@@ -173,5 +173,29 @@ public class OssObjectController {
         return ApiResp.success(objectService.unfreeze(bucketName, objectName));
     }
 
+    /**
+     * 备份一个文件
+     * @param bucketName
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/backup")
+    public ApiResp<Boolean> backup(@RequestParam("bucketName") String bucketName,@RequestParam("objectName") String objectName,
+                                   @RequestParam("newObjectName")String newObjectName) throws Exception{
+        return ApiResp.success(objectService.backup(bucketName, objectName,objectName,newObjectName));
+    }
+
+
+    /**
+     * 复原一个文件
+     * @param bucketName
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/backupRecovery")
+    public ApiResp<Boolean> backupRecovery(@RequestParam("bucketName") String bucketName,@RequestParam("objectName") String objectName) throws Exception{
+        return ApiResp.success(objectService.backupRecovery(bucketName, objectName));
+    }
+
 }
 

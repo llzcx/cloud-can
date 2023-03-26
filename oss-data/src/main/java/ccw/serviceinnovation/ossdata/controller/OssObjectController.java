@@ -110,10 +110,8 @@ public class OssObjectController {
      * @throws Exception
      */
     @GetMapping("/preview-video/{group}/{etag}")
-    public void previewVideo(String name, @PathVariable String etag, HttpServletResponse response, @PathVariable String group) throws Exception {
-        FileInputStream fis = new FileInputStream(OssDataConstant.POSITION +"\\"+FILE_NOR+etag);
-        ControllerUtils.loadResource(response, fis,name,false,
-                null);
+    public void previewVideo(String name, @PathVariable String etag,HttpServletRequest request ,HttpServletResponse response, @PathVariable String group) throws Exception {
+        ControllerUtils.previewVideo(request,response ,resourceHttpRequestHandler,OssDataConstant.POSITION +"\\"+FILE_NOR+etag);
     }
 
 
