@@ -20,6 +20,7 @@
         <module>oss-interface</module>
         <module>oss-service</module>
         <module>oss-cold-data</module>
+        <module>oss-gateway</module>
     </modules>
 
     <groupId>ccw.serviceinnovation</groupId>
