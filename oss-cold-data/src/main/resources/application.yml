@@ -25,13 +25,13 @@ spring:
       config: |
         singleServerConfig:
           password:
-          address: "redis://127.0.0.1:6379"
+          address: "redis://192.168.50.236:6379"
           database: 1
         threads: 0
         nettyThreads: 0
         codec: !<org.redisson.codec.FstCodec> {}
         transportMode: "NIO"
-    host: 127.0.0.1
+    host: 101.35.43.156
     port: 6379
     timeout: 1000
     password:
@@ -43,5 +43,6 @@ spring:
         maxActive: 8
   application:
     name: oss-data-server
+
 
 

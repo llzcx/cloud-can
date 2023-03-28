@@ -1,6 +1,7 @@
 package ccw.serviceinnovation.oss.service;
 
 import ccw.serviceinnovation.common.entity.OssObject;
+import ccw.serviceinnovation.oss.pojo.bo.BlockTokenBo;
 import ccw.serviceinnovation.oss.pojo.bo.GetObjectBo;
 import ccw.serviceinnovation.oss.pojo.vo.ObjectStateVo;
 import ccw.serviceinnovation.oss.pojo.vo.ObjectVo;
@@ -67,7 +68,7 @@ public interface IObjectService extends IService<OssObject> {
      * @param size 大小
      * @return
      */
-    String getBlockToken(String etag,String bucketName, String objectName,Long parentObjectId,Integer chunks,Long size);
+    BlockTokenBo getBlockToken(String etag, String bucketName, String objectName, Long parentObjectId, Integer chunks, Long size);
 
     /**
      * 用户从一个桶当中获取一个oss对象

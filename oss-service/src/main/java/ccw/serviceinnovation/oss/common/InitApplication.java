@@ -67,29 +67,6 @@ public class InitApplication {
         //启动生产者
         producer.start();
         System.out.println("producer started.");
-        try {
-            for (int i = 0; i < 10; i++) {
-                Thread.sleep(1000);  //每秒发送一次MQ
-                //创建消息
-                Message msg = new Message("Topic-cold",// topic
-                        "coldTag",// tag
-                        (new Date() + " RocketMQ test msg " + i).getBytes()// body
-                );
-
-                //发送，返回结果对象
-                SendResult sendResult = producer.send(msg);
-
-                System.out.println(sendResult.getMsgId()); //消息id
-                System.out.println(sendResult.getMessageQueue()); //队列信息
-                System.out.println(sendResult.getSendStatus());  //发送结果
-                System.out.println(sendResult.getOffsetMsgId()); //下一个要消费的消息的偏移量
-                System.out.println(sendResult.getQueueOffset());  //队列消息偏移量
-                System.out.println();
-                System.out.println("================================================");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         producer.shutdown();
 
 

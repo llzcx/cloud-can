@@ -71,6 +71,7 @@ public class Init {
         final String groupId = OssDataConstant.GROUP;
         final String serverIdStr = OssDataConstant.RPC_ADDR;
         final String initConfStr = OssDataConstant.CLUSTER;
+        log.info("dataPath:{},groupId:{},serverIdStr:{},initConfStr{}",dataPath,groupId,serverIdStr,initConfStr);
 
         final NodeOptions nodeOptions = new NodeOptions();
         // for test, modify some params
@@ -115,7 +116,7 @@ public class Init {
         Integer port = IpUtils.getPort(OssDataConstant.RPC_ADDR);
         namingService.registerInstance("raft-rpc",ip ,port);
         //更新元数据
-        trackerService.updateMeta();
+        trackerService.updateJraftMeta();
     }
 
 
