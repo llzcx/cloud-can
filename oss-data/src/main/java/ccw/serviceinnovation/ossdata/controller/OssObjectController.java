@@ -1,8 +1,11 @@
 package ccw.serviceinnovation.ossdata.controller;
 
+import ccw.serviceinnovation.common.constant.FileTypeConstant;
 import ccw.serviceinnovation.common.entity.LocationVo;
 import ccw.serviceinnovation.common.exception.OssException;
 import ccw.serviceinnovation.common.request.ResultCode;
+import ccw.serviceinnovation.common.util.file.JpegCompress;
+import ccw.serviceinnovation.common.util.file.VideoCompress;
 import ccw.serviceinnovation.common.util.hash.QETag;
 import ccw.serviceinnovation.ossdata.bo.ChunkBo;
 import ccw.serviceinnovation.ossdata.constant.OssDataConstant;
@@ -10,6 +13,8 @@ import ccw.serviceinnovation.ossdata.manager.redis.ChunkRedisService;
 import ccw.serviceinnovation.ossdata.mapper.OssObjectMapper;
 import ccw.serviceinnovation.ossdata.util.ControllerUtils;
 import ccw.serviceinnovation.ossdata.util.NoStaticResourceHttpRequestHandler;
+import cn.hutool.core.io.FileTypeUtil;
+import cn.hutool.core.lang.UUID;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import service.StorageObjectService;
 import service.StorageTempObjectService;
+import service.bo.FilePrehandleBo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,6 +32,7 @@ import java.util.Base64;
 
 import static ccw.serviceinnovation.ossdata.constant.FilePrefixConstant.FILE_NOR;
 import static ccw.serviceinnovation.ossdata.constant.FilePrefixConstant.FILE_TMP_BLOCK;
+import static ccw.serviceinnovation.ossdata.constant.OssDataConstant.POSITION;
 
 /**
  * 对象接口
@@ -60,6 +67,8 @@ public class OssObjectController {
     @Autowired
     OssObjectMapper ossObjectMapper;
 
+    private String TMP_BLOCK =  POSITION + "/" + FILE_TMP_BLOCK;
+    private String NOR = POSITION + "/" + FILE_NOR;
 
     /**
      * 上传分片文件
@@ -162,6 +171,12 @@ public class OssObjectController {
         return JSONObject.toJSONString(location);
     }
 
+    @GetMapping("/provider")
+    public String provider() {
+        System.out.println(OssDataConstant.PROVIDE_PORT);
+
+        return OssDataConstant.PROVIDE_PORT;
+    }
 
 }
 

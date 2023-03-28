@@ -12,6 +12,7 @@ import com.alipay.sofa.jraft.rpc.impl.cli.CliClientServiceImpl;
 import com.alipay.sofa.jraft.util.Endpoint;
 import lombok.Data;
 
+import service.constant.Addr;
 import service.raft.request.DelRequest;
 import service.raft.request.GetRequest;
 import service.raft.request.SaveRequest;
@@ -34,12 +35,13 @@ public class RaftRpcRequest {
     }
 
     public static RaftRpcRequestBo getLeader(String naocosPath,String groupId){
+        //获取所有节点 groupName ==> node list
         RaftRpcRequestBo raftRpcRequestBo = new RaftRpcRequestBo();
         Map<String, List<Host>> allJraftList = TrackerService.getAllJraftList(naocosPath);
         StringBuilder addr_list = new StringBuilder();
         List<Host> list = allJraftList.get(groupId);
         for (int i = 0; i < list.size(); i++) {
-            addr_list.append("127.0.0.1:").append(list.get(i).getPort());
+            addr_list.append(Addr.ip+":").append(list.get(i).getPort());
             if(i!=list.size()-1){
                 addr_list.append(",");
             }

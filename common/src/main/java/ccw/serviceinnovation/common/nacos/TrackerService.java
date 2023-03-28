@@ -89,4 +89,13 @@ public class TrackerService {
         return null;
     }
 
+    public static Integer getOssDataProvidePort(String serverIp,Integer serverPort){
+        try {
+            return Integer.valueOf(HttpUtils.request("http://"+serverIp+":"+serverPort + "/object/provider"));
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return null;
+    }
+
 }

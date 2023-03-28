@@ -66,6 +66,7 @@ public enum ResultCode {
     NOT_STANDARD_STORAGE(3025,"该对象不为标准存储"),
     STANDARD_STORAGE(3025,"该对象已经为标准存储"),
     OBJECT_STATE_EXCEPTION(3026,"对象状态异常"),
+    CHUNK_NOT_UP_FINISH(3027,"还有未上传完成的分块"),
     ;
     private Integer code;
     private String message;

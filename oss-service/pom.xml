@@ -177,11 +177,6 @@
             <version>3.0.6</version>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>org.apache.dubbo</groupId>-->
-<!--            <artifactId>dubbo</artifactId>-->
-<!--            <version>3.0.1</version>-->
-<!--        </dependency>-->
 
 
         <!--        从上面可以看出，是com/alibaba/spring/spring-context-support/1.0.8/spring-context-support-1.0.8.jar  这个包版本有问-->

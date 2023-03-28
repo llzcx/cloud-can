@@ -56,9 +56,6 @@ public class Init {
     public static void fileInit() {
 
     }
-    public static void initPRC(){
-        DataGrpcHelper.initGRpc();
-    }
 
 
 }

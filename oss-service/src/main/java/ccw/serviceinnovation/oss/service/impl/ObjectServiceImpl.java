@@ -22,6 +22,7 @@ import ccw.serviceinnovation.oss.mapper.BackupMapper;
 import ccw.serviceinnovation.oss.mapper.BucketMapper;
 import ccw.serviceinnovation.oss.mapper.ColdStorageMapper;
 import ccw.serviceinnovation.oss.mapper.OssObjectMapper;
+import ccw.serviceinnovation.oss.pojo.bo.BlockTokenBo;
 import ccw.serviceinnovation.oss.pojo.bo.ChunkBo;
 import ccw.serviceinnovation.oss.pojo.vo.ObjectStateVo;
 import ccw.serviceinnovation.oss.pojo.vo.ObjectVo;
@@ -208,12 +209,16 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
 
 
     @Override
-    public String getBlockToken(String etag, String bucketName, String objectName, Long parentObjectId, Integer chunks, Long size) {
+    public BlockTokenBo getBlockToken(String etag, String bucketName, String objectName, Long parentObjectId, Integer chunks, Long size) {
         Bucket bucket = bucketMapper.selectOne(MPUtil.queryWrapperEq("name", bucketName));
         String blockToken = UUID.randomUUID().toString().replace('-', '_');
         System.out.println(blockToken);
-        chunkRedisService.saveBlockToken(blockToken, etag, bucket.getUserId(), bucket.getId(), size, parentObjectId, objectName);
-        return blockToken;
+        ChunkBo chunkBo = chunkRedisService.saveBlockToken(blockToken, etag, bucket.getUserId(), bucket.getId(), size, parentObjectId, objectName);
+        BlockTokenBo blockTokenBo = new BlockTokenBo();
+        blockTokenBo.setBlockToken(blockToken);
+        blockTokenBo.setIp(chunkBo.getIp());
+        blockTokenBo.setPort(chunkBo.getPort());
+        return blockTokenBo;
     }
 
     @Override
@@ -249,6 +254,10 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
         Integer port = chunkBo.getPort();
         String ObjectName = chunkBo.getName();
         String groupId = chunkBo.getGroupId();
+        Integer ossDataProvidePort = TrackerService.getOssDataProvidePort(ip, port);
+        if(ossDataProvidePort==null){
+            throw new OssException(ResultCode.SERVER_EXCEPTION);
+        }
         OssObject ossObject = new OssObject();
         //文件校验
         if (chunkRedisService.isUploaded(blockToken)) {
@@ -259,11 +268,14 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
                 //校验失败
                 log.info("校验失败");
                 chunkRedisService.removeChunk(blockToken);
+                UserSpecifiedAddressUtil.setAddress(new Address(ip,ossDataProvidePort, true));
                 storageTempObjectService.deleteBlockObject(blockToken);
                 throw new OssException(ResultCode.CLIENT_ETAG_ERROR);
             } else {
                 //校验成功
                 log.info("校验成功");
+                log.info("preHandle:{}:{}",ip,port);
+                UserSpecifiedAddressUtil.setAddress(new Address(ip,ossDataProvidePort, true));
                 FilePrehandleBo filePrehandleBo = storageTempObjectService.preHandle(blockToken);
                 ossObject.setExt(filePrehandleBo.getFileType());
                 if(filePrehandleBo.getEtag()!=null){
@@ -320,7 +332,7 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
                 return true;
             }
         } else {
-            return true;
+            throw new OssException(ResultCode.CHUNK_NOT_UP_FINISH);
         }
     }
 

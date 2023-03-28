@@ -61,4 +61,11 @@ public class OssDataConstant {
         OssDataConstant.NACOS_SERVER_ADDR = nacosServerAddress;
     }
 
+
+    public static String PROVIDE_PORT;
+    @Value("${dubbo.protocol.port}")
+    public void setPROVIDE_PORT(String PROVIDE_PORT) {
+        OssDataConstant.PROVIDE_PORT = PROVIDE_PORT;
+    }
+
 }
