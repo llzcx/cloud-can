@@ -80,14 +80,6 @@ public interface IObjectService extends IService<OssObject> {
     OssObject getObjectInfo(String bucketName, String objectName);
 
     /**
-     * 通过bucketName获取对象列表
-     * @param bucketName
-     * @return
-     * @throws Exception
-     */
-    List<OssObjectVo> getObjectList(String bucketName) throws Exception;
-
-    /**
      * 删除一个桶当中所有对象
      * @param bucketName
      * @return

@@ -133,12 +133,17 @@ public class QETag {
      * @throws Exception
      */
     public static String getFinalSha1(byte[] allSha1Data) throws Exception{
-        byte[] allSha1DataSha1 = sha1(allSha1Data);
-        byte[] hashData = new byte[allSha1DataSha1.length + 1];
-        System.arraycopy(allSha1DataSha1, 0, hashData, 1,
-                allSha1DataSha1.length);
-        hashData[0] = (byte) 0x96;
-        return urlSafeBase64Encode(hashData);
+        if(allSha1Data.length<=1){
+            return QETag.getETag(allSha1Data);
+        }else{
+            byte[] allSha1DataSha1 = sha1(allSha1Data);
+            byte[] hashData = new byte[allSha1DataSha1.length + 1];
+            System.arraycopy(allSha1DataSha1, 0, hashData, 1,
+                    allSha1DataSha1.length);
+            hashData[0] = (byte) 0x96;
+            return urlSafeBase64Encode(hashData);
+        }
+
     }
 
     /**

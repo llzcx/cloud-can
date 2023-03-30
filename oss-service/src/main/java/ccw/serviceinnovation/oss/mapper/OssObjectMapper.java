@@ -37,7 +37,7 @@ public interface OssObjectMapper extends BaseMapper<OssObject> {
      * @param objectName
      * @return
      */
-    OssObject selectObjectByName(@Param("bucketName")String bucketName,@Param("bucketName")String objectName);
+    OssObject selectObjectByName(@Param("bucketName")String bucketName,@Param("objectName")String objectName);
 
 
 
@@ -79,6 +79,7 @@ public interface OssObjectMapper extends BaseMapper<OssObject> {
      * @param etag
      * @return
      */
-    OssObject getOssObjectByEtag(String etag);
+    OssObject getOssObjectByEtag(@Param("etag")String etag);
+
 
 }

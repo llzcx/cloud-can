@@ -1,6 +1,7 @@
 package ccw.serviceinnovation.oss.service.impl;
 
-import ccw.serviceinnovation.common.constant.BucketACLEnum;
+
+import ccw.serviceinnovation.common.constant.ObjectACLEnum;
 import ccw.serviceinnovation.common.constant.StorageTypeEnum;
 import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.oss.common.util.MPUtil;
@@ -44,7 +45,7 @@ public class BucketServiceImpl extends ServiceImpl<BucketMapper, Bucket> impleme
         bucket.setUserId(userId);
         bucket.setCreateTime(DateUtil.now());
         bucket.setUpdateTime(DateUtil.now());
-        bucket.setBucketAcl(BucketACLEnum.PRIVATE.getCode());
+        bucket.setBucketAcl(ObjectACLEnum.PRIVATE.getCode());
         StorageTypeEnum storageTypeEnum = StorageTypeEnum.getEnum(addBucketDto.getStorageType());
         Integer value = storageTypeEnum==null?StorageTypeEnum.STANDARD.getCode():storageTypeEnum.getCode();
         bucket.setStorageLevel(value);

@@ -41,6 +41,14 @@ public class CacheBodyGlobalFilter implements Ordered, GlobalFilter {
     @Autowired
     ObjectStateRedisService objectStateRedisService;
 
+    public String getObjectName(String[] pathParams){
+        StringBuilder sb = new StringBuilder();
+        int i = 3;
+        for (; i < pathParams.length; i++) {
+            sb.append(pathParams[i]);
+        }
+        return sb.toString();
+    }
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         URI uri = exchange.getRequest().getURI();
@@ -49,9 +57,8 @@ public class CacheBodyGlobalFilter implements Ordered, GlobalFilter {
         //下载文件请求格式为/object/download/{objectName}
         if ("object".equals(pathParams[0]) && "download".equals(pathParams[1])) {
             String bucketName = pathParams[2];
-            String objectName = pathParams[3];
+            String objectName = getObjectName(pathParams);
             addOriginalRequestUrl(exchange, uri);
-
             OssObject ossObject = ossObjectMapper.selectObjectIdByName(bucketName,objectName);
             String etag = ossObject.getEtag();
             String group = norDuplicateRemovalService.getGroup(etag);

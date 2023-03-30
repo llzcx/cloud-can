@@ -28,7 +28,7 @@ public class ObjectStateRedisService {
         redisUtil.hdel(STATE_PREFIX,bucketName+"/"+objectName);
         return true;
     }
-    public Integer getState(String bucketName,String objectName){
-        return Integer.valueOf(redisUtil.hget(STATE_PREFIX,bucketName+"/"+objectName));
+    public String getState(String bucketName,String objectName){
+        return redisUtil.hget(STATE_PREFIX,bucketName+"/"+objectName);
     }
 }

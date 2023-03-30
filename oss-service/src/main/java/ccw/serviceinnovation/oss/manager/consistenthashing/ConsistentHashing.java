@@ -107,26 +107,26 @@ public class ConsistentHashing {
 
     /**
      * 查找对象存储的节点
-     *
-     * @param object
+     * 根据etag进行hash落到某个group 在group内寻找rpc-raft服务的leader 根据leader的port推出上传服务的位置
+     * @param etag
      * @return
      */
-    public static LocationVo getStorageObjectNode(String object) {
-        long hash = FNVHash(object);
+    public static LocationVo getStorageObjectNode(String etag) {
+        long hash = FNVHash(etag);
         SortedMap<Long, String> tailMap = virtualNodes.tailMap(hash); // 所有大于 hash 的节点
         Long key = tailMap.isEmpty() ? virtualNodes.firstKey() : tailMap.firstKey();
         String addr = virtualNodes.get(key);
         RaftRpcRequest.RaftRpcRequestBo leader = RaftRpcRequest.getLeader(OssApplicationConstant.NACOS_SERVER_ADDR,addr);
         //查找leader-group对应的端口信息
-        Map<String, List<Host>> allJraftList = TrackerService.getAllJraftList(OssApplicationConstant.NACOS_SERVER_ADDR);
-        List<Host> list = allJraftList.get(addr);
-        Integer applicationPort = null;
-        for (Host host : list) {
-            if(host.getPort().equals(leader.getPeerId().getPort())){
-                applicationPort = host.getMetadata().getPort();
-            }
-        }
-        LocationVo locationVo = new LocationVo(leader.getPeerId().getIp(), applicationPort);
+//        Map<String, List<Host>> allJraftList = TrackerService.getAllJraftList(OssApplicationConstant.NACOS_SERVER_ADDR);
+//        List<Host> list = allJraftList.get(addr);
+//        Integer applicationPort = null;
+//        for (Host host : list) {
+//            if(host.getPort().equals(leader.getPeerId().getPort())){
+//                applicationPort = host.getMetadata().getPort();
+//            }
+//        }
+        LocationVo locationVo = new LocationVo(leader.getPeerId().getIp(), leader.getPeerId().getPort()-10);
         locationVo.setGroup(addr);
         return locationVo;
     }

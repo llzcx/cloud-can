@@ -66,16 +66,20 @@ public class ObjectAclService {
     }
 
     public OssObject getObjectFromParam(HttpServletRequest request,String[] params){
-        OssObject ossObject = null;
+        Bucket bucket = null;
+        String objectName = request.getParameter("objectName");
         for (String param : params) {
             if ("objectId".equals(param)) {
-                ossObject = ossObjectMapper.selectById(Long.valueOf(request.getParameter("objectId")));
-                break;
-            } else if ("objectName".equals(param)) {
-                ossObject = ossObjectMapper.selectOne(MPUtil.queryWrapperEq("name", request.getParameter("objectName")));
-                break;
+                return ossObjectMapper.selectById(Long.valueOf(request.getParameter("objectId")));
+            } else if ("bucketName".equals(param)) {
+                bucket = bucketMapper.selectBucketByName(request.getParameter("bucketName"));
+            }else  if ("bucketId".equals(param)) {
+                bucket = bucketMapper.selectById(Long.valueOf(request.getParameter("bucketId")));
             }
         }
-        return ossObject;
+        if(objectName==null || bucket==null){
+            return null;
+        }
+        return ossObjectMapper.selectObjectByName(bucket.getName(), objectName);
     }
 }
