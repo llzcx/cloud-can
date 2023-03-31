@@ -5,6 +5,7 @@ import ccw.serviceinnovation.common.entity.OssObject;
 import ccw.serviceinnovation.common.exception.OssException;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.common.util.http.HttpUtils;
+
 import ccw.serviceinnovation.ossgateway.manager.redis.NorDuplicateRemovalService;
 import ccw.serviceinnovation.ossgateway.manager.redis.ObjectStateRedisService;
 import ccw.serviceinnovation.ossgateway.mapper.OssObjectMapper;
@@ -62,10 +63,10 @@ public class CacheBodyGlobalFilter implements Ordered, GlobalFilter {
             OssObject ossObject = ossObjectMapper.selectObjectIdByName(bucketName,objectName);
             String etag = ossObject.getEtag();
             String group = norDuplicateRemovalService.getGroup(etag);
-            String state = objectStateRedisService.getState(bucketName, objectName);
-            if(ObjectStateConstant.FREEZE.equals(state)){
+            Integer state = objectStateRedisService.getState(bucketName, objectName);
+            if(ObjectStateConstant.FREEZING.equals(state)){
                 throw new OssException(ResultCode.OBJECT_STATE_EXCEPTION);
-            }else if(ObjectStateConstant.UNFREEZE.equals(state)){
+            }else if(ObjectStateConstant.UNFREEZING.equals(state)){
                 throw new OssException(ResultCode.OBJECT_STATE_EXCEPTION);
             }else{
                 String newPath = "/object/download/"+ group + "/" + etag + "?name=" + objectName;

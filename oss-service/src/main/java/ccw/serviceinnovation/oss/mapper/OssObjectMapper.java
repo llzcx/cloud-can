@@ -81,5 +81,15 @@ public interface OssObjectMapper extends BaseMapper<OssObject> {
      */
     OssObject getOssObjectByEtag(@Param("etag")String etag);
 
+    /**
+     * 查找一个对象的存储状态
+     * @param bucketName
+     * @param objectName
+     * @return
+     */
+    Integer selectObjectStorageLevel(@Param("bucketName")String bucketName,@Param("objectName")String objectName);
+
+
+
 
 }

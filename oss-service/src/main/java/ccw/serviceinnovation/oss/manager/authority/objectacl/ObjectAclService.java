@@ -44,10 +44,10 @@ public class ObjectAclService {
             Boolean read = apiType.equals(AuthorityConstant.API_READ) || apiType.equals(AuthorityConstant.API_LIST);
             //目标接口是否为写接口
             Boolean write = apiType.equals(AuthorityConstant.API_WRITER);
-            Boolean mainUserPower = user.getParent() == null || (user.getParent().equals(bucket.getUserId()));
+            Boolean mainUserPower = user.getParent().equals(bucket.getUserId());
             Boolean ramUserPower = user.getParent() != null && (user.getParent().equals(bucket.getUserId()));
             if (objectAcl.equals(ObjectACLEnum.PRIVATE.getCode())) {
-                //私有权限->只有user本身和RAM用户可以访问
+                //私有权限->只有user本身可以访问
                 return mainUserPower;
             } else if (objectAcl.equals(ObjectACLEnum.PUBLIC_READ.getCode())) {
                 return read;
@@ -59,7 +59,7 @@ public class ObjectAclService {
                 return ramUserPower && (read || write);
             }  else if (objectAcl.equals(ObjectACLEnum.DEFAULT.getCode())) {
                 //调用bucketAcl进行验证
-                return bucketAclService.checkBucketAcl( user, apiType,bucket);
+                return bucketAclService.checkBucketAcl(user,apiType,bucket);
             }
         }
         return false;

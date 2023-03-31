@@ -1,5 +1,6 @@
 package ccw.serviceinnovation.oss.manager.mq;
 
+import ccw.serviceinnovation.common.constant.MessageQueueConstant;
 import ccw.serviceinnovation.common.constant.StorageTypeEnum;
 import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.entity.ColdStorage;
@@ -61,70 +62,66 @@ public class ColdConsumer {
 
     public void initMqUnfreeze() throws Exception {
         //消费解冻:oss-data拿到oss-old-data
-        DefaultMQPushConsumer consumer1 = new DefaultMQPushConsumer(
-                "oss-group");
+        DefaultMQPushConsumer consumer1 = new DefaultMQPushConsumer("oss-group");
         consumer1.setNamesrvAddr("127.0.0.1:9876");
         consumer1.setInstanceName("unfreeze-consumer");
         //订阅某个主题，然后使用tag过滤消息，不过滤可以用*代表
-        consumer1.subscribe("Topic-unfreeze", "*");
+        consumer1.subscribe(MessageQueueConstant.TOPIC_UNFREEZE, "*");
         consumer1.setConsumeMessageBatchMaxSize(1);
         //设置广播消费模式
         consumer1.setMessageModel(MessageModel.BROADCASTING);
         //注册监听回调实现类来处理broker推送过来的消息,MessageListenerConcurrently是并发消费
-        consumer1.registerMessageListener(new MessageListenerConcurrently() {
-            @Override
-            public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> messages, ConsumeConcurrentlyContext context) {
-                for (MessageExt message : messages) {
-                    try {
-                        ColdMqMessage coldMqMessage = JSONObject.parseObject(new String(message.getBody()), ColdMqMessage.class);
-                        Long objectId = coldMqMessage.getObjectId();
-                        String etag = coldMqMessage.getEtag();
-                        OssObject ossObject = ossObjectMapper.selectById(objectId);
-                        Bucket bucket = bucketMapper.selectById(ossObject.getBucketId());
-                        //检查oss-data是否已经存在这个etag
-                        String group = norDuplicateRemovalService.getGroup(etag);
-                        //检查oss-cold是否存在这个文件
-                        String coldServerName = coldDuplicateRemovalService.getName(etag);
-                        if (group == null && coldServerName == null) {
-                            //2边度没有数据,无法完成解冻
-                            throw new OssException(ResultCode.SERVER_EXCEPTION);
-                        } else if (group == null && coldServerName != null) {
-                            //oss-data没有 oss-cold有 属于正常情况 走正常流程
-                            RaftRpcRequest.RaftRpcRequestBo leader = RaftRpcRequest.getLeader(OssApplicationConstant.NACOS_SERVER_ADDR, group);
-                            //拿到oss-cold的ip+port
-                            Host cold = TrackerService.getCold(OssApplicationConstant.NACOS_SERVER_ADDR, coldServerName);
-                            String url = "http://" + cold.getIp() + ":" + cold.getPort() + "/cold/unfreeze/" + etag;
-                            LocationVo locationVo = new LocationVo(url);
-                            RaftRpcRequest.save(leader.getCliClientService(), leader.getPeerId(), etag, locationVo);
-                            //归档数据-1
-                            if (coldDuplicateRemovalService.del(etag) == 0) {
-                                HttpUtils.requestTo("http://" + cold.getIp() + ":" + cold.getPort() + "/cold/delete/" + etag, "delete");
-                            }
-                            //正常数据+1
-                            norDuplicateRemovalService.save(etag, group);
-                        } else if (group != null && coldServerName == null) {
-                            //oss-data有 oss-cold没有
-                            //一种情况是没有冷冻过,一种情况是已经完成了解冻
-                            //这就是最终结果
-                        } else if (group != null && coldServerName != null) {
-                            //2边都有数据
-                            //归档数据-1
-                            if (coldDuplicateRemovalService.del(etag) == 0) {
-                                Host cold = TrackerService.getCold(OssApplicationConstant.NACOS_SERVER_ADDR, coldServerName);
-                                HttpUtils.requestTo("http://" + cold.getIp() + ":" + cold.getPort() + "/cold/delete/" + etag, "delete");
-                            }
-                            //正常数据+1
-                            norDuplicateRemovalService.save(etag, group);
+        consumer1.registerMessageListener((MessageListenerConcurrently) (messages, context) -> {
+            for (MessageExt message : messages) {
+                try {
+                    ColdMqMessage coldMqMessage = JSONObject.parseObject(new String(message.getBody()), ColdMqMessage.class);
+                    Long objectId = coldMqMessage.getObjectId();
+                    String etag = coldMqMessage.getEtag();
+                    OssObject ossObject = ossObjectMapper.selectById(objectId);
+                    Bucket bucket = bucketMapper.selectById(ossObject.getBucketId());
+                    //检查oss-data是否已经存在这个etag
+                    String group = norDuplicateRemovalService.getGroup(etag);
+                    //检查oss-cold是否存在这个文件
+                    String coldServerName = coldDuplicateRemovalService.getName(etag);
+                    if (group == null && coldServerName == null) {
+                        //2边度没有数据,无法完成解冻
+                        throw new OssException(ResultCode.SERVER_EXCEPTION);
+                    } else if (group == null && coldServerName != null) {
+                        //oss-data没有 oss-cold有 属于正常情况 走正常流程
+                        RaftRpcRequest.RaftRpcRequestBo leader = RaftRpcRequest.getLeader(OssApplicationConstant.NACOS_SERVER_ADDR, group);
+                        //拿到oss-cold的ip+port
+                        Host cold = TrackerService.getCold(OssApplicationConstant.NACOS_SERVER_ADDR, coldServerName);
+                        String url = "http://" + cold.getIp() + ":" + cold.getPort() + "/cold/unfreeze/" + etag;
+                        LocationVo locationVo = new LocationVo(url);
+                        RaftRpcRequest.save(leader.getCliClientService(), leader.getPeerId(), etag, locationVo);
+                        //归档数据-1
+                        if (coldDuplicateRemovalService.del(etag) == 0) {
+                            HttpUtils.requestTo("http://" + cold.getIp() + ":" + cold.getPort() + "/cold/delete/" + etag, "delete");
                         }
-                        ossObject.setStorageLevel(StorageTypeEnum.STANDARD.getCode());
-                        ossObjectMapper.updateById(ossObject);
-                        objectStateRedisService.delState(bucket.getName(),ossObject.getName());
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                        //正常数据+1
+                        norDuplicateRemovalService.save(etag, group);
+                    } else if (group != null && coldServerName == null) {
+                        //oss-data有 oss-cold没有
+                        //一种情况是没有冷冻过,一种情况是已经完成了解冻
+                        //这就是最终结果
+                    } else if (group != null && coldServerName != null) {
+                        //2边都有数据
+                        //归档数据-1
+                        if (coldDuplicateRemovalService.del(etag) == 0) {
+                            Host cold = TrackerService.getCold(OssApplicationConstant.NACOS_SERVER_ADDR, coldServerName);
+                            HttpUtils.requestTo("http://" + cold.getIp() + ":" + cold.getPort() + "/cold/delete/" + etag, "delete");
+                        }
+                        //正常数据+1
+                        norDuplicateRemovalService.save(etag, group);
                     }
+                    ossObject.setStorageLevel(StorageTypeEnum.STANDARD.getCode());
+                    ossObjectMapper.updateById(ossObject);
+                    objectStateRedisService.delState(bucket.getName(),ossObject.getName());
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
             }
+            return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
         });
         consumer1.start();//消费者启动完成
         System.out.println("Consumer:freeze Started.");
@@ -136,7 +133,7 @@ public class ColdConsumer {
         consumer1.setNamesrvAddr("127.0.0.1:9876");
         consumer1.setInstanceName("freeze-consumer");
         //订阅某个主题，然后使用tag过滤消息，不过滤可以用*代表
-        consumer1.subscribe("Topic-freeze", "*");
+        consumer1.subscribe(MessageQueueConstant.TOPIC_FREEZE, "*");
         consumer1.setConsumeMessageBatchMaxSize(1);
         //设置广播消费模式
         consumer1.setMessageModel(MessageModel.BROADCASTING);

@@ -4,8 +4,10 @@ package ccw.serviceinnovation.oss.service.impl;
 import ccw.serviceinnovation.common.constant.ObjectACLEnum;
 import ccw.serviceinnovation.common.constant.StorageTypeEnum;
 import ccw.serviceinnovation.common.entity.Bucket;
+import ccw.serviceinnovation.common.entity.User;
 import ccw.serviceinnovation.oss.common.util.MPUtil;
 import ccw.serviceinnovation.oss.mapper.BucketMapper;
+import ccw.serviceinnovation.oss.mapper.UserMapper;
 import ccw.serviceinnovation.oss.pojo.dto.AddBucketDto;
 import ccw.serviceinnovation.oss.service.IBucketService;
 import ccw.serviceinnovation.oss.service.IObjectService;
@@ -37,12 +39,20 @@ public class BucketServiceImpl extends ServiceImpl<BucketMapper, Bucket> impleme
     @Autowired
     private IObjectService objectService;
 
+    @Autowired
+    private UserMapper userMapper;
+
 
     @Override
     public Bucket createBucket(AddBucketDto addBucketDto, Long userId)  {
         Bucket bucket = new Bucket();
         bucket.setName(addBucketDto.getBucketName());
-        bucket.setUserId(userId);
+        User user = userMapper.selectById(userId);
+        if(user.getParent()!=null){
+            bucket.setUserId(user.getParent());
+        }else{
+            bucket.setUserId(userId);
+        }
         bucket.setCreateTime(DateUtil.now());
         bucket.setUpdateTime(DateUtil.now());
         bucket.setBucketAcl(ObjectACLEnum.PRIVATE.getCode());

@@ -1,9 +1,6 @@
 package ccw.serviceinnovation.oss.service.impl;
 
-import ccw.serviceinnovation.common.constant.FileTypeConstant;
-import ccw.serviceinnovation.common.constant.ObjectACLEnum;
-import ccw.serviceinnovation.common.constant.ObjectStateConstant;
-import ccw.serviceinnovation.common.constant.StorageTypeEnum;
+import ccw.serviceinnovation.common.constant.*;
 import ccw.serviceinnovation.common.entity.*;
 import ccw.serviceinnovation.common.entity.bo.ColdMqMessage;
 import ccw.serviceinnovation.common.exception.OssException;
@@ -40,7 +37,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import service.StorageObjectService;
 import service.StorageTempObjectService;
 import service.bo.FilePrehandleBo;
 import service.raft.client.RaftRpcRequest;
@@ -60,8 +56,6 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
     /**
      * 服务消费者
      */
-    @DubboReference(version = "1.0.0", group = "object")
-    private StorageObjectService storageObjectService;
 
     @DubboReference(version = "1.0.0", group = "temp")
     private StorageTempObjectService storageTempObjectService;
@@ -93,21 +87,20 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
 
     @Override
     public ObjectStateVo getState(String bucketName, String objectName) {
-        OssObject ossObject = ossObjectMapper.selectObjectByName(bucketName,objectName);
-        if(ossObject==null){
-            throw new OssException(ResultCode.OBJECT_IS_DEFECT);
-        }
         ObjectStateVo objectStateVo = new ObjectStateVo();
-        String state = objectStateRedisService.getState(bucketName, objectName);
-        if(state==null){
+        Integer state = objectStateRedisService.getState(bucketName, objectName);
+        if(ObjectStateConstant.FREEZE.equals(state)){
+            objectStateVo.setNormal(false);
+            objectStateVo.setState("已经归档");
+        }if(ObjectStateConstant.NOR.equals(state)){
             objectStateVo.setNormal(true);
-            objectStateVo.setState("数据可以正常访问");
-        }else if(ObjectStateConstant.UNFREEZE.equals(state)){
+            objectStateVo.setState("正常");
+        }else if(ObjectStateConstant.UNFREEZING.equals(state)){
             objectStateVo.setNormal(false);
             objectStateVo.setState("解冻中");
-        }else if(ObjectStateConstant.FREEZE.equals(state)){
+        }else if(ObjectStateConstant.FREEZING.equals(state)){
             objectStateVo.setNormal(false);
-            objectStateVo.setState("冷冻中");
+            objectStateVo.setState("归档中");
         }
         return objectStateVo;
     }
@@ -120,9 +113,9 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
         }else{
             backupObjectName = "backupData-"+sourceBucketName+"-"+objectName;
         }
-        OssObject SourceOssObject = ossObjectMapper.selectObjectByName(sourceBucketName, objectName);
+        OssObject sourceOssObject = ossObjectMapper.selectObjectByName(sourceBucketName, objectName);
         Long id = bucketMapper.selectBucketIdByName(targetBucketName);
-        String etag = SourceOssObject.getEtag();
+        String etag = sourceOssObject.getEtag();
         //引用次数+1
         String group = norDuplicateRemovalService.getGroup(etag);
         norDuplicateRemovalService.save(etag,group);
@@ -139,11 +132,11 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
         ossObject.setIsFolder(false);
         ossObject.setObjectAcl(ObjectACLEnum.DEFAULT.getCode());
         ossObject.setParent(null);
-        ossObject.setSize(SourceOssObject.getSize());
+        ossObject.setSize(sourceOssObject.getSize());
         ossObject.setSecret(null);
         ossObjectMapper.insert(ossObject);
         Backup backup = new Backup();
-        backup.setSourceObjectId(SourceOssObject.getId());
+        backup.setSourceObjectId(sourceOssObject.getId());
         backup.setTargetObjectId(ossObject.getId());
         backup.setCreateTime(time);
         backupMapper.insert(backup);
@@ -445,14 +438,17 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
 
     @Override
     public Boolean freeze(String bucketName, String objectName) throws Exception {
-        objectStateRedisService.setState(bucketName, objectName, ObjectStateConstant.FREEZE);
+        //归档前必须处于正常状态
+        Integer state = objectStateRedisService.getState(bucketName, objectName);
+        if(!state.equals(ObjectStateConstant.NOR)){
+            throw new OssException(ResultCode.CANT_SET_STATE);
+        }
+        //设置为归档中
+        objectStateRedisService.setState(bucketName, objectName, ObjectStateConstant.FREEZING);
         OssObject ossObject = ossObjectMapper.selectObjectByName(bucketName, objectName);
         String etag = ossObject.getEtag();
-        if(!ossObject.getStorageLevel().equals(StorageTypeEnum.STANDARD.getCode())){
-            throw new OssException(ResultCode.NOT_STANDARD_STORAGE);
-        }
-        //现在需要进行归档处理,调用cold-data服务将数据下载并压缩保存
-        Message msg = new Message("Topic-freeze",
+        //现在需要进行归档处理,调用oss-cold-data服务将数据从oss-data下载并压缩保存
+        Message msg = new Message(MessageQueueConstant.TOPIC_FREEZE,
                 JSONObject.toJSONString(new ColdMqMessage(ossObject.getId(),etag)).getBytes(StandardCharsets.UTF_8));
         InitApplication.producer.send(msg);
         return true;
@@ -460,14 +456,16 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
 
     @Override
     public Boolean unfreeze(String bucketName, String objectName)throws Exception {
-        objectStateRedisService.setState(bucketName, objectName, ObjectStateConstant.UNFREEZE);
+        //解冻前必须处于已经归档状态:
+        Integer state = objectStateRedisService.getState(bucketName, objectName);
+        if(!state.equals(ObjectStateConstant.FREEZE)){
+            throw new OssException(ResultCode.CANT_SET_STATE);
+        }
+        objectStateRedisService.setState(bucketName, objectName, ObjectStateConstant.UNFREEZING);
         OssObject ossObject = ossObjectMapper.selectObjectByName(bucketName, objectName);
         String etag = ossObject.getEtag();
-        if(ossObject.getStorageLevel().equals(StorageTypeEnum.STANDARD.getCode())){
-            throw new OssException(ResultCode.STANDARD_STORAGE);
-        }
-        //现在需要进行解冻处理,调用cold-data服务将数据下载并解压缩保存
-        Message msg = new Message("Topic-unfreeze",
+        //现在需要进行解冻处理,调用oss-data服务将数据从oss-cold-data下载并解压缩保存
+        Message msg = new Message(MessageQueueConstant.TOPIC_UNFREEZE,
                 JSONObject.toJSONString(new ColdMqMessage(ossObject.getId(),etag)).getBytes(StandardCharsets.UTF_8));
         InitApplication.producer.send(msg);
         return true;

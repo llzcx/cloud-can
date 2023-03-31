@@ -142,14 +142,21 @@ public class RequestInterceptor implements HandlerInterceptor {
                 String accessPath = bucket.getName()+"/"+ossObject.getName();
                 Boolean flag = bucketPolicyService.check(user.getId(), bucket.getId(),accessPath,type);
                 if(flag != null){
+                    //有允许策略但没有拒绝侧类直接放过,有拒绝策略直接拒绝
                     return ControllerUtils.writeIfReturn(response, ResultCode.BUCKET_POLICY_BLOCK,flag);
                 }
                 /*-------------------验证objectAcl-------------------*/
                 return ControllerUtils.writeIfReturn(response, ResultCode.OBJECT_ACL_BLOCK,
                         objectAclService.checkObjectAcl(bucket,user, ossApi.type(), ossObject));
+            }else{
+                //针对其他(不是对象 或者 桶)而言
+                return true;
             }
+        }else{
+            //目标接口不含有ossApi注解,并且接口含有参数
+            return true;
         }
-        return true;
+
     }
 
 

@@ -40,6 +40,7 @@ public enum ResultCode {
     CANT_SYNC(2007,"同步失败"),
     SERVER_EXCEPTION(2008,"数据服务异常"),
     DATA_NOT_FOUND(2009,"数据丢失"),
+    UNDEFINED(2010,"不确定的后台常量"),
 
 
     /* 业务异常 */
@@ -70,7 +71,8 @@ public enum ResultCode {
     BACKUP_DATA_NULL(3028,"备份数据为空"),
     OBJECT_NAME_ERROR(3029,"对象名为NULL"),
     FILE_NAME_IS_NULL(3030,"该对象文件名为空"),
-    PARENT_ID_IS_INVALID(3031,"父级文件夹无效")
+    PARENT_ID_IS_INVALID(3031,"父级文件夹无效"),
+    CANT_SET_STATE(3032,"不能设置为该状态"),
     ;
     private Integer code;
     private String message;
