@@ -27,34 +27,53 @@ public class ManageUserServiceImpl extends ServiceImpl<ManageUserMapper, User> i
     private ManageUserMapper manageUserMapper;
 
     @Override
-    public Boolean deleteUser(Long userId) {
-        int delete = manageUserMapper.delete(MPUtil.queryWrapperEq("id", userId));
-        return delete > 0;
+    public Boolean deleteUser(String userId) {
+        Long longUserId = Long.valueOf(userId);
+        int delete1 = manageUserMapper.delete(MPUtil.queryWrapperEq("id", longUserId));
+        int delete2 = manageUserMapper.delete(MPUtil.queryWrapperEq("parent", longUserId));
+        return delete1 > 0 && delete2 > 0;
     }
 
     @Override
-    public RPage<User> getUserList(String userName, Integer pageNum, Integer size) {
-        List<User> userList;
-        RPage<User> userRPage;
-        if (!Objects.equals(userName, "") && userName!=null){
-            userList = manageUserMapper.selectUserListByName((pageNum-1)*size,  size, userName);
-            userRPage = new RPage<>(pageNum,size,userList);
-            userRPage.setTotalCountAndTotalPage(manageUserMapper.selectCount(MPUtil.queryWrapperEq("username",userName)));
-        }else {
-            userList = manageUserMapper.selectUserList((pageNum-1)*size,  size);
-            userRPage = new RPage<>(pageNum,size,userList);
-            userRPage.setTotalCountAndTotalPage(manageUserMapper.selectAllCount());
+    public RPage<User> getUserList(String keyword, Integer pageNum, Integer size) {
+        Long longKeyword = -1L;
+        try {
+            longKeyword = Long.valueOf(keyword);
+        }catch (Exception e){
+            throw e;
+        }finally {
+            List<User> userList;
+            RPage<User> userRPage;
+            if (!Objects.equals(keyword, "") && keyword!=null){
+                userList = manageUserMapper.selectUserListByName((pageNum-1)*size,  size, keyword, longKeyword);
+                userRPage = new RPage<>(pageNum,size,userList);
+                userRPage.setTotalCountAndTotalPage(manageUserMapper.selectCount(MPUtil.queryWrapperEq("username",keyword, "id",longKeyword)));
+            }else {
+                userList = manageUserMapper.selectUserList((pageNum-1)*size,  size);
+                userRPage = new RPage<>(pageNum,size,userList);
+                userRPage.setTotalCountAndTotalPage(manageUserMapper.selectAllCount());
+            }
+            return userRPage;
         }
-
-        return userRPage;
     }
 
     @Override
-    public RPage<User> getSubUsers(Long userId, Integer pageNum, Integer size) {
-        List<User> userList = manageUserMapper.selectSubUsers((pageNum-1)*size,  size, userId);
-        RPage<User> userRPage = new RPage<>(pageNum,size,userList);
-        userRPage.setTotalCountAndTotalPage(manageUserMapper.selectCount(MPUtil.queryWrapperEq("parent",userId)));
+    public RPage<User> getSubUsers(String userId, String keyword, Integer pageNum, Integer size) {
+        Long longKeyword = -1L;
+        try {
+            longKeyword = Long.valueOf(keyword);
+        }catch (Exception e){
+            throw e;
+        }finally {
 
-        return userRPage;
+            Long longUserId = Long.valueOf(userId);
+
+            List<User> userList = manageUserMapper.selectSubUsers((pageNum - 1) * size, size, longUserId, keyword, longKeyword);
+            RPage<User> userRPage = new RPage<>(pageNum, size, userList);
+
+            userRPage.setTotalCountAndTotalPage(manageUserMapper.selectCount(MPUtil.queryWrapperEq("parent", longUserId, "id", longKeyword, "username", keyword)));
+
+            return userRPage;
+        }
     }
 }

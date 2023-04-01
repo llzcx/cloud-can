@@ -42,15 +42,20 @@ public class BucketVo implements Serializable {
      */
     private String updateTime;
 
-    /**
-     * 是否开启版本控制
-     */
-    private Boolean versionControl;
+//    /**
+//     * 是否开启版本控制
+//     */
+//    private Boolean versionControl;
+
+//    /**
+//     * 存储等级
+//     */
+//    private Integer storageLevel;
 
     /**
      * 存储等级
      */
-    private Integer storageLevel;
+    private String storageLevelString;
 
     /**
      * 图片是否需要加水印
@@ -65,10 +70,20 @@ public class BucketVo implements Serializable {
     /**
      * 桶读写权限ACL
      */
-    private Integer bucketAcl;
+    private String bucketAcl;
 
     /**
-     * Bucket 的容量，单位 b
+     * Bucket 的容量，单位 B
      */
     private Long capacity;
+
+    /**
+     * Bucket 内存储的标准类型对象的容量, 单位B
+     */
+    private Long standardCapacity;
+
+    /**
+     * Bucket 内存储的归档类型对象的容量, 单位B
+     */
+    private Long pigeonholeCapacity;
 }

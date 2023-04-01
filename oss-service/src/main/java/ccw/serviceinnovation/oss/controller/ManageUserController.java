@@ -29,39 +29,42 @@ public class ManageUserController {
      * @return 是否删除成功
      */
     @DeleteMapping("/deleteUser")
-    public ApiResp<Boolean> deleteUser(@RequestParam("userId")Long userId) throws Exception{
+    public ApiResp<Boolean> deleteUser(@RequestParam("userId")String userId) throws Exception{
         Boolean flag = manageUserService.deleteUser(userId);
         return ApiResp.ifResponse(flag,flag, ResultCode.COMMON_FAIL);
     }
 
     /**
      * 获取用户列表
-     * @param userName
+     * @param keyword
      * @param pageNum
      * @param size
      * @return
      */
     @GetMapping("/listUsers")
-    public ApiResp<RPage<User>> listUsers(@RequestParam("userName")String userName,
+    public ApiResp<RPage<User>> listUsers(@RequestParam("keyword")String keyword,
                                           @RequestParam("pageNum")Integer pageNum,
                                           @RequestParam("size")Integer size) throws Exception{
-        RPage<User> userRPage = manageUserService.getUserList(userName, pageNum, size);
+        RPage<User> userRPage = manageUserService.getUserList(keyword, pageNum, size);
         return ApiResp.success(userRPage);
     }
 
     /**
      * 分页获取该用户的子用户
      * @param userId
+     * @param keyword
      * @param pageNum
      * @param size
      * @return
      * @throws Exception
      */
     @GetMapping("/listSubUsers")
-    public ApiResp<RPage<User>> listSubUsers(@RequestParam("userId")Long userId,
+    public ApiResp<RPage<User>> listSubUsers(@RequestParam("userId")String userId,
+                                             @RequestParam("keyword")String keyword,
                                              @RequestParam("pageNum")Integer pageNum,
                                              @RequestParam("size")Integer size) throws Exception{
-        RPage<User> userRPage = manageUserService.getSubUsers(userId, pageNum, size);
+        RPage<User> userRPage = manageUserService.getSubUsers(userId, keyword, pageNum, size);
         return ApiResp.success(userRPage);
     }
+
 }

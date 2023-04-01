@@ -12,8 +12,8 @@
     <select id="selectAllCount" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM bucket;
     </select>
-    <select id="getBucketListById" resultType="ccw.serviceinnovation.common.entity.Bucket">
-        SELECT * FROM bucket WHERE user_id = #{userId}
+    <select id="getBucketListByKeyword" resultType="ccw.serviceinnovation.common.entity.Bucket">
+        SELECT * FROM bucket WHERE user_id = #{longKeyword} OR `name` like concat('%',#{keyword},'%')
         <if test="offset != null and size != null">
             LIMIT ${offset}, ${size}
         </if>

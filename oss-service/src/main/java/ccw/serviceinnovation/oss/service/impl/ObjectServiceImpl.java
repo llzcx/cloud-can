@@ -18,10 +18,7 @@ import ccw.serviceinnovation.oss.manager.consistenthashing.ConsistentHashing;
 import ccw.serviceinnovation.oss.manager.redis.ChunkRedisService;
 import ccw.serviceinnovation.oss.manager.redis.NorDuplicateRemovalService;
 import ccw.serviceinnovation.oss.manager.redis.ObjectStateRedisService;
-import ccw.serviceinnovation.oss.mapper.BackupMapper;
-import ccw.serviceinnovation.oss.mapper.BucketMapper;
-import ccw.serviceinnovation.oss.mapper.ColdStorageMapper;
-import ccw.serviceinnovation.oss.mapper.OssObjectMapper;
+import ccw.serviceinnovation.oss.mapper.*;
 import ccw.serviceinnovation.oss.pojo.bo.BlockTokenBo;
 import ccw.serviceinnovation.oss.pojo.bo.ChunkBo;
 import ccw.serviceinnovation.oss.pojo.vo.ObjectStateVo;
@@ -62,10 +59,10 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
     /**
      * 服务消费者
      */
-    @DubboReference(version = "1.0.0", group = "object")
+    @DubboReference(version = "1.0.0", group = "object",check = false)
     private StorageObjectService storageObjectService;
 
-    @DubboReference(version = "1.0.0", group = "temp")
+    @DubboReference(version = "1.0.0", group = "temp",check = false)
     private StorageTempObjectService storageTempObjectService;
 
     @Autowired
@@ -90,6 +87,12 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
 
     @Autowired
     BackupMapper backupMapper;
+
+    @Autowired
+    ObjectTagMapper objectTagMapper;
+
+    @Autowired
+    ObjectTagObjectMapper objectTagObjectMapper;
 
 
     @Override
@@ -366,6 +369,12 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
             //删除元数据
             ossObjectMapper.delete(MPUtil.queryWrapperEq("name", ossObject.getName(), "bucket_id", ossObject.getBucketId()));
 
+            //删除标签
+            List<ObjectTagObject> tagObjects = objectTagObjectMapper.selectList(MPUtil.queryWrapperEq("object_id", ossObject.getId()));
+            for (ObjectTagObject tagObject : tagObjects) {
+                objectTagMapper.delete(MPUtil.queryWrapperEq("id",tagObject.getTagId()));
+            }
+            objectTagObjectMapper.delete(MPUtil.queryWrapperEq("object_id", ossObject.getId()));
         }
         return true;
     }

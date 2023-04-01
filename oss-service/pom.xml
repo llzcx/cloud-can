@@ -215,6 +215,13 @@
             <version>4.7.0</version>
         </dependency>
 
+        <!-- rocketmq.common       -->
+        <dependency>
+            <groupId>org.apache.rocketmq</groupId>
+            <artifactId>rocketmq-common</artifactId>
+            <version>4.7.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -237,7 +244,7 @@
                     </execution>
                 </executions>
             </plugin>
-            
+
 
             <!-- docker插件 -->
             <plugin>

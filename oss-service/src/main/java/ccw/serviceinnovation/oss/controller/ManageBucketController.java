@@ -3,6 +3,7 @@ package ccw.serviceinnovation.oss.controller;
 import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.request.ApiResp;
 import ccw.serviceinnovation.common.request.ResultCode;
+import ccw.serviceinnovation.oss.pojo.vo.BucketVo;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import ccw.serviceinnovation.oss.service.IManageBucketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,17 +25,17 @@ public class ManageBucketController {
     /**
      * 获取bucket列表
      * 1-分页（无筛选）
-     * 2-根据用户Id筛选
-     * @param userId 代查找用户的Id
+     * 2-根据用户名、用户ID筛选
+     * @param keyword
      * @param pageNum
      * @param size
      * @return
      */
     @GetMapping("/listBuckets")
-    public ApiResp<RPage<Bucket>> listBuckets(@RequestParam("userId") Long userId,
-                                              @RequestParam("pageNum")Integer pageNum,
-                                              @RequestParam("size")Integer size){
-        RPage<Bucket> bucketRPage = manageBucketService.getBucketList(userId,pageNum,size);
+    public ApiResp<RPage<BucketVo>> listBuckets(@RequestParam("keyword") String keyword,
+                                                @RequestParam("pageNum")Integer pageNum,
+                                                @RequestParam("size")Integer size){
+        RPage<BucketVo> bucketRPage = manageBucketService.getBucketList(keyword,pageNum,size);
         return ApiResp.success(bucketRPage);
     }
 

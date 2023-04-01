@@ -34,7 +34,6 @@ public class BucketController {
     IBucketService bucketService;
 
 
-
     /**
      * 获取桶信息
      * @param bucketName 桶名字

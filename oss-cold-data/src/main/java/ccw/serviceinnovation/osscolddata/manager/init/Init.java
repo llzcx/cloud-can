@@ -17,12 +17,6 @@ import ccw.serviceinnovation.osscolddata.constant.OssColdDataConstant;
 import ccw.serviceinnovation.osscolddata.controller.OssColdController;
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.sofa.jraft.error.RemotingException;
-import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
-import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
-import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
-import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
-import org.apache.rocketmq.common.message.MessageExt;
-import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
 import service.raft.client.RaftRpcRequest;
 import service.raft.rpc.DataGrpcHelper;
 
