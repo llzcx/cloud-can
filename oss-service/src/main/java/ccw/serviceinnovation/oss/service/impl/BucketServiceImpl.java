@@ -6,10 +6,10 @@ import ccw.serviceinnovation.common.constant.StorageTypeEnum;
 import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.entity.User;
 import ccw.serviceinnovation.oss.common.util.MPUtil;
-import ccw.serviceinnovation.oss.mapper.BucketMapper;
-import ccw.serviceinnovation.oss.mapper.UserMapper;
+import ccw.serviceinnovation.oss.mapper.*;
 import ccw.serviceinnovation.oss.pojo.dto.AddBucketDto;
 import ccw.serviceinnovation.oss.service.IBucketService;
+import ccw.serviceinnovation.oss.service.IBucketTagService;
 import ccw.serviceinnovation.oss.service.IObjectService;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -42,6 +42,15 @@ public class BucketServiceImpl extends ServiceImpl<BucketMapper, Bucket> impleme
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private UserFavoriteMapper userFavoriteMapper;
+
+    @Autowired
+    private BucketTagMapper bucketTagMapper;
+
+    @Autowired
+    private BucketTagBucketMapper bucketTagBucketMapper;
+
 
     @Override
     public Bucket createBucket(AddBucketDto addBucketDto, Long userId)  {
@@ -65,8 +74,14 @@ public class BucketServiceImpl extends ServiceImpl<BucketMapper, Bucket> impleme
 
     @Override
     public Boolean deleteBucket(String bucketName) throws Exception {
+        Long bucketId = bucketMapper.selectBucketIdByName(bucketName);
+
         bucketMapper.delete(MPUtil.queryWrapperEq("name", bucketName));
         objectService.deleteObjects(bucketName);
+
+        userFavoriteMapper.delete(MPUtil.queryWrapperEq("bucket_id",bucketId));
+        bucketTagBucketMapper.deleteTagByBucketId(bucketId);
+        bucketTagMapper.delete(MPUtil.queryWrapperEq("bucket_id",bucketId));
         return true;
     }
 

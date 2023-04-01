@@ -15,10 +15,7 @@ import ccw.serviceinnovation.oss.manager.consistenthashing.ConsistentHashing;
 import ccw.serviceinnovation.oss.manager.redis.ChunkRedisService;
 import ccw.serviceinnovation.oss.manager.redis.NorDuplicateRemovalService;
 import ccw.serviceinnovation.oss.manager.redis.ObjectStateRedisService;
-import ccw.serviceinnovation.oss.mapper.BackupMapper;
-import ccw.serviceinnovation.oss.mapper.BucketMapper;
-import ccw.serviceinnovation.oss.mapper.ColdStorageMapper;
-import ccw.serviceinnovation.oss.mapper.OssObjectMapper;
+import ccw.serviceinnovation.oss.mapper.*;
 import ccw.serviceinnovation.oss.pojo.bo.BlockTokenBo;
 import ccw.serviceinnovation.oss.pojo.bo.ChunkBo;
 import ccw.serviceinnovation.oss.pojo.vo.ObjectStateVo;
@@ -82,6 +79,12 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
 
     @Autowired
     BackupMapper backupMapper;
+
+    @Autowired
+    ObjectTagMapper objectTagMapper;
+
+    @Autowired
+    ObjectTagObjectMapper objectTagObjectMapper;
 
 
 
@@ -404,6 +407,9 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
             //删除元数据
             ossObjectMapper.delete(MPUtil.queryWrapperEq("name", ossObject.getName(), "bucket_id", ossObject.getBucketId()));
 
+            //删除对象标签
+            objectTagObjectMapper.deleteTagByObjectId(ossObject.getId());
+            objectTagMapper.delete(MPUtil.queryWrapperEq("bucket_id",bucketId));
         }
         return true;
     }

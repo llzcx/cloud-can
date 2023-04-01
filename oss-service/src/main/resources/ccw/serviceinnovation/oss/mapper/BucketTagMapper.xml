@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ccw.serviceinnovation.oss.mapper.BucketTagMapper">
+
+    <insert id="insertTag">
+        INSERT INTO bucket_tag (`key` ,`value`) VALUES (#{key}, #{value})
+    </insert>
+
+    <select id="getBucketTag" resultType="ccw.serviceinnovation.common.entity.BucketTag">
+        SELECT * FROM bucket_tag WHERE id = (SELECT tag_id FROM bucket_tag_bucket WHERE bucket_id = #{bucketId})
+    </select>
+</mapper>

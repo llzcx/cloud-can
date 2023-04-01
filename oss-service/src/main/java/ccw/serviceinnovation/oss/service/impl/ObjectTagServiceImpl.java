@@ -54,7 +54,7 @@ public class ObjectTagServiceImpl extends ServiceImpl<ObjectTagMapper, ObjectTag
     public Boolean deleteObjectTag(String bucketName, String objectName, Long tagId) {
         Long objectId = ossObjectMapper.selectObjectIdByName(bucketName, objectName);
         int delete = objectTagObjectMapper.delete(MPUtil.queryWrapperEq("object_id", objectId, "tag_id", tagId));
-        int deleteTag = objectTagMapper.delete(MPUtil.queryWrapperEq("tag_id", tagId));
+        int deleteTag = objectTagMapper.delete(MPUtil.queryWrapperEq("id", tagId));
         return delete>0 && deleteTag>0;
     }
 
@@ -62,25 +62,36 @@ public class ObjectTagServiceImpl extends ServiceImpl<ObjectTagMapper, ObjectTag
      * 添加对象标签
      * @param bucketName
      * @param objectName
-     * @param key
-     * @param value
+     * @param objectTags
      * @return
      */
     @Override
-    public List<ObjectTag> putObjectTag(String bucketName, String objectName, String key, String value) {
+    public List<ObjectTag> putObjectTag(String bucketName, String objectName, List<ObjectTag> objectTags) {
         Long objectId = ossObjectMapper.selectObjectIdByName(bucketName, objectName);
 
-        ObjectTag objectTag = new ObjectTag();
-        objectTag.setKey(key);
-        objectTag.setValue(value);
-        objectTagMapper.insertTag(objectTag);
+        List<ObjectTag> objectTagsOld = getObjectTag(bucketName, objectName);
 
-        ObjectTagObject objectTagObject = new ObjectTagObject();
-        objectTagObject.setObjectId(objectId);
-        objectTagObject.setTagId(objectTag.getId());
-        objectTagObjectMapper.insert(objectTagObject);
+        for (ObjectTag objectTag : objectTags) {
 
-        List<ObjectTag> objectTags = getObjectTag(bucketName, objectName);
-        return objectTags;
+            //判断是否有相同的key
+            for (ObjectTag objectTagOld : objectTagsOld) {
+                if (objectTagOld.getKey().equals(objectTag.getKey())){
+                    return null;
+                }
+            }
+
+            ObjectTag newObjectTag = new ObjectTag();
+            newObjectTag.setKey(objectTag.getKey());
+            newObjectTag.setValue(objectTag.getValue());
+            objectTagMapper.insertTag(newObjectTag);
+
+            ObjectTagObject objectTagObject = new ObjectTagObject();
+            objectTagObject.setObjectId(objectId);
+            objectTagObject.setTagId(newObjectTag.getId());
+            objectTagObjectMapper.insert(objectTagObject);
+        }
+
+        List<ObjectTag> newObjectTags = getObjectTag(bucketName, objectName);
+        return newObjectTags;
     }
 }

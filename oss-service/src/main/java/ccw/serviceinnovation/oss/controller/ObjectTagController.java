@@ -41,15 +41,15 @@ public class ObjectTagController {
      * 1-判断是否有更改标签权限
      * 2-判断key是否相同
      * 3-添加
+     * 可同时添加多个标签
      * @param bucketName
      * @param objectName
-     * @param key
-     * @param value
+     * @param objectTags
      * @return
      */
     @PutMapping("/putObjectTag")
-    public ApiResp<List<ObjectTag>> putObjectTag(@RequestParam("bucketName")String bucketName, @RequestParam("objectName") String objectName, @RequestParam("key") String key, @RequestParam("value") String value){
-        objectTagService.putObjectTag(bucketName,objectName,key,value);
+    public ApiResp<List<ObjectTag>> putObjectTag(@RequestParam("bucketName")String bucketName, @RequestParam("objectName") String objectName, @RequestBody List<ObjectTag> objectTags){
+        objectTagService.putObjectTag(bucketName,objectName,objectTags);
         return ApiResp.success();
     }
 
