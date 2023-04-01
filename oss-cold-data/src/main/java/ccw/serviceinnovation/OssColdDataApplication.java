@@ -10,7 +10,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  */
 @SpringBootApplication(scanBasePackages={"ccw.serviceinnovation.osscolddata.*"})
 public class OssColdDataApplication {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         ConfigurableApplicationContext cac = SpringApplication.run(OssColdDataApplication.class, args);
         Init.fileInit();
         Init.initFileKey();

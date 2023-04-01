@@ -32,6 +32,7 @@ import com.alipay.sofa.jraft.util.ThreadPoolUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,8 +41,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static ccw.serviceinnovation.ossdata.constant.FilePrefixConstant.FILE_NOR;
-import static ccw.serviceinnovation.ossdata.manager.raft.server.DataOperation.GET;
-import static ccw.serviceinnovation.ossdata.manager.raft.server.DataOperation.SAVE;
+import static ccw.serviceinnovation.ossdata.manager.raft.server.DataOperation.*;
 
 
 /**
@@ -108,6 +108,7 @@ public class DataStateMachine extends StateMachineAdapter {
             if (dataOperation != null) {
                 LOG.info("此次操作:{}",dataOperation.getOp());
                 String etag = dataOperation.getEtag();
+                String filePath = OssDataConstant.POSITION +"/"+FILE_NOR+etag;
                 switch (dataOperation.getOp()) {
                     case GET:
                         //返回HTTP接口位置
@@ -117,7 +118,7 @@ public class DataStateMachine extends StateMachineAdapter {
                             returnData = locationVo1;
                         }else{
                             returnData = locationVo1;
-                            System.out.println("文件不存在,要求重定向");
+                            LOG.info("文件不存在,要求重定向");
                         }
                         LOG.info("Get path={} at logIndex={}", JSONObject.toJSONString(locationVo1), iter.getIndex());
                         break;
@@ -125,32 +126,29 @@ public class DataStateMachine extends StateMachineAdapter {
                         try {
                             LocationVo locationVo = dataOperation.getLocationVo();
                             //从网络地址中保存文件
-                            String filePath = OssDataConstant.POSITION +"/"+FILE_NOR+etag;
-                            System.out.println("缓存地址:"+locationVo.getPath());
+                            LOG.info("缓存地址:"+locationVo.getPath());
                             FileUtil.saveFile(locationVo.getPath(),filePath);
-                            System.out.println("同步完成!");
+                            LOG.info("同步完成!");
                             dataMap.put(etag,filePath);
                             returnData = "save ok";
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        System.out.println("状态机:"+JSONObject.toJSON(dataMap));
+                        LOG.info("状态机:"+JSONObject.toJSON(dataMap));
                         break;
+                    case DEL:
+                        //在map当中删除
+                        dataMap.remove(etag);
+                        //删除本地文件
+                        FileUtil.deleteFile(new File(filePath));
+                        returnData = "del ok";
+                        LOG.info("本地map和文件删除成功!");
                     default:
                         break;
                 }
 
                 if (closure != null) {
-                    switch (dataOperation.getOp()) {
-                        case GET:
-                            closure.success(returnData);
-                            break;
-                        case SAVE:
-                            closure.success("save ok!");
-                            break;
-                        default:
-                            break;
-                    }
+                    closure.success(returnData);
                     closure.run(Status.OK());
                 }
             }

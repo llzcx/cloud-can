@@ -9,6 +9,7 @@ import ccw.serviceinnovation.oss.common.util.ControllerUtils;
 import ccw.serviceinnovation.oss.manager.authority.OssApi;
 import ccw.serviceinnovation.oss.pojo.bo.BlockTokenBo;
 import ccw.serviceinnovation.oss.pojo.bo.GetObjectBo;
+import ccw.serviceinnovation.oss.pojo.vo.ObjectStateVo;
 import ccw.serviceinnovation.oss.pojo.vo.ObjectVo;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import ccw.serviceinnovation.oss.service.IObjectService;
@@ -46,6 +47,17 @@ public class OssObjectController {
         return ApiResp.ifResponse(object!=null,object,ResultCode.COMMON_FAIL);
     }
 
+    /**
+     * 从桶中获取一个对象的状态
+     * param objectId 对象ID
+     * @return 返回添加的桶对象
+     */
+    @GetMapping("/getState")
+    @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_READ,name = "getState",description = "从桶中获取一个对象的状态")
+    public ApiResp<OssObject> getState(@RequestParam("objectName") String objectName, @RequestParam("bucketName") String bucketName) throws Exception{
+        ObjectStateVo state = objectService.getState(bucketName, objectName);
+        return ApiResp.ifResponse(state!=null,state,ResultCode.COMMON_FAIL);
+    }
 
 
     /**
@@ -92,7 +104,7 @@ public class OssObjectController {
      * @throws Exception
      */
     @PostMapping("/createChunkToken")
-    @OssApi(target = AuthorityConstant.API_BUCKET,type = AuthorityConstant.API_WRITER,name = "putBigObject",description = "在桶中添加一个对象[大文件]")
+    @OssApi(target = AuthorityConstant.API_BUCKET,type = AuthorityConstant.API_WRITER,name = "createChunkToken",description = "创建一个文件分块上传事件[大文件]")
     public ApiResp<BlockTokenBo> putBigObject(@RequestParam("bucketName") String bucketName,
                                               String objectName,
                                               String etag,

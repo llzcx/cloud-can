@@ -37,7 +37,7 @@ public interface OssObjectMapper extends BaseMapper<OssObject> {
      * @param objectName
      * @return
      */
-    OssObject selectObjectByName(@Param("bucketName")String bucketName,@Param("bucketName")String objectName);
+    OssObject selectObjectByName(@Param("bucketName")String bucketName,@Param("objectName")String objectName);
 
 
 
@@ -79,6 +79,17 @@ public interface OssObjectMapper extends BaseMapper<OssObject> {
      * @param etag
      * @return
      */
-    OssObject getOssObjectByEtag(String etag);
+    OssObject getOssObjectByEtag(@Param("etag")String etag);
+
+    /**
+     * 查找一个对象的存储状态
+     * @param bucketName
+     * @param objectName
+     * @return
+     */
+    Integer selectObjectStorageLevel(@Param("bucketName")String bucketName,@Param("objectName")String objectName);
+
+
+
 
 }

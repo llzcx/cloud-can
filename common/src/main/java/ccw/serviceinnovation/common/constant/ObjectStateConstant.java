@@ -6,14 +6,26 @@ package ccw.serviceinnovation.common.constant;
 
 public interface ObjectStateConstant {
 
+
+    /**
+     * 正常访问
+     */
+    Integer NOR = 1;
+
+
+    /**
+     * 已经归档
+     */
+    Integer FREEZE = 2;
+
     /**
      * 正在归档
      */
-    String FREEZE = "FREEZE";
+    Integer FREEZING = 3;
 
 
     /**
      * 正在解冻
      */
-    String UNFREEZE = "UNFREEZE";
+    Integer UNFREEZING = 4;
 }

@@ -4,7 +4,6 @@ import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.entity.User;
 import ccw.serviceinnovation.oss.common.util.MPUtil;
 import ccw.serviceinnovation.common.constant.AuthorityConstant;
-import ccw.serviceinnovation.common.constant.BucketACLEnum;
 import ccw.serviceinnovation.common.constant.ObjectACLEnum;
 import ccw.serviceinnovation.oss.mapper.BucketMapper;
 
@@ -13,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 /**
  * 提供bucketACL的服务
@@ -29,10 +29,6 @@ public class BucketAclService {
     BucketMapper bucketMapper;
 
 
-    public BucketACLEnum getBucketAclType(String bucketId){
-        Bucket bucket = bucketMapper.selectById(bucketId);
-        return BucketACLEnum.getEnum(bucket.getBucketAcl());
-    }
 
     /**
      * 检查bucketACL
@@ -49,19 +45,26 @@ public class BucketAclService {
             Boolean read = apiType.equals(AuthorityConstant.API_READ) || apiType.equals(AuthorityConstant.API_LIST);
             //目标接口是否为写接口
             Boolean write = apiType.equals(AuthorityConstant.API_WRITER);
-            Boolean mainUserPower = user.getParent() == null || (user.getParent().equals(bucket.getUserId()));
+            //是这个桶的主人
+            Boolean mainUserPower = Objects.equals(user.getParent(), bucket.getUserId());
+            //是否为该桶主人的子用户
             Boolean ramUserPower = user.getParent() != null && (user.getParent().equals(bucket.getUserId()));
             if (bucketAcl.equals(ObjectACLEnum.PRIVATE.getCode())) {
-                //私有权限->只有user本身和RAM用户可以访问
+                //私有权限->只有user本身可以访问
                 return mainUserPower;
             } else if (bucketAcl.equals(ObjectACLEnum.PUBLIC_READ.getCode())) {
-                return read;
+                //公共读->是这个桶的主人 或者 不论身份,只需要是读接口即可
+                return mainUserPower || read;
             }if (bucketAcl.equals(ObjectACLEnum.RAM_READ.getCode())) {
-                return read && ramUserPower;
+                //RAM读->是这个桶的主人 或者 身份是RAM,只需要是读接口即可
+                return mainUserPower || (ramUserPower && read);
             } else if (bucketAcl.equals(ObjectACLEnum.PUBLIC_READ_WRITE.getCode())) {
-                return read || write;
+                //公共可读可写
+                //直接返回true即可
+                return true;
             }else if (bucketAcl.equals(ObjectACLEnum.RAM_READ_WRITE.getCode())) {
-                return ramUserPower && (read || write);
+                //RAM用户可读可写
+                return mainUserPower || ramUserPower;
             }
         }
         return false;
@@ -74,7 +77,7 @@ public class BucketAclService {
                 bucket = bucketMapper.selectById(Long.valueOf(request.getParameter("bucketId")));
                 break;
             } else if ("bucketName".equals(param)) {
-                bucket = bucketMapper.selectOne(MPUtil.queryWrapperEq("name", request.getParameter("bucketName"),"id",1));
+                bucket = bucketMapper.selectBucketByName(request.getParameter("bucketName"));
                 break;
             }
         }

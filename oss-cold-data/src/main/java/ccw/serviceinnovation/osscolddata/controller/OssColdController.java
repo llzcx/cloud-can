@@ -1,29 +1,16 @@
 package ccw.serviceinnovation.osscolddata.controller;
-import ccw.serviceinnovation.common.constant.RedisConstant;
-import ccw.serviceinnovation.common.entity.LocationVo;
-import ccw.serviceinnovation.common.exception.OssException;
-import ccw.serviceinnovation.common.nacos.TrackerService;
-import ccw.serviceinnovation.common.request.ApiResp;
-import ccw.serviceinnovation.common.request.ResultCode;
+
 import ccw.serviceinnovation.common.util.file.ZipUtil;
 import ccw.serviceinnovation.common.util.http.FileUtil;
-import ccw.serviceinnovation.common.util.http.HttpUtils;
 import ccw.serviceinnovation.osscolddata.constant.OssColdDataConstant;
 import ccw.serviceinnovation.osscolddata.util.ControllerUtils;
-import ccw.serviceinnovation.osscolddata.util.RedisUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
-import service.raft.client.RaftRpcRequest;
+import org.springframework.web.bind.annotation.*;
+
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static ccw.serviceinnovation.common.constant.RedisConstant.OBJECT_STATE;
-import static ccw.serviceinnovation.common.constant.RedisConstant.OSS;
 import static ccw.serviceinnovation.osscolddata.constant.FilePrefixConstant.FILE_COLD;
 import static ccw.serviceinnovation.osscolddata.constant.FilePrefixConstant.FILE_COLD_TMP;
 
@@ -36,14 +23,12 @@ public class OssColdController {
 
     public static ConcurrentHashMap<String,String> data = new ConcurrentHashMap<>();
 
-
-
     /**
      * oss-service调用此接口 将oss-data 数据归档 oss-cold-data
      * @param etag
      * @return
      */
-    @PostMapping("/freeze/{ip}/{port}/{etag}")
+    @GetMapping("/freeze/{ip}/{port}/{etag}")
     public void freeze(@PathVariable String etag, HttpServletResponse response, @PathVariable String ip, @PathVariable String port) throws Exception{
         //将文件下载
         FileUtil.saveFile("http://"+ip+":"+port+"/group/"+etag,OssColdDataConstant.POSITION+"\\"+ FILE_COLD_TMP +etag);
@@ -58,7 +43,7 @@ public class OssColdController {
      * @param etag
      * @return
      */
-    @PostMapping("/unfreeze/{etag}/{name}")
+    @GetMapping("/unfreeze/{etag}/{name}")
     public void unfreeze(@PathVariable String etag, HttpServletResponse response, @PathVariable String name) throws Exception{
         //将文件解压缩
         File oldFile = new File(OssColdDataConstant.POSITION+"\\"+ FILE_COLD +etag);
@@ -74,7 +59,7 @@ public class OssColdController {
     }
 
     @DeleteMapping("/delete/{etag}")
-    public void unfreeze(@PathVariable String etag, HttpServletResponse response) throws Exception{
+    public void unfreeze(@PathVariable String etag, HttpServletResponse response) {
         //将文件解压缩
         File oldFile = new File(OssColdDataConstant.POSITION+"\\"+ FILE_COLD +etag);
         oldFile.delete();

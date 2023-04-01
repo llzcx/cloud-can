@@ -110,16 +110,18 @@ public class RequestInterceptor implements HandlerInterceptor {
         }
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         Method method = handlerMethod.getMethod();
+        log.info("methodName:{}",method.getName());
         OssApi ossApi = method.getAnnotation(OssApi.class);
         LocalVariableTableParameterNameDiscoverer u = new LocalVariableTableParameterNameDiscoverer();
         //获取接口的方法名列表
         String[] params = u.getParameterNames(method);
-        if(ossApi!=null && params!=null && params.length != 0){
-            //目标接口含有ossApi注解,并且接口含有参数
+        if(ossApi!=null && params!=null && params.length != 0){          //目标接口含有ossApi注解,并且接口含有参数
+            log.info("API_BUCKET");
             String type = ossApi.type();
             //判断目标接口是针对桶 / 对象而言的
             if(ossApi.target().equals(API_BUCKET)){
                 Bucket bucket = bucketAclService.getBucketFromParam(request, params);
+                log.info("bucket is {}",bucket.getName());
                 if(bucket==null) {
                     ControllerUtils.writeReturn(response, ResultCode.BUCKET_IS_DEFECT);
                     return false;
@@ -127,30 +129,34 @@ public class RequestInterceptor implements HandlerInterceptor {
                 /*-------------------验证bucketAcl-------------------*/
                 return ControllerUtils.writeIfReturn(response, ResultCode.BUCKET_ACL_BLOCK,
                         bucketAclService.checkBucketAcl(user, type, bucket));
-            }
-            else if(ossApi.target().equals(API_OBJECT)){
+            } else if(ossApi.target().equals(API_OBJECT)){
+                log.info("API_OBJECT");
                 OssObject ossObject = objectAclService.getObjectFromParam(request, params);
+                log.info("object is {}",ossObject.getName());
                 if(ossObject==null){
                     ControllerUtils.writeReturn(response, ResultCode.OBJECT_IS_DEFECT);
                     return false;
                 }
                 Bucket bucket = bucketMapper.selectById(ossObject.getBucketId());
-                if(bucket==null) {
-                    ControllerUtils.writeReturn(response, ResultCode.BUCKET_IS_DEFECT);
-                    return false;
-                }
                 /*-------------------判断bucketPolicy-------------------*/
                 String accessPath = bucket.getName()+"/"+ossObject.getName();
                 Boolean flag = bucketPolicyService.check(user.getId(), bucket.getId(),accessPath,type);
                 if(flag != null){
+                    //有允许策略但没有拒绝侧类直接放过,有拒绝策略直接拒绝
                     return ControllerUtils.writeIfReturn(response, ResultCode.BUCKET_POLICY_BLOCK,flag);
                 }
                 /*-------------------验证objectAcl-------------------*/
                 return ControllerUtils.writeIfReturn(response, ResultCode.OBJECT_ACL_BLOCK,
                         objectAclService.checkObjectAcl(bucket,user, ossApi.type(), ossObject));
+            }else{
+                //针对其他(不是对象 或者 桶)而言
+                return true;
             }
+        }else{
+            //目标接口不含有ossApi注解,并且接口含有参数
+            return true;
         }
-        return true;
+
     }
 
 

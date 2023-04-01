@@ -4,6 +4,7 @@ package ccw.serviceinnovation.common.constant;
 import static ccw.serviceinnovation.common.constant.AuthorityConstant.*;
 
 /**
+ * bucketPolicy的操作种类
  * @author 陈翔
  */
 public enum AuthorizeOperationEnum {

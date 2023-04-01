@@ -10,5 +10,13 @@ import lombok.Data;
 public class ObjectStateVo {
     private String bucketName;
     private String objectName;
+    /**
+     * 是否可以正常访问
+     */
+    private Boolean normal;
+
+    /**
+     * 当前的状态
+     */
     private String state;
 }

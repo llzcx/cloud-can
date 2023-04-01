@@ -1,16 +1,13 @@
 package ccw.serviceinnovation.oss.service.impl;
 
-import ccw.serviceinnovation.common.constant.FileTypeConstant;
-import ccw.serviceinnovation.common.constant.ObjectACLEnum;
-import ccw.serviceinnovation.common.constant.ObjectStateConstant;
-import ccw.serviceinnovation.common.constant.StorageTypeEnum;
+import ccw.serviceinnovation.common.constant.*;
 import ccw.serviceinnovation.common.entity.*;
 import ccw.serviceinnovation.common.entity.bo.ColdMqMessage;
 import ccw.serviceinnovation.common.exception.OssException;
-import ccw.serviceinnovation.common.nacos.Host;
 import ccw.serviceinnovation.common.nacos.TrackerService;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.common.util.hash.QETag;
+import ccw.serviceinnovation.common.util.object.ObjectUtil;
 import ccw.serviceinnovation.oss.common.InitApplication;
 import ccw.serviceinnovation.oss.common.util.MPUtil;
 import ccw.serviceinnovation.oss.constant.OssApplicationConstant;
@@ -18,17 +15,18 @@ import ccw.serviceinnovation.oss.manager.consistenthashing.ConsistentHashing;
 import ccw.serviceinnovation.oss.manager.redis.ChunkRedisService;
 import ccw.serviceinnovation.oss.manager.redis.NorDuplicateRemovalService;
 import ccw.serviceinnovation.oss.manager.redis.ObjectStateRedisService;
-import ccw.serviceinnovation.oss.mapper.*;
+import ccw.serviceinnovation.oss.mapper.BackupMapper;
+import ccw.serviceinnovation.oss.mapper.BucketMapper;
+import ccw.serviceinnovation.oss.mapper.ColdStorageMapper;
+import ccw.serviceinnovation.oss.mapper.OssObjectMapper;
 import ccw.serviceinnovation.oss.pojo.bo.BlockTokenBo;
 import ccw.serviceinnovation.oss.pojo.bo.ChunkBo;
 import ccw.serviceinnovation.oss.pojo.vo.ObjectStateVo;
 import ccw.serviceinnovation.oss.pojo.vo.ObjectVo;
-import ccw.serviceinnovation.oss.pojo.vo.OssObjectVo;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import ccw.serviceinnovation.oss.service.IObjectService;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.alipay.sofa.jraft.rhea.storage.StorageType;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -39,13 +37,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import service.StorageObjectService;
 import service.StorageTempObjectService;
 import service.bo.FilePrehandleBo;
 import service.raft.client.RaftRpcRequest;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+
 
 /**
  * @author 陈翔
@@ -55,14 +53,11 @@ import java.util.*;
 @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> implements IObjectService {
 
-
     /**
      * 服务消费者
      */
-    @DubboReference(version = "1.0.0", group = "object",check = false)
-    private StorageObjectService storageObjectService;
 
-    @DubboReference(version = "1.0.0", group = "temp",check = false)
+    @DubboReference(version = "1.0.0", group = "temp")
     private StorageTempObjectService storageTempObjectService;
 
     @Autowired
@@ -88,32 +83,39 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
     @Autowired
     BackupMapper backupMapper;
 
-    @Autowired
-    ObjectTagMapper objectTagMapper;
-
-    @Autowired
-    ObjectTagObjectMapper objectTagObjectMapper;
 
 
     @Override
     public ObjectStateVo getState(String bucketName, String objectName) {
-        OssObject ossObject = ossObjectMapper.selectObjectByName(bucketName,objectName);
-
-        return null;
+        ObjectStateVo objectStateVo = new ObjectStateVo();
+        Integer state = objectStateRedisService.getState(bucketName, objectName);
+        if(ObjectStateConstant.FREEZE.equals(state)){
+            objectStateVo.setNormal(false);
+            objectStateVo.setState("已经归档");
+        }if(ObjectStateConstant.NOR.equals(state)){
+            objectStateVo.setNormal(true);
+            objectStateVo.setState("正常");
+        }else if(ObjectStateConstant.UNFREEZING.equals(state)){
+            objectStateVo.setNormal(false);
+            objectStateVo.setState("解冻中");
+        }else if(ObjectStateConstant.FREEZING.equals(state)){
+            objectStateVo.setNormal(false);
+            objectStateVo.setState("归档中");
+        }
+        return objectStateVo;
     }
 
     @Override
     public Boolean backup(String sourceBucketName,String targetBucketName,String objectName,String newObjectName) {
         String backupObjectName;
         if(newObjectName==null){
-            backupObjectName = newObjectName;
+            backupObjectName = null;
         }else{
             backupObjectName = "backupData-"+sourceBucketName+"-"+objectName;
         }
-
-        OssObject SourceOssObject = ossObjectMapper.selectObjectByName(sourceBucketName, objectName);
+        OssObject sourceOssObject = ossObjectMapper.selectObjectByName(sourceBucketName, objectName);
         Long id = bucketMapper.selectBucketIdByName(targetBucketName);
-        String etag = SourceOssObject.getEtag();
+        String etag = sourceOssObject.getEtag();
         //引用次数+1
         String group = norDuplicateRemovalService.getGroup(etag);
         norDuplicateRemovalService.save(etag,group);
@@ -130,11 +132,11 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
         ossObject.setIsFolder(false);
         ossObject.setObjectAcl(ObjectACLEnum.DEFAULT.getCode());
         ossObject.setParent(null);
-        ossObject.setSize(SourceOssObject.getSize());
+        ossObject.setSize(sourceOssObject.getSize());
         ossObject.setSecret(null);
         ossObjectMapper.insert(ossObject);
         Backup backup = new Backup();
-        backup.setSourceObjectId(SourceOssObject.getId());
+        backup.setSourceObjectId(sourceOssObject.getId());
         backup.setTargetObjectId(ossObject.getId());
         backup.setCreateTime(time);
         backupMapper.insert(backup);
@@ -144,6 +146,9 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
     @Override
     public Boolean backupRecovery(String bucketName,String objectName) {
         Backup backups = backupMapper.selectBackup(bucketName, objectName);
+        if(backups==null){
+            throw new OssException(ResultCode.BACKUP_DATA_NULL);
+        }
         Long targetObjectId = backups.getTargetObjectId();
         OssObject sourceOssObject = ossObjectMapper.selectById(backups.getSourceObjectId());
         String sourceGroup = norDuplicateRemovalService.getGroup(sourceOssObject.getEtag());
@@ -165,11 +170,12 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
         OssObject ossObject = ossObjectMapper.selectObjectByName(bucketName,objectName);
         String group = norDuplicateRemovalService.getGroup(ossObject.getEtag());
         //删除元数据
-        int delete = ossObjectMapper.delete(MPUtil.queryWrapperEq("name", ossObject.getName(), "bucket_id", ossObject.getBucketId()));
+        ossObjectMapper.deleteById(ossObject.getId());
         //删除真实数据
         if(norDuplicateRemovalService.del(ossObject.getEtag())==0){
             RaftRpcRequest.RaftRpcRequestBo leader = RaftRpcRequest.getLeader(OssApplicationConstant.NACOS_SERVER_ADDR,group);
             RaftRpcRequest.del(leader.getCliClientService(), leader.getPeerId(), ossObject.getEtag());
+            log.info("对象{}删除成功",bucketName+"/"+objectName);
         }
         return true;
     }
@@ -245,6 +251,40 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
         return true;
     }
 
+    public void saveFolder(Long bucketId,String objectName,Long parentId){
+        if(bucketId==null){
+            throw new OssException(ResultCode.BUCKET_IS_DEFECT);
+        }
+        String[] arr = ObjectUtil.getAllFolder(objectName);
+        if(arr!=null){
+            StringBuilder prefixName = new StringBuilder();
+            if(parentId!=null){
+                OssObject ossObject2 = ossObjectMapper.selectById(parentId);
+                if(ossObject2==null || !ossObject2.getIsFolder()){
+                    throw new OssException(ResultCode.PARENT_ID_IS_INVALID);
+                }
+                prefixName.append(ossObject2.getName());
+            }
+            OssObject ossObject = new OssObject();
+            ossObject.setIsFolder(true);
+            ossObject.setParent(parentId);
+            ossObject.setBucketId(bucketId);
+            prefixName.append(arr[0]).append("/");
+            ossObject.setName(prefixName.toString());
+            int prefixId = ossObjectMapper.insert(ossObject);
+            for (int i = 1; i < arr.length; i++) {
+                OssObject ossObject1 = new OssObject();
+                ossObject1.setIsFolder(true);
+                ossObject1.setParent((long) prefixId);
+                ossObject1.setBucketId(bucketId);
+                prefixName = prefixName.append(arr[i]).append("/");
+                ossObject1.setName(prefixName.toString());
+                ossObject1.setBucketId(bucketId);
+                prefixId = ossObjectMapper.insert(ossObject1);
+            }
+        }
+    }
+
     @Override
     public Boolean mergeObjectChunk(String blockToken) throws Exception {
         ChunkBo chunkBo = chunkRedisService.getObjectPosition(blockToken);
@@ -313,20 +353,19 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
                 chunkRedisService.removeChunk(blockToken);
                 //删除缓存数据
                 storageTempObjectService.deleteBlockObject(blockToken);
-                // 持久化元数据
-                ossObject.setBucketId(bucketId);
-                String time = DateUtil.now();
-                ossObject.setCreateTime(time);
-                ossObject.setLastUpdateTime(time);
-                ossObject.setSize(size);
-                ossObject.setEtag(etag);
-                ossObject.setName(chunkBo.getName());
-                //storageObjectService.getExt(etag)
-                ossObject.setExt(FileTypeConstant.OTHER);
-                ossObject.setParent(parentObjectId);
+                //-----------持久化元数据-------------
+                //插入文件夹
+                saveFolder(bucketId, chunkBo.getName(),parentObjectId);
+                //真实
+                ossObject.setBucketId(bucketId);String time = DateUtil.now();ossObject.setCreateTime(time);
+                ossObject.setLastUpdateTime(time);ossObject.setSize(size);ossObject.setEtag(etag);
+                ossObject.setName(chunkBo.getName());ossObject.setParent(parentObjectId);
+                ossObject.setStorageLevel(StorageTypeEnum.STANDARD.getCode());
+                ossObject.setObjectAcl(ObjectACLEnum.DEFAULT.getCode());ossObject.setIsFolder(false);
                 Long id = ossObjectMapper.selectObjectIdByIdAndName(bucketId, ObjectName);
                 if(id!=null){
                     //存在则更新
+                    ossObject.setId(id);
                     ossObjectMapper.updateById(ossObject);
                 }else{
                     //不存在则插入
@@ -345,10 +384,6 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
         return ossObjectMapper.selectObjectByName(bucketName, objectName);
     }
 
-    @Override
-    public List<OssObjectVo> getObjectList(String bucketName) throws Exception {
-        return null;
-    }
 
 
     @Override
@@ -369,20 +404,20 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
             //删除元数据
             ossObjectMapper.delete(MPUtil.queryWrapperEq("name", ossObject.getName(), "bucket_id", ossObject.getBucketId()));
 
-            //删除标签
-            List<ObjectTagObject> tagObjects = objectTagObjectMapper.selectList(MPUtil.queryWrapperEq("object_id", ossObject.getId()));
-            for (ObjectTagObject tagObject : tagObjects) {
-                objectTagMapper.delete(MPUtil.queryWrapperEq("id",tagObject.getTagId()));
-            }
-            objectTagObjectMapper.delete(MPUtil.queryWrapperEq("object_id", ossObject.getId()));
         }
         return true;
     }
 
 
     @Override
-    public Boolean putFolder(String bucketName, String objectName, Long parentObjectId) {
-        return null;
+    public Boolean putFolder(String bucketName, String objectName, Long parentObjectId){
+        Long id = bucketMapper.selectBucketIdByName(bucketName);
+        if(id!=null){
+            saveFolder(id,objectName,parentObjectId);
+            return true;
+        }else{
+            throw new OssException(ResultCode.BUCKET_IS_DEFECT);
+        }
     }
 
     @Override
@@ -402,15 +437,18 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
     }
 
     @Override
-    public Boolean freeze(String bucketName, String objectName) throws Exception{
-        objectStateRedisService.setState(bucketName, objectName, ObjectStateConstant.FREEZE);
+    public Boolean freeze(String bucketName, String objectName) throws Exception {
+        //归档前必须处于正常状态
+        Integer state = objectStateRedisService.getState(bucketName, objectName);
+        if(!state.equals(ObjectStateConstant.NOR)){
+            throw new OssException(ResultCode.CANT_SET_STATE);
+        }
+        //设置为归档中
+        objectStateRedisService.setState(bucketName, objectName, ObjectStateConstant.FREEZING);
         OssObject ossObject = ossObjectMapper.selectObjectByName(bucketName, objectName);
         String etag = ossObject.getEtag();
-        if(!ossObject.getStorageLevel().equals(StorageTypeEnum.STANDARD.getCode())){
-            throw new OssException(ResultCode.NOT_STANDARD_STORAGE);
-        }
-        //现在需要进行归档处理,调用cold-data服务将数据下载并压缩保存
-        Message msg = new Message("Topic-freeze",
+        //现在需要进行归档处理,调用oss-cold-data服务将数据从oss-data下载并压缩保存
+        Message msg = new Message(MessageQueueConstant.TOPIC_FREEZE,
                 JSONObject.toJSONString(new ColdMqMessage(ossObject.getId(),etag)).getBytes(StandardCharsets.UTF_8));
         InitApplication.producer.send(msg);
         return true;
@@ -418,14 +456,16 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
 
     @Override
     public Boolean unfreeze(String bucketName, String objectName)throws Exception {
-        objectStateRedisService.setState(bucketName, objectName, ObjectStateConstant.UNFREEZE);
+        //解冻前必须处于已经归档状态:
+        Integer state = objectStateRedisService.getState(bucketName, objectName);
+        if(!state.equals(ObjectStateConstant.FREEZE)){
+            throw new OssException(ResultCode.CANT_SET_STATE);
+        }
+        objectStateRedisService.setState(bucketName, objectName, ObjectStateConstant.UNFREEZING);
         OssObject ossObject = ossObjectMapper.selectObjectByName(bucketName, objectName);
         String etag = ossObject.getEtag();
-        if(ossObject.getStorageLevel().equals(StorageTypeEnum.STANDARD.getCode())){
-            throw new OssException(ResultCode.STANDARD_STORAGE);
-        }
-        //现在需要进行解冻处理,调用cold-data服务将数据下载并解压缩保存
-        Message msg = new Message("Topic-unfreeze",
+        //现在需要进行解冻处理,调用oss-data服务将数据从oss-cold-data下载并解压缩保存
+        Message msg = new Message(MessageQueueConstant.TOPIC_UNFREEZE,
                 JSONObject.toJSONString(new ColdMqMessage(ossObject.getId(),etag)).getBytes(StandardCharsets.UTF_8));
         InitApplication.producer.send(msg);
         return true;
