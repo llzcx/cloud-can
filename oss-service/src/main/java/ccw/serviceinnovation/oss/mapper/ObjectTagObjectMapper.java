@@ -9,4 +9,11 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface ObjectTagObjectMapper extends BaseMapper<ObjectTagObject> {
+
+    /**
+     * 删除对象标签
+     * @param objectId
+     * @return
+     */
+    Long deleteTagByObjectId(Long objectId);
 }

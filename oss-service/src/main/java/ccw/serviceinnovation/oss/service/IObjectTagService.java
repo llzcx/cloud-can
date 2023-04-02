@@ -14,11 +14,10 @@ public interface IObjectTagService extends IService<ObjectTag> {
      * 添加对象标签
      * @param bucketName
      * @param objectName
-     * @param key
-     * @param value
+     * @param objectTags
      * @return
      */
-    List<ObjectTag> putObjectTag(String bucketName, String objectName, String key, String value);
+    List<ObjectTag> putObjectTag(String bucketName, String objectName, List<ObjectTag> objectTags);
 
     /**
      * 获取对象标签

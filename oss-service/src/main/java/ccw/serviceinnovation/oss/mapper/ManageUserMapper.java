@@ -13,13 +13,14 @@ import java.util.List;
 @Mapper
 public interface ManageUserMapper extends BaseMapper<User> {
     /**
-     * 根据用户名查询用户
+     * 查询用户
      * @param offset
      * @param size
-     * @param username
+     * @param keyword
+     * @param longKeyword
      * @return
      */
-    List<User> selectUserListByName(Integer offset, Integer size, String username);
+    List<User> selectUserListByName(Integer offset, Integer size, String keyword, Long longKeyword);
 
     /**
      * 查找所有用户
@@ -40,7 +41,9 @@ public interface ManageUserMapper extends BaseMapper<User> {
      * @param offset
      * @param size
      * @param userId
+     * @param keyword
+     * @param longKeyword
      * @return
      */
-    List<User> selectSubUsers(Integer offset, Integer size, Long userId);
+    List<User> selectSubUsers(Integer offset, Integer size, Long userId, String keyword, Long longKeyword);
 }

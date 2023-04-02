@@ -30,8 +30,9 @@ public interface ManageBucketMapper extends BaseMapper<Bucket> {
      * 根据userId分页查找Bucket
      * @param offset
      * @param size
-     * @param userId
+     * @param keyword
+     * @param longKeyword
      * @return
      */
-    List<Bucket> getBucketListById(Integer offset, Integer size, Long userId);
+    List<Bucket> getBucketListByKeyword(Integer offset, Integer size, String keyword, Long longKeyword);
 }

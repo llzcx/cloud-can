@@ -34,6 +34,6 @@ public class NetUtil {
     }
 
     public static String getIP(){
-        return "192.168.50.236";
+        return "192.168.50.35";
     }
 }

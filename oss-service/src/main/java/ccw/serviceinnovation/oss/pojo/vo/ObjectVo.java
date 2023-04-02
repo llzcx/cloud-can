@@ -14,7 +14,7 @@ import java.util.Map;
  * @author 陈翔
  */
 @Data
-public class ObjectVo {
+public class    ObjectVo {
 
     private static final long serialVersionUID = 1L;
 

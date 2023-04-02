@@ -4,7 +4,7 @@
 
 
     <select id="selectUserListByName" resultType="ccw.serviceinnovation.common.entity.User">
-        SELECT * FROM user WHERE username = #{username}
+        SELECT * FROM user WHERE username like concat('%',#{keyword},'%') OR id = #{longKeyword}
         <if test="offset != null and size != null">
             LIMIT ${offset}, ${size}
         </if>
@@ -19,7 +19,7 @@
         SELECT COUNT(*) FROM user;
     </select>
     <select id="selectSubUsers" resultType="ccw.serviceinnovation.common.entity.User">
-        SELECT * FROM user WHERE parent = #{userId}
+        SELECT * FROM user WHERE parent = #{userId} AND (id = #{longKeyword} OR username like concat('%',#{keyword},'%'))
         <if test="offset != null and size != null">
             LIMIT ${offset}, ${size}
         </if>

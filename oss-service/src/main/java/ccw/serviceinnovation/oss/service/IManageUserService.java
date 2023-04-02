@@ -16,23 +16,24 @@ public interface IManageUserService extends IService<User> {
      * @param userId
      * @return
      */
-    Boolean deleteUser(Long userId);
+    Boolean deleteUser(String userId);
 
     /**
      * 获取用户列表
-     * @param userName
+     * @param keyword
      * @param pageNum
      * @param size
      * @return
      */
-    RPage<User> getUserList(String userName, Integer pageNum, Integer size);
+    RPage<User> getUserList(String keyword, Integer pageNum, Integer size);
 
     /**
      * 获取该用户创建的子用户
      * @param userId
+     * @param keyword
      * @param pageNum
      * @param size
      * @return
      */
-    RPage<User> getSubUsers(Long userId, Integer pageNum, Integer size);
+    RPage<User> getSubUsers(String userId, String keyword, Integer pageNum, Integer size);
 }

@@ -1,18 +1,13 @@
 package ccw.serviceinnovation.oss.common;
 
+import org.apache.rocketmq.remoting.RPCHook;
 import ccw.serviceinnovation.common.nacos.Host;
 import ccw.serviceinnovation.common.nacos.TrackerService;
 import ccw.serviceinnovation.oss.constant.OssApplicationConstant;
 import ccw.serviceinnovation.oss.manager.consistenthashing.ConsistentHashing;
-import com.alipay.sofa.jraft.example.ne.NeGrpcHelper;
-import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
-import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
-import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
-import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
-import org.apache.rocketmq.common.message.MessageExt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import service.raft.rpc.DataGrpcHelper;
