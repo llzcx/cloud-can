@@ -2,6 +2,7 @@ package ccw.serviceinnovation.oss.service;
 
 import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.oss.pojo.dto.AddBucketDto;
+import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.io.IOException;
@@ -32,10 +33,13 @@ public interface IBucketService extends IService<Bucket> {
     /**
      * 获取用户的桶列表
      * @param userId 用户ID
+     * @param pageNum
+     * @param size
+     * @param key
      * @return 返回桶列表
      * @throws IOException
      */
-    List<Bucket> getBucketList(Long userId) throws IOException;
+    RPage<Bucket> getBucketList(Long userId, Integer pageNum, Integer size, String key) throws IOException;
 
 
     /**

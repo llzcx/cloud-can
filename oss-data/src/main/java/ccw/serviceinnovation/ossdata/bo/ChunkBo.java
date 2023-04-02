@@ -42,7 +42,14 @@ public class ChunkBo {
 
     private String name;
 
-    public ChunkBo(Integer currentChunk, String etag, Long userId, Long bucketId, Long size, String ip,Integer port,Long parentObjectId,String name) {
+    private String groupId;
+
+    private Integer secret;
+
+    private Integer objectAcl;
+
+    public ChunkBo(Integer currentChunk, String etag, Long userId, Long bucketId, Long size, String ip,Integer port,Long parentObjectId,Integer secret,
+                   Integer objectAcl,String name,String groupId) {
         this.currentChunk = currentChunk;
         this.etag = etag;
         this.userId = userId;
@@ -51,6 +58,9 @@ public class ChunkBo {
         this.ip = ip;
         this.port = port;
         this.parentObjectId = parentObjectId;
+        this.secret =secret;
+        this.objectAcl = objectAcl;
         this.name = name;
+        this.groupId = groupId;
     }
 }

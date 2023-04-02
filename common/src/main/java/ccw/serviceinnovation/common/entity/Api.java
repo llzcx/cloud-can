@@ -1,5 +1,7 @@
 package ccw.serviceinnovation.common.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -23,6 +25,7 @@ public class Api implements Serializable {
     /**
      * 唯一ID
      */
+    @TableId(value = "id",type = IdType.AUTO)
     private Long id;
 
     /**
@@ -34,6 +37,4 @@ public class Api implements Serializable {
      * 接口描述
      */
     private String description;
-
-
 }

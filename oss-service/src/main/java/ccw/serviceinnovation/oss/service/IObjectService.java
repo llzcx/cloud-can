@@ -38,7 +38,7 @@ public interface IObjectService extends IService<OssObject> {
      * @return
      * @throws IOException
      */
-    Boolean addSmallObject(String bucketName, String objectName, String etag, MultipartFile file,Long  parentObjectId) throws Exception;
+    Boolean addSmallObject(String bucketName, String objectName, String etag, MultipartFile file,Long  parentObjectId,Integer objectAcl) throws Exception;
 
 
     /**
@@ -68,7 +68,8 @@ public interface IObjectService extends IService<OssObject> {
      * @param size 大小
      * @return
      */
-    BlockTokenBo getBlockToken(String etag, String bucketName, String objectName, Long parentObjectId, Integer chunks, Long size);
+    BlockTokenBo getBlockToken(String etag, String bucketName, String objectName, Long parentObjectId,
+                               Integer objectAcl, Integer chunks, Long size);
 
     /**
      * 用户从一个桶当中获取一个oss对象
@@ -77,7 +78,7 @@ public interface IObjectService extends IService<OssObject> {
      * @return 返回查询到的数据
      * @throws IOException
      */
-    OssObject getObjectInfo(String bucketName, String objectName);
+    OssObjectVo getObjectInfo(String bucketName, String objectName);
 
     /**
      * 删除一个桶当中所有对象

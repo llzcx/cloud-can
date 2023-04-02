@@ -19,9 +19,9 @@ package ccw.serviceinnovation.ossdata.manager.raft.server.service;
 import ccw.serviceinnovation.common.entity.LocationVo;
 import ccw.serviceinnovation.common.util.net.NetUtil;
 import ccw.serviceinnovation.ossdata.constant.OssDataConstant;
+import ccw.serviceinnovation.ossdata.manager.raft.server.DataClosure;
 import ccw.serviceinnovation.ossdata.manager.raft.server.DataOperation;
 import ccw.serviceinnovation.ossdata.manager.raft.server.DataServer;
-import ccw.serviceinnovation.ossdata.manager.raft.server.DataClosure;
 import com.alipay.remoting.exception.CodecException;
 import com.alipay.remoting.serialization.SerializerManager;
 import com.alipay.sofa.jraft.Status;
@@ -35,10 +35,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.InetAddress;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.Objects;
 import java.util.concurrent.Executor;
 
 /**

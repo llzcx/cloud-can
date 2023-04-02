@@ -1,5 +1,7 @@
 package ccw.serviceinnovation.common.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -22,6 +24,7 @@ public class Bucket implements Serializable {
     /**
      * 桶ID
      */
+    @TableId(value = "id",type = IdType.AUTO)
     private Long id;
 
     /**
@@ -44,35 +47,24 @@ public class Bucket implements Serializable {
      */
     private String updateTime;
 
-    /**
-     * 是否开启版本控制
-     */
-    private Boolean versionControl;
 
     /**
      * 存储等级
      */
     private Integer storageLevel;
 
-    /**
-     * 图片是否需要加水印
-     */
-    private Boolean watermark;
-
-    /**
-     * 是否需要加密存储
-     */
-    private Boolean encryption;
 
     /**
      * 桶读写权限ACL
      */
     private Integer bucketAcl;
 
+
     /**
-     * 加密方式
+     * 加密存储
      */
-    private String secret;
+    private Integer secret;
+
 
 
 }

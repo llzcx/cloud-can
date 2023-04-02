@@ -1,11 +1,8 @@
 package ccw.serviceinnovation.ossdata.controller;
 
-import ccw.serviceinnovation.common.constant.FileTypeConstant;
 import ccw.serviceinnovation.common.entity.LocationVo;
 import ccw.serviceinnovation.common.exception.OssException;
 import ccw.serviceinnovation.common.request.ResultCode;
-import ccw.serviceinnovation.common.util.file.JpegCompress;
-import ccw.serviceinnovation.common.util.file.VideoCompress;
 import ccw.serviceinnovation.common.util.hash.QETag;
 import ccw.serviceinnovation.ossdata.bo.ChunkBo;
 import ccw.serviceinnovation.ossdata.constant.OssDataConstant;
@@ -13,8 +10,6 @@ import ccw.serviceinnovation.ossdata.manager.redis.ChunkRedisService;
 import ccw.serviceinnovation.ossdata.mapper.OssObjectMapper;
 import ccw.serviceinnovation.ossdata.util.ControllerUtils;
 import ccw.serviceinnovation.ossdata.util.NoStaticResourceHttpRequestHandler;
-import cn.hutool.core.io.FileTypeUtil;
-import cn.hutool.core.lang.UUID;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +17,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import service.StorageObjectService;
 import service.StorageTempObjectService;
-import service.bo.FilePrehandleBo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Base64;
 
 import static ccw.serviceinnovation.ossdata.constant.FilePrefixConstant.FILE_NOR;
 import static ccw.serviceinnovation.ossdata.constant.FilePrefixConstant.FILE_TMP_BLOCK;
@@ -80,17 +73,16 @@ public class OssObjectController {
      */
     @PostMapping("/append_file")
     public Boolean addObjectChunk(MultipartFile file, Integer chunk, String blockToken) throws Exception {
-        log.info("当前为第:{}块分片",chunk);
+        log.info("当前:{},为第:{}块分片",blockToken,chunk);
         ChunkBo chunkBo = chunkRedisService.getObjectPosition(blockToken);
         long size = chunkBo.getSize();
         int chunks = QETag.getChunks(size);
         byte[] bytes = file.getBytes();
         //向磁盘服务器存储该分块
-        storageTempObjectService.saveBlock(blockToken,size,file.getBytes(),file.getSize(),chunks,chunk);
+        storageTempObjectService.saveBlock(blockToken,size,file.getBytes(),file.getSize(),chunks,chunk,chunkBo.getSecret());
         //redis保存该分块信息
-        String blockSha1 = Base64.getEncoder().encodeToString(QETag.sha1(bytes));
-        log.info("第{}块sha1为{}",chunk,blockSha1);
-        chunkRedisService.saveChunk(blockToken,chunk, blockSha1);
+        log.info("第:{}块",chunk);
+        chunkRedisService.saveChunkBit(blockToken,chunk);
         return true;
     }
 
@@ -102,10 +94,10 @@ public class OssObjectController {
      * @throws Exception
      */
     @GetMapping("/download/{group}/{etag}")
-    public void download(String name, @PathVariable String etag, HttpServletResponse response, @PathVariable String group) throws Exception {
+    public void download(Integer secret,String name, @PathVariable String etag, HttpServletResponse response, @PathVariable String group) throws Exception {
         FileInputStream fis = new FileInputStream(OssDataConstant.POSITION +"\\"+FILE_NOR+etag);
         ControllerUtils.loadResource(response, fis,name,true,
-                null);
+                secret);
     }
 
 
@@ -133,7 +125,7 @@ public class OssObjectController {
     @GetMapping("/preview-image/{group}/{etag}")
     public void previewImage(String name, @PathVariable String etag, HttpServletResponse response, @PathVariable String group) throws Exception {
         String path = OssDataConstant.POSITION +"\\"+FILE_NOR+etag;
-        ControllerUtils.previewVideo(request,response,resourceHttpRequestHandler, path);
+        ControllerUtils.loadResource(response,new FileInputStream(path),name,false, null);
     }
 
     /**
@@ -174,7 +166,6 @@ public class OssObjectController {
     @GetMapping("/provider")
     public String provider() {
         System.out.println(OssDataConstant.PROVIDE_PORT);
-
         return OssDataConstant.PROVIDE_PORT;
     }
 

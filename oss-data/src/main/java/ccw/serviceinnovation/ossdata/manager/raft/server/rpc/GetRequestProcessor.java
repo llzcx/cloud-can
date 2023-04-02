@@ -5,7 +5,6 @@ import ccw.serviceinnovation.ossdata.manager.raft.server.service.DataService;
 import com.alipay.sofa.jraft.Status;
 import com.alipay.sofa.jraft.rpc.RpcContext;
 import com.alipay.sofa.jraft.rpc.RpcProcessor;
-import service.raft.request.DelRequest;
 import service.raft.request.GetRequest;
 
 /**

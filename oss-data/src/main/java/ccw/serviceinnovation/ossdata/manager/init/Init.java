@@ -3,23 +3,20 @@ package ccw.serviceinnovation.ossdata.manager.init;
 import ccw.serviceinnovation.common.util.IpUtils;
 import ccw.serviceinnovation.common.util.http.FileUtil;
 import ccw.serviceinnovation.ossdata.constant.OssDataConstant;
-import ccw.serviceinnovation.ossdata.manager.nacos.TrackerService;
 import ccw.serviceinnovation.ossdata.manager.raft.server.DataServer;
 import ccw.serviceinnovation.ossdata.manager.raft.server.DataStateMachine;
-import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
-import com.alibaba.cloud.nacos.NacosServiceManager;
 import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.api.naming.NamingFactory;
 import com.alibaba.nacos.api.naming.NamingService;
+import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.alipay.sofa.jraft.conf.Configuration;
 import com.alipay.sofa.jraft.entity.PeerId;
 import com.alipay.sofa.jraft.option.NodeOptions;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import service.raft.rpc.DataGrpcHelper;
 
 import java.io.File;
-
 
 import static ccw.serviceinnovation.ossdata.constant.FilePrefixConstant.FILE_NOR;
 import static ccw.serviceinnovation.ossdata.constant.OssDataConstant.POSITION;
@@ -98,25 +95,19 @@ public class Init {
         DataGrpcHelper.blockUntilShutdown();
     }
 
-    @Autowired
-    private NacosServiceManager nacosServiceManager;
-
-    @Autowired
-    private NacosDiscoveryProperties nacosDiscoveryProperties;
-
-
-    @Autowired
-    private TrackerService trackerService;
-
-
-
     public void registerNacos() throws NacosException {
-        NamingService namingService = nacosServiceManager.getNamingService(nacosDiscoveryProperties.getNacosProperties());
+        NamingService namingService = NamingFactory.createNamingService("101.35.43.156:8848");
         String ip = IpUtils.getIp(OssDataConstant.RPC_ADDR);
         Integer port = IpUtils.getPort(OssDataConstant.RPC_ADDR);
-        namingService.registerInstance("raft-rpc",ip ,port);
+        Instance instance = new Instance();
+        instance.setIp(ip);
+        instance.setInstanceId("raft-rpc1");
+        instance.setPort(port);
+        instance.addMetadata("group", OssDataConstant.GROUP);
+        instance.addMetadata("port", OssDataConstant.PORT);
+        namingService.registerInstance("raft-rpc",instance);
         //更新元数据
-        trackerService.updateJraftMeta();
+//        trackerService.updateJraftMeta();
     }
 
 

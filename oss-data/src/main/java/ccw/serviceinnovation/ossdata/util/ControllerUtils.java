@@ -1,11 +1,10 @@
 package ccw.serviceinnovation.ossdata.util;
+
 import ccw.serviceinnovation.common.constant.SecretEnum;
 import ccw.serviceinnovation.common.request.ApiResp;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.common.util.sm4.SM4Utils;
-import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSONObject;
-import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletException;
@@ -95,7 +94,7 @@ public class ControllerUtils {
             int byteSize = (int) sm4Utils.getAfterSecretLength(READ_WRITER_SIZE);
             byte[] b = new byte[byteSize];
             while (-1 != (len = in.read(b))) {
-                //SM4加密
+                //SM4解密
                 byte[] newBytes = sm4Utils.encryptData_ECB(b);
                 os.write(newBytes,0,len);
             }

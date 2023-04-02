@@ -320,7 +320,9 @@ public class SM4 {
     public static void main(String[] args) {
         try {
             FileInputStream fis   = new FileInputStream("D:\\VM\\CentOS-7-x86_64-DVD-2009.iso");
-            FileOutputStream fos   = new FileOutputStream("D:\\OSS\\test\\5");
+            File file1 = new File("D:\\OSS\\test\\5");
+
+            FileOutputStream fos   = new FileOutputStream(file1);
             byte[] buf = new byte[1024];
             int len;
             long start = System.currentTimeMillis();
@@ -332,7 +334,8 @@ public class SM4 {
             fis.close();
             fos.close();
             fis   = new FileInputStream("D:\\VM\\CentOS-7-x86_64-DVD-2009.iso");
-            fos   = new FileOutputStream("D:\\OSS\\test\\6");
+            File file2 = new File("D:\\OSS\\test\\6");
+            fos   = new FileOutputStream(file2);
             start = System.currentTimeMillis();
             while (fis.available() > 0) {
                 buf = fis.available() > 1024 ? buf : new byte[fis.available()];

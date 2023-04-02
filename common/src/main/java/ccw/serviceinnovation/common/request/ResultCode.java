@@ -73,6 +73,8 @@ public enum ResultCode {
     FILE_NAME_IS_NULL(3030,"该对象文件名为空"),
     PARENT_ID_IS_INVALID(3031,"父级文件夹无效"),
     CANT_SET_STATE(3032,"不能设置为该状态"),
+    BUCKET_NAME_NULL(3033,"桶名字为空"),
+    BLOCK_TOKEN_NULL(3034,"blockToken为NULL"),
     ;
     private Integer code;
     private String message;

@@ -21,4 +21,11 @@ public class BlockTokenBo {
      * 端口号
      */
     private Integer port;
+
+    /**
+     * 后端是否已经存在这个文件
+     */
+    private Boolean exist;
+
+
 }

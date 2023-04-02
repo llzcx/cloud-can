@@ -1,4 +1,5 @@
 package ccw.serviceinnovation.ossdata.dubboservice.impl;
+
 import ccw.serviceinnovation.common.entity.LocationVo;
 import ccw.serviceinnovation.common.util.http.FileUtil;
 import ccw.serviceinnovation.common.util.net.NetUtil;
@@ -8,11 +9,15 @@ import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import service.StorageObjectService;
-import java.io.*;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import static ccw.serviceinnovation.ossdata.constant.FilePrefixConstant.*;
+import static ccw.serviceinnovation.ossdata.constant.FilePrefixConstant.FILE_NOR;
+import static ccw.serviceinnovation.ossdata.constant.FilePrefixConstant.FILE_TMP_BLOCK;
 import static ccw.serviceinnovation.ossdata.constant.OssDataConstant.POSITION;
 
 /**

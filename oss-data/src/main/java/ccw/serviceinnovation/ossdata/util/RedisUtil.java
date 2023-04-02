@@ -22,6 +22,8 @@ import java.util.concurrent.TimeUnit;
 @Component
 @Slf4j
 public class RedisUtil {
+    //redis保存字节数组:Base64.getEncoder().encodeToString(bytes)
+
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 

@@ -106,13 +106,16 @@ public class VideoCompress {
             e.printStackTrace();
         }finally {
             if(target.length() > 0){
-                source.delete();
+//                source.delete();
             }
         }
         return source;
     }
 
     public static void main(String[] args) {
-        compressionVideo(new File("D:\\OSS\\NARAKA  BLADEPOINT 2023.02.16 - 03.23.26.28.DVR.1676489314875.mp4"),"demo.mp4");
+        File file = compressionVideo(new File("D:\\OSS\\NARAKA  BLADEPOINT 2023.02.16 - 03.23.26.28.DVR.1676489314875.mp4"), "31NARAKA  BLADEPOINT 2023.02.16 - 03.23.26.28.DVR.1676489314875.mp4");
+        System.out.println(file.getAbsolutePath());
+
+        System.out.println(1);
     }
 }

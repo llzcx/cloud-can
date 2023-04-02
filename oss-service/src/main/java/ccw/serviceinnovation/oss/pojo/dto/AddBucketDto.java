@@ -15,6 +15,17 @@ public class AddBucketDto {
     /**
      * 归档类型
      */
-    private String storageType;
+    private Integer storageType;
+
+    /**
+     * 桶读写权限ACL
+     */
+    private Integer bucketAcl;
+
+
+    /**
+     * 加密方式
+     */
+    private Integer secret;
 
 }
