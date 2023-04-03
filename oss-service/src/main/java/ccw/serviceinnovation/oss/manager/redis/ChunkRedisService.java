@@ -19,8 +19,6 @@ import static ccw.serviceinnovation.common.constant.RedisConstant.*;
  */
 @Component
 public class ChunkRedisService {
-
-
     /**
      * 某个token当前的sha1值和分块信息
      */
@@ -30,6 +28,10 @@ public class ChunkRedisService {
      * 某个token对应的分块上传事件的信息
      */
     private final String BLOCK_TOKEN_PREFIX = OSS+OBJECT_CHUNK+BLOCK_TOKEN;
+
+
+    private final String CHUNK_BIT_PREFIX = OSS+OBJECT_CHUNK+CHUNK_BIT;
+
     @Autowired
     RedisUtil redisUtil;
 
@@ -43,10 +45,13 @@ public class ChunkRedisService {
         redisUtil.hset(CHUNK_SHA1_PREFIX+blockToken, String.valueOf(chunk), sha1);
         return true;
     }
+    public Boolean saveChunkBit(String blockToken,Integer chunk){
+        return redisUtil.setBit(CHUNK_BIT_PREFIX+blockToken, chunk, true);
+    }
 
     public Boolean removeChunk(String blockToken){
-        redisUtil.del(CHUNK_SHA1_PREFIX+blockToken);
         redisUtil.del(BLOCK_TOKEN_PREFIX+blockToken);
+        redisUtil.del(CHUNK_BIT_PREFIX+blockToken);
         return true;
     }
     /**
@@ -60,7 +65,7 @@ public class ChunkRedisService {
             Long size = chunkBo.getSize();
             int chunks = QETag.getChunks(size);
             for (int i = 0; i < chunks; i++) {
-                if(!redisUtil.hExists(CHUNK_SHA1_PREFIX+blockToken,String.valueOf(i))){
+                if(!redisUtil.getBit(CHUNK_BIT_PREFIX+blockToken, i)){
                     return false;
                 }
             }
@@ -102,9 +107,10 @@ public class ChunkRedisService {
     }
 
 
-    public ChunkBo saveBlockToken(String blockToken,String etag,Long userId,Long bucketId,Long size,Long parentObjectId,String name){
+    public ChunkBo saveBlockToken(String blockToken,String etag,Long userId,Long bucketId,Long size,Long parentObjectId,Integer secret,
+                                  Integer objectAcl,String name){
         LocationVo location = ConsistentHashing.getStorageObjectNode(etag);
-        ChunkBo chunkBo = new ChunkBo(0,etag,userId,bucketId,size,location.getIp(),location.getPort(),parentObjectId,name,location.getGroup());
+        ChunkBo chunkBo = new ChunkBo(0,etag,userId,bucketId,size,location.getIp(),location.getPort(),parentObjectId,secret,objectAcl,name,location.getGroup());
         redisUtil.set(BLOCK_TOKEN_PREFIX +blockToken,JSONObject.toJSONString(chunkBo));
         return chunkBo;
     }

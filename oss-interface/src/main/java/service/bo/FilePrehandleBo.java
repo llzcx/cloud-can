@@ -9,6 +9,7 @@ import java.io.Serializable;
  */
 @Data
 public class FilePrehandleBo implements Serializable {
-    private String etag;
+    private String oldEtag;
+    private String newEtag;
     private Integer fileType;
 }

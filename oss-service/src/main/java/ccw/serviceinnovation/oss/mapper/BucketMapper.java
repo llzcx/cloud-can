@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * @author 陈翔
  */
@@ -32,4 +34,15 @@ public interface BucketMapper extends BaseMapper<Bucket> {
      * @return
      */
     String getBucketName(@Param("bucketId")Long bucketId);
+
+
+    /**
+     * 获取bucketlist
+     * @param key
+     * @param offset
+     * @param pagesize
+     * @return
+     */
+    List<Bucket> selectBucketList(@Param("userId") Long userId,@Param("key") String key,@Param("offset") Integer offset,@Param("pagesize") Integer pagesize);
+    Integer selectBucketListSize(@Param("userId") Long userId,@Param("key") String key);
 }

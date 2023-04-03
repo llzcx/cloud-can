@@ -12,7 +12,7 @@ public enum StorageTypeEnum {
     /**
      * 归档存储 归档：数据长期存储、基本不访问，存储单价低于低频访问型。
      */
-    ARCHIVAL(3,"归档存储"),
+    ARCHIVAL(2,"归档存储"),
     ;
     private Integer code;
     private String message;

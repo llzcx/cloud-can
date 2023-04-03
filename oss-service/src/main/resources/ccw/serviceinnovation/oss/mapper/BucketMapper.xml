@@ -12,5 +12,27 @@
     <select id="getBucketName" resultType="java.lang.String">
         select name from bucket where id = #{bucketId}
     </select>
+    <select id="selectBucketList" resultType="ccw.serviceinnovation.common.entity.Bucket">
+        select * from bucket
+        <where>
+            user_id = #{userId}
+            <if test="key!=null">
+                and name like concat('%',#{key},'%')
+            </if>
+        </where>
+        <if test="offset!=null and pagesize!= null">
+            limit ${offset}, ${pagesize}
+        </if>
+    </select>
+    <select id="selectBucketListSize" resultType="java.lang.Integer">
+        select count(*)
+        from bucket
+        <where>
+            user_id = #{userId}
+            <if test="key!=null">
+                and name like concat('%',#{key},'%')
+            </if>
+        </where>
+    </select>
 
 </mapper>

@@ -11,6 +11,7 @@ import ccw.serviceinnovation.oss.pojo.bo.BlockTokenBo;
 import ccw.serviceinnovation.oss.pojo.bo.GetObjectBo;
 import ccw.serviceinnovation.oss.pojo.vo.ObjectStateVo;
 import ccw.serviceinnovation.oss.pojo.vo.ObjectVo;
+import ccw.serviceinnovation.oss.pojo.vo.OssObjectVo;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import ccw.serviceinnovation.oss.service.IObjectService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +43,8 @@ public class OssObjectController {
      */
     @GetMapping("/getObjectInfo")
     @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_READ,name = "getObjectInfo",description = "从桶中获取一个对象的元数据")
-    public ApiResp<OssObject> getObjectInfo(@RequestParam("objectName") String objectName, @RequestParam("bucketName") String bucketName) throws Exception{
-        OssObject object = objectService.getObjectInfo(bucketName,objectName);
+    public ApiResp<OssObjectVo> getObjectInfo(@RequestParam("objectName") String objectName, @RequestParam("bucketName") String bucketName) throws Exception{
+        OssObjectVo object = objectService.getObjectInfo(bucketName,objectName);
         return ApiResp.ifResponse(object!=null,object,ResultCode.COMMON_FAIL);
     }
 
@@ -78,7 +79,7 @@ public class OssObjectController {
     /**
      * 在桶中添加一个对象[小文件]
      * @param objectName
-     * @param md5
+     * @param etag
      * @param file
      * @return
      * @throws Exception
@@ -86,9 +87,10 @@ public class OssObjectController {
     @PutMapping("/putSmallObject")
     @OssApi(target = AuthorityConstant.API_BUCKET,type = AuthorityConstant.API_WRITER,name = "putSmallObject",description = "在桶中添加一个对象[小文件]")
     public ApiResp<Boolean> putSmallObject(@RequestParam("bucketName") String bucketName, String objectName,
-                                           String md5,@RequestParam(value = "parentObjectId",required = false) Long parentObjectId,
+                                           String etag,@RequestParam(value = "parentObjectId",required = false) Long parentObjectId,
+                                           Integer objectAcl,
                                            MultipartFile file) throws Exception{
-        return ApiResp.success(objectService.addSmallObject(bucketName,objectName,md5,file,parentObjectId));
+        return ApiResp.success(objectService.addSmallObject(bucketName,objectName,etag,file,parentObjectId,objectAcl));
     }
 
 
@@ -110,8 +112,9 @@ public class OssObjectController {
                                               String etag,
                                               Long size,
                                               Integer chunks,
-                                              Long parentObjectId) throws Exception{
-        return ApiResp.success(objectService.getBlockToken(etag, bucketName, objectName, parentObjectId, chunks, size));
+                                              Long parentObjectId,
+                                              Integer objectAcl) throws Exception{
+        return ApiResp.success(objectService.getBlockToken(etag, bucketName, objectName, parentObjectId,objectAcl ,chunks, size));
     }
 
 
@@ -153,9 +156,9 @@ public class OssObjectController {
      */
     @GetMapping("/listObjects")
     @OssApi(target = AuthorityConstant.API_BUCKET,type = AuthorityConstant.API_LIST,name = "listObjects",description = "获取对象列表")
-    public ApiResp<RPage<ObjectVo>> listObjects(@RequestParam("bucketName") String bucketName,@RequestParam("key") String key,
+    public ApiResp<RPage<ObjectVo>> listObjects(@RequestParam("bucketName") String bucketName,@RequestParam(value = "key",required = false) String key,
                                                 @RequestParam("pagenum") Integer pageNum, @RequestParam("size") Integer size,
-                                                @RequestParam("parentObjectId") Long parentObjectId,@RequestParam("isImages") Boolean isImages) throws Exception{
+                                                @RequestParam(value = "parentObjectId",required = false) Long parentObjectId,@RequestParam(value = "isImages",required = false) Boolean isImages) throws Exception{
         RPage<ObjectVo> rPage = objectService.listObjects(bucketName, pageNum, size, key,parentObjectId,isImages);
         return ApiResp.success(rPage);
     }

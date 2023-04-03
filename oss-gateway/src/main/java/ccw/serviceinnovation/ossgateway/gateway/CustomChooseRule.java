@@ -93,8 +93,8 @@ public class CustomChooseRule implements ICustomRule {
 
         //拦截nacos-provide服务也可拦截服务中特定url
         if ("oss-data-server".equals(instancesId)) {
-            if ("object".equals(pathParams[0]) && "download".equals(pathParams[1])) {
-                //下载文件请求
+            String way = pathParams[1];
+            if ("object".equals(pathParams[0])) {
                 //获取group和etag
                 String group = pathParams[2];
                 String etag = pathParams[3];
@@ -107,6 +107,7 @@ public class CustomChooseRule implements ICustomRule {
                 }else{
                     throw new OssException(ResultCode.OBJECT_IS_DEFECT);
                 }
+
             } else if (path.contains("/test/demo")) {
                 String lastPathParams = HttpUtils.getLastPathParams(path);
                 System.out.println("lastPathParams:" + lastPathParams);

@@ -8,7 +8,9 @@ import lombok.Data;
  */
 @Data
 public class ObjectStateVo {
+
     private String bucketName;
+
     private String objectName;
     /**
      * 是否可以正常访问
@@ -18,5 +20,7 @@ public class ObjectStateVo {
     /**
      * 当前的状态
      */
-    private String state;
+    private String stateStr;
+
+    private Integer state;
 }

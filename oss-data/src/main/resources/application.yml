@@ -10,6 +10,9 @@ jraft-data-path: ${jraft-data-path:D:\\oss\\00\\jraft_data_path}
 rpc-addr: ${rpc-addr:127.0.0.1:8031}
 
 dubbo:
+  provider:
+    timeout: 30000
+    retries: 0
   protocol:
     port: -1
     name: dubbo

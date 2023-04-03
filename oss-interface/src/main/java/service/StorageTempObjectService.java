@@ -34,18 +34,21 @@ public interface StorageTempObjectService {
      * @param srcSize
      * @param chunks
      * @param chunk
+     * @param secret
      * @return
      * @throws Exception
      */
-    Boolean saveBlock(String blockToken, Long targetSize, byte[] bytes, Long srcSize, Integer chunks, Integer chunk) throws IOException;
+    Boolean saveBlock(String blockToken, Long targetSize, byte[] bytes, Long srcSize, Integer chunks, Integer chunk,Integer secret) throws IOException;
 
 
     /**
      * 对文件进行压缩 返回压缩的etag
+     * @param etag
      * @param objectKey
+     * @param press
      * @return
      */
-    FilePrehandleBo preHandle(String objectKey) throws Exception;
+    FilePrehandleBo preHandle(String etag,String objectKey,Boolean press,Integer secret) throws Exception;
 
     /**
      * 获取端口号

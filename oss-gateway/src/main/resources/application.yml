@@ -1,6 +1,11 @@
 server:
   port: 5555
   address: 0.0.0.0
+  servlet:
+    encoding:
+      charset: utf-8
+      enabled: true
+      force: true
 
 spring:
   main:
@@ -25,7 +30,7 @@ spring:
         - id: oss-data-server  #路由的ID，没有固定规则但求唯一，建议配合服务名
           uri: lb://oss-data-server     # 匹配后提供服务的路由地址，lb代表从注册中心获取服务，且以负载均衡方式转发
           predicates:
-            - Path=/object/download/** #断言，路径相匹配的进行路由
+            - Path=/object/** #断言，路径相匹配的进行路由
 mybatis-plus:
 
   global-config:

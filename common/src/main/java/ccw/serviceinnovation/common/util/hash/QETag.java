@@ -37,6 +37,7 @@ import javax.xml.bind.DatatypeConverter;
 public class QETag {
     public static final int CHUNK_SIZE = 1 << 22;
 
+
     public static byte[] sha1(byte[] data) throws NoSuchAlgorithmException {
         MessageDigest mDigest = MessageDigest.getInstance("sha1");
         return mDigest.digest(data);
@@ -175,6 +176,7 @@ public class QETag {
 
     public static void main(String[] args) {
         try {
+            System.out.println(CHUNK_SIZE);
 //            System.out.println(calcETag("D:\\OSS\\01\\position\\TMP_BLOCK&846aee3c_4196_4721_ab30_b52d153b6a82"));
             System.out.println(calcETag("D:\\OSS\\BWhosOpposite.exe"));
         } catch (Exception e) {

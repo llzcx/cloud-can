@@ -6,7 +6,6 @@ import ccw.serviceinnovation.common.util.net.NetUtil;
 import ccw.serviceinnovation.ossdata.constant.OssDataConstant;
 import org.springframework.stereotype.Component;
 
-
 import static ccw.serviceinnovation.ossdata.constant.OssDataConstant.NACOS_SERVER_ADDR;
 
 /**

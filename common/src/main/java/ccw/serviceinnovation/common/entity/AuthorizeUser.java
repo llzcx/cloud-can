@@ -1,6 +1,8 @@
 package ccw.serviceinnovation.common.entity;
 
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -23,6 +25,7 @@ public class AuthorizeUser implements Serializable {
     /**
      * 授权用户id
      */
+    @TableId(value = "id",type = IdType.AUTO)
     private Long authorizeId;
 
     /**

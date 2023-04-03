@@ -1,6 +1,7 @@
 package ccw.serviceinnovation.common.nacos;
 
 import ccw.serviceinnovation.common.util.http.HttpUtils;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import java.util.ArrayList;
@@ -28,6 +29,16 @@ public class TrackerService {
         return null;
     }
 
+    public static Integer getProvidePort(String ip,Integer port){
+        try {
+            String response = HttpUtils.request("http://"+ip+port + "/object/provider");
+            return Integer.valueOf(response);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return null;
+    }
+
     /**
      * 获取Jraft服务列表(GRPC)
      * @return
@@ -45,8 +56,8 @@ public class TrackerService {
                 }
                 list.add(host);
                 newHosts.put(group,list);
-                System.out.println("put了:"+group+":"+JSONObject.toJSONString(list));
             }
+            System.out.println("final {group => serveList}:\n"+JSONObject.toJSONString(newHosts));
             return  newHosts;
         } catch (Exception exception) {
             exception.printStackTrace();

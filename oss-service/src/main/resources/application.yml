@@ -77,6 +77,9 @@ myoss:
     backups: D:\OSS\backups
 
 dubbo:
+  consumer:
+    timeout: 30000
+    retries: 0
   protocol:
     id: dubbo
     name: dubbo

@@ -16,9 +16,9 @@ public class JpegCompress {
     }
 
     public static void main(String[] args) {
-        Img.from(FileUtil.file("D:\\OSS\\BWhosOpposite.jpg"))
-                .setQuality(0.5)
-                .write(FileUtil.file("D:\\OSS\\target.jpg"));
+        Img.from(FileUtil.file("D:\\OSS\\123l123123.jpg"))
+                .setQuality(0.1)
+                .write(FileUtil.file("D:\\OSS\\123l123123.jpg"));
     }
 
 }

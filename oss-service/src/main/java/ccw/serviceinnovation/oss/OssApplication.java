@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableDiscoveryClient
 @EnableDubbo
 public class OssApplication {
-
     public static ConfigurableApplicationContext run;
     public static void main(String[] args) throws Exception{
         InitApplication.beforeSpring();

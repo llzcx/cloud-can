@@ -57,13 +57,13 @@ public interface OssObjectMapper extends BaseMapper<OssObject> {
     /**
      * 分页获取对象列表
      * @param bucketName 桶名字
-     * @param pageNum 第几页
+     * @param offset 第几页
      * @param size 每页数据
      * @param key 前缀匹配
      * @param parentObjectId 父级文件夹对象id
      * @return
      */
-    List<ObjectVo> selectObjectList(@Param("bucketName") String bucketName,@Param("pageNum") Integer pageNum,
+    List<ObjectVo> selectObjectList(@Param("bucketName") String bucketName,@Param("offset") Integer offset,
                                     @Param("size") Integer size, @Param("key") String key,@Param("parentObjectId")Long parentObjectId,@Param("type")Integer type);
 
     /**
