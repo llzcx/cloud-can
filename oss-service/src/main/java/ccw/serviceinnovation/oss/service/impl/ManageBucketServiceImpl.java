@@ -1,6 +1,6 @@
 package ccw.serviceinnovation.oss.service.impl;
 
-import ccw.serviceinnovation.common.constant.BucketACLEnum;
+import ccw.serviceinnovation.common.constant.ObjectACLEnum;
 import ccw.serviceinnovation.common.constant.StorageTypeEnum;
 import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.entity.OssObject;
@@ -14,6 +14,7 @@ import ccw.serviceinnovation.oss.service.IManageBucketService;
 import ccw.serviceinnovation.oss.service.IObjectService;
 import ccw.serviceinnovation.oss.service.IUserFavoriteService;
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +67,9 @@ public class ManageBucketServiceImpl extends ServiceImpl<ManageBucketMapper, Buc
             List<BucketVo> bucketVos = getBucketVos(bucketList);
 
             bucketVoRPage = new RPage<>(pageNum,size,bucketVos);
-            bucketVoRPage.setTotalCountAndTotalPage(manageBucketMapper.selectCount(MPUtil.queryWrapperEq("user_id", longKeyword, "name", keyword)));
+            QueryWrapper eq = new QueryWrapper<>().eq("user_id", longKeyword).or().eq("name", keyword);
+            bucketVoRPage.setTotalCountAndTotalPage(manageBucketMapper.selectCount(eq));
+//            MPUtil.queryWrapperEq("user_id", longKeyword, "name", keyword));
         }
         return bucketVoRPage;
     }
@@ -109,7 +112,7 @@ public class ManageBucketServiceImpl extends ServiceImpl<ManageBucketMapper, Buc
 
             bucketVo.setCapacity(sum);
             bucketVo.setStorageLevelString(StorageTypeEnum.getEnum(bucket.getStorageLevel()).getMessage());
-            bucketVo.setBucketAcl(BucketACLEnum.getEnum(bucket.getBucketAcl()).getMessage());
+            bucketVo.setBucketAcl(ObjectACLEnum.getEnum(bucket.getBucketAcl()).getMessage());
             bucketVo.setStandardCapacity(standardSum);
             bucketVo.setPigeonholeCapacity(pigeonholeSum);
             bucketVos.add(bucketVo);

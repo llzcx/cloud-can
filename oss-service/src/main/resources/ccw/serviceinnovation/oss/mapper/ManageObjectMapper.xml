@@ -4,16 +4,60 @@
 
     <select id="selectObjectList" resultType="ccw.serviceinnovation.common.entity.OssObject">
         SELECT * FROM oss_object WHERE
-        <if test="bucketId != null">bucket_id = #{bucketId}</if>
-        <if test="bucketName != null">or bucket_id = #{bucketName}</if>
+        bucket_id IN (SELECT id FROM bucket WHERE `name` like concat('%',#{keyword},'%')) OR
+        bucket_id = #{longKeyword} OR
+        bucket_id IN (SELECT id FROM bucket WHERE user_id = #{longKeyword})
         <if test="offset != null and size != null">
             LIMIT ${offset}, ${size}
         </if>
     </select>
     <select id="selectObjectCount" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM oss_object WHERE
-        <if test="bucketId != null">bucket_id = #{bucketId}</if>
-        <if test="bucketName != null">or bucket_id = #{bucketName}</if>
+        bucket_id IN (SELECT id FROM bucket WHERE `name` like concat('%',#{keyword},'%')) OR
+        bucket_id = #{longKeyword} OR
+        bucket_id IN (SELECT id FROM bucket WHERE user_id = #{longKeyword})
+    </select>
+    <select id="selectObjectListByString" resultType="ccw.serviceinnovation.common.entity.OssObject">
+        SELECT * FROM oss_object WHERE
+        bucket_id IN (SELECT id FROM bucket WHERE `name` like concat('%',#{keyword},'%'))
+        <if test="offset != null and size != null">
+            LIMIT ${offset}, ${size}
+        </if>
+    </select>
+    <select id="selectObjectCountBucketName" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM oss_object WHERE
+        bucket_id IN (SELECT id FROM bucket WHERE `name` like concat('%',#{keyword},'%'))
+    </select>
+    <select id="getBucketName" resultType="java.lang.String">
+        SELECT `name` FROM bucket WHERE id IN (SELECT bucket_id FROM oss_object WHERE id = #{objectId})
+    </select>
+    <select id="getObjectName" resultType="java.lang.String">
+        SELECT `name` FROM oss_object WHERE id = #{objectId}
+    </select>
+    <select id="selectObjectListWithParent" resultType="ccw.serviceinnovation.common.entity.OssObject">
+        SELECT * FROM oss_object
+        <where>
+            <if test="keyword != null and keyword != ''">
+            `name` like concat('%',#{keyword},'%')
+            </if>
+            <if test="parent != null">
+            AND parent = #{parent}
+            </if>
+        </where>
+        <if test="offset != null and size != null">
+        LIMIT ${offset}, ${size}
+        </if>
+    </select>
+    <select id="selectObjectCountWithParent" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM oss_object
+        <where>
+            <if test="keyword != null and keyword != ''">
+                `name` like concat('%',#{keyword},'%')
+            </if>
+            <if test="parent != null">
+                AND parent = #{parent}
+            </if>
+        </where>
     </select>
 
 

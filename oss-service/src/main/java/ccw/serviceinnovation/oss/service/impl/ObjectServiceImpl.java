@@ -54,7 +54,7 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
      * 服务消费者
      */
 
-    @DubboReference(version = "1.0.0", group = "temp")
+    @DubboReference(version = "1.0.0", group = "temp" ,check = false)
     private StorageTempObjectService storageTempObjectService;
 
     @Autowired
