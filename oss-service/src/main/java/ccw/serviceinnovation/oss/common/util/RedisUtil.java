@@ -59,7 +59,7 @@ public class RedisUtil {
    public boolean exists(String key) {
       return redisTemplate.hasKey(key);
    }
-   
+
    /**
     * 实现命令：expire 设置过期时间，单位秒
     * @param key
@@ -68,7 +68,7 @@ public class RedisUtil {
    public void expire(String key, long timeout) {
       stringRedisTemplate.expire(key, timeout, TimeUnit.SECONDS);
    }
-   
+
    /**
     * 实现命令：INCR key，增加key一次
     * @param key
@@ -100,7 +100,7 @@ public class RedisUtil {
 
    /**
     * 实现命令：SET key value，设置一个key-value（将字符串值 value关联到 key）
-    * 
+    *
     * @param key
     * @param value
     */
@@ -121,7 +121,7 @@ public class RedisUtil {
 
    /**
     * 实现命令：SET key value EX seconds，设置key-value和超时时间（秒）
-    * 
+    *
     * @param key
     * @param value
     * @param timeout
@@ -133,7 +133,7 @@ public class RedisUtil {
 
    /**
     * 实现命令：GET key，返回 key所关联的字符串值。
-    * 
+    *
     * @param key
     * @return value
     */
@@ -213,7 +213,7 @@ public class RedisUtil {
 
    /**
     * 实现命令：HGET key field，返回哈希表 key中给定域 field的值
-    * 
+    *
     * @param key
     * @param field
     * @return
@@ -224,7 +224,7 @@ public class RedisUtil {
 
    /**
     * 实现命令：HDEL key field [field ...]，删除哈希表 key 中的一个或多个指定域，不存在的域将被忽略。
-    * 
+    *
     * @param key
     * @param fields
     */
@@ -238,7 +238,7 @@ public class RedisUtil {
 
    /**
     * 实现命令：HGETALL key，返回哈希表 key中，所有的域和值。
-    * 
+    *
     * @param key
     * @return
     */
@@ -255,7 +255,7 @@ public class RedisUtil {
 
    /**
     * 实现命令：LPUSH key value，将一个值 value插入到列表 key的表头
-    * 
+    *
     * @param key
     * @param value
     * @return 执行 LPUSH命令后，列表的长度。
@@ -266,7 +266,7 @@ public class RedisUtil {
 
    /**
     * 实现命令：LPOP key，移除并返回列表 key的头元素。
-    * 
+    *
     * @param key
     * @return 列表key的头元素。
     */
@@ -276,7 +276,7 @@ public class RedisUtil {
 
    /**
     * 实现命令：RPUSH key value，将一个值 value插入到列表 key的表尾(最右边)。
-    * 
+    *
     * @param key
     * @param value
     * @return 执行 LPUSH命令后，列表的长度。

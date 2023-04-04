@@ -16,4 +16,11 @@ public interface ObjectTagObjectMapper extends BaseMapper<ObjectTagObject> {
      * @return
      */
     Long deleteTagByObjectId(Long objectId);
+
+    /**
+     * 插入标签中间件
+     * @param objectTagObject
+     * @return
+     */
+    int insertTag(ObjectTagObject objectTagObject);
 }

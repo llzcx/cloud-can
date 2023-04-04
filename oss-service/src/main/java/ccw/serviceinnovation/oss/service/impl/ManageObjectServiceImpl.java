@@ -114,7 +114,7 @@ public class ManageObjectServiceImpl extends ServiceImpl<ManageObjectMapper, Oss
         String objectName = manageObjectMapper.getObjectName(id);
         ObjectStateVo state = objectService.getState(bucketName, objectName);
 
-        objectVo.setState(state.getState());
+        objectVo.setState(state.getStateStr());
         return objectVo;
     }
 

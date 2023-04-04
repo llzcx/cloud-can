@@ -49,20 +49,20 @@ public class ObjectTagController {
      */
     @PutMapping("/putObjectTag")
     public ApiResp<List<ObjectTag>> putObjectTag(@RequestParam("bucketName")String bucketName, @RequestParam("objectName") String objectName, @RequestBody List<ObjectTag> objectTags){
-        objectTagService.putObjectTag(bucketName,objectName,objectTags);
-        return ApiResp.success();
+        List<ObjectTag> newObjectTags = objectTagService.putObjectTag(bucketName, objectName, objectTags);
+        return ApiResp.success(newObjectTags);
     }
 
     /**
      * 删除对象标签
      * @param bucketName
      * @param objectName
-     * @param tagId 标签的id
+     * @param objectTags 标签的id
      * @return
      */
     @DeleteMapping("/deleteObjectTag")
-    public ApiResp<Boolean> deleteObjectTag(@RequestParam("bucketName") String bucketName, @RequestParam("objectName") String objectName, @RequestParam("TagId") Long tagId){
-        Boolean aBoolean = objectTagService.deleteObjectTag(bucketName, objectName, tagId);
-        return ApiResp.ifResponse(aBoolean,aBoolean, ResultCode.COMMON_FAIL);
+    public ApiResp<List<ObjectTag>> deleteObjectTag(@RequestParam("bucketName") String bucketName, @RequestParam("objectName") String objectName, @RequestBody List<ObjectTag> objectTags){
+        List<ObjectTag> newObjectTags = objectTagService.deleteObjectTag(bucketName, objectName, objectTags);
+        return ApiResp.success(newObjectTags);
     }
 }

@@ -21,7 +21,7 @@ public interface OssObjectMapper extends BaseMapper<OssObject> {
      * @param objectName
      * @return
      */
-    Long selectObjectIdByName(@Param("bucketName")String bucketName,@Param("bucketName")String objectName);
+    Long selectObjectIdByName(@Param("bucketName")String bucketName,@Param("objectName")String objectName);
 
     /**
      * 根据桶名字查找对象id

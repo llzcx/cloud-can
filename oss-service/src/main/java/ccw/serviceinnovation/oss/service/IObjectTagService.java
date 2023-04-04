@@ -31,8 +31,8 @@ public interface IObjectTagService extends IService<ObjectTag> {
      * 删除对象标签
      * @param bucketName
      * @param objectName
-     * @param tagId
+     * @param objectTags
      * @return
      */
-    Boolean deleteObjectTag(String bucketName,String objectName,Long tagId);
+    List<ObjectTag> deleteObjectTag(String bucketName, String objectName, List<ObjectTag> objectTags);
 }

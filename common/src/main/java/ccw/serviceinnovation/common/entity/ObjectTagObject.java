@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author 陈翔
@@ -24,7 +24,7 @@ public class ObjectTagObject implements Serializable {
     /**
      * 对象ID
      */
-    @TableId(value = "id",type = IdType.AUTO)
+    @TableId(value = "object_id",type = IdType.AUTO)
     private Long objectId;
 
     /**
