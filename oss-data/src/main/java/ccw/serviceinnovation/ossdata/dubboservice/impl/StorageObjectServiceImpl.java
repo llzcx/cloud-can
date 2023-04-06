@@ -1,6 +1,7 @@
 package ccw.serviceinnovation.ossdata.dubboservice.impl;
 
 import ccw.serviceinnovation.common.entity.LocationVo;
+import ccw.serviceinnovation.common.util.IpUtils;
 import ccw.serviceinnovation.common.util.http.FileUtil;
 import ccw.serviceinnovation.common.util.net.NetUtil;
 import ccw.serviceinnovation.ossdata.manager.raft.server.DataStateMachine;
@@ -19,6 +20,7 @@ import java.net.UnknownHostException;
 import static ccw.serviceinnovation.ossdata.constant.FilePrefixConstant.FILE_NOR;
 import static ccw.serviceinnovation.ossdata.constant.FilePrefixConstant.FILE_TMP_BLOCK;
 import static ccw.serviceinnovation.ossdata.constant.OssDataConstant.POSITION;
+import static ccw.serviceinnovation.ossdata.constant.OssDataConstant.RPC_ADDR;
 
 /**
  * 本地实现对象底层操作的业务类
@@ -53,17 +55,11 @@ public class StorageObjectServiceImpl implements StorageObjectService {
 
     @Override
     public Boolean deleteObject(String objectKey){
-        File file = new File(POSITION +"/"+objectKey);
-        if(file.exists() && file.isDirectory() && file.list()!=null){
-            String[] list = file.list();
-            assert list != null;
-            if(list.length==0){
-                return file.delete();
-            }else{
-                return false;
-            }
+        File file = new File(POSITION +"/"+FILE_NOR+objectKey);
+        if(!file.exists()){
+            return true;
         }else{
-            return false;
+            return file.delete();
         }
     }
 
@@ -73,7 +69,7 @@ public class StorageObjectServiceImpl implements StorageObjectService {
         String path = DataStateMachine.dataMap.get(etag);
         if(path!=null){
             try {
-                return new LocationVo(NetUtil.getIP(), Integer.valueOf(port));
+                return new LocationVo(IpUtils.getIp(RPC_ADDR), Integer.valueOf(port));
             } catch (Exception e) {
                 e.printStackTrace();
             }

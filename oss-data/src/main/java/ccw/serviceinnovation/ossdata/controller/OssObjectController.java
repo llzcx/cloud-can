@@ -4,10 +4,11 @@ import ccw.serviceinnovation.common.entity.LocationVo;
 import ccw.serviceinnovation.common.exception.OssException;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.common.util.hash.QETag;
+import ccw.serviceinnovation.common.util.http.FileUtil;
+import ccw.serviceinnovation.common.util.http.HttpUtils;
 import ccw.serviceinnovation.ossdata.bo.ChunkBo;
 import ccw.serviceinnovation.ossdata.constant.OssDataConstant;
 import ccw.serviceinnovation.ossdata.manager.redis.ChunkRedisService;
-import ccw.serviceinnovation.ossdata.mapper.OssObjectMapper;
 import ccw.serviceinnovation.ossdata.util.ControllerUtils;
 import ccw.serviceinnovation.ossdata.util.NoStaticResourceHttpRequestHandler;
 import com.alibaba.fastjson.JSONObject;
@@ -22,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 
 import static ccw.serviceinnovation.ossdata.constant.FilePrefixConstant.FILE_NOR;
 import static ccw.serviceinnovation.ossdata.constant.FilePrefixConstant.FILE_TMP_BLOCK;
@@ -57,8 +59,6 @@ public class OssObjectController {
     @Autowired
     StorageObjectService storageObjectService;
 
-    @Autowired
-    OssObjectMapper ossObjectMapper;
 
     private String TMP_BLOCK =  POSITION + "/" + FILE_TMP_BLOCK;
     private String NOR = POSITION + "/" + FILE_NOR;
@@ -72,9 +72,9 @@ public class OssObjectController {
      * @throws Exception
      */
     @PostMapping("/append_file")
-    public Boolean addObjectChunk(MultipartFile file, Integer chunk, String blockToken) throws Exception {
+    public Boolean addObjectChunk(MultipartFile file, Integer chunk, String blockToken,String bucketName) throws Exception {
         log.info("当前:{},为第:{}块分片",blockToken,chunk);
-        ChunkBo chunkBo = chunkRedisService.getObjectPosition(blockToken);
+        ChunkBo chunkBo = chunkRedisService.getChunkBo(bucketName,blockToken);
         long size = chunkBo.getSize();
         int chunks = QETag.getChunks(size);
         byte[] bytes = file.getBytes();
@@ -95,6 +95,7 @@ public class OssObjectController {
      */
     @GetMapping("/download/{group}/{etag}")
     public void download(Integer secret,String name, @PathVariable String etag, HttpServletResponse response, @PathVariable String group) throws Exception {
+        //先检查group是否正确...
         FileInputStream fis = new FileInputStream(OssDataConstant.POSITION +"\\"+FILE_NOR+etag);
         ControllerUtils.loadResource(response, fis,name,true,
                 secret);
@@ -167,6 +168,17 @@ public class OssObjectController {
     public String provider() {
         System.out.println(OssDataConstant.PROVIDE_PORT);
         return OssDataConstant.PROVIDE_PORT;
+    }
+
+    @GetMapping("/unfreeze")
+    public Boolean unfreeze(String etag,String ip,String port) {
+        String url = "http://"+ip+":"+port +"/cold/download?etag="+etag+"&name="+FILE_NOR+etag;
+        try {
+            return FileUtil.saveFile(url,NOR+etag);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 }

@@ -41,6 +41,8 @@ public enum ResultCode {
     SERVER_EXCEPTION(2008,"数据服务异常"),
     DATA_NOT_FOUND(2009,"数据丢失"),
     UNDEFINED(2010,"不确定的后台常量"),
+    SYSTEM_ERROR_DATA_NULL(2011,"系统错误-对象存储数据丢失"),
+    RPC_JRAFT(2008,"RPC-JRAFT服务器异常"),
 
 
     /* 业务异常 */
@@ -75,6 +77,10 @@ public enum ResultCode {
     CANT_SET_STATE(3032,"不能设置为该状态"),
     BUCKET_NAME_NULL(3033,"桶名字为空"),
     BLOCK_TOKEN_NULL(3034,"blockToken为NULL"),
+    EVENT_NULL(3035,"该事件不存在"),
+    NAME_IS_EXIST(3036,"该名字已经被其他对象占用"),
+    FILE_IS_BIG(3037,"文件必须<=5MB,请更换上传方式(分片上传)"),
+
     ;
     private Integer code;
     private String message;

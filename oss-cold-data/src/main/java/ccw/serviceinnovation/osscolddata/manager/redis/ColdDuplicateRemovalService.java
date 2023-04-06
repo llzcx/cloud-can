@@ -33,7 +33,7 @@ public class ColdDuplicateRemovalService {
 
     public long del(String etag) {
         long hincr = redisUtil.hincr(COUNT_PREFIX, etag, -1);
-        if(hincr==0){
+        if(hincr<=0){
             redisUtil.hdel(COUNT_PREFIX, etag);
             redisUtil.hdel(NAME_PREFIX, etag);
         }

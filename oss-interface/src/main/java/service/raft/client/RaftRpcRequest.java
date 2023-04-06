@@ -85,7 +85,7 @@ public class RaftRpcRequest {
     public static boolean save(final CliClientServiceImpl cliClientService, final PeerId leader, String etag, LocationVo locationVo) throws RemotingException, InterruptedException {
         Endpoint endpoint = leader.getEndpoint();
         SaveRequest saveRequest = new SaveRequest(etag,locationVo);
-        RpcResponse rpcResponse = (RpcResponse)cliClientService.getRpcClient().invokeSync(endpoint, saveRequest, 5000);
+        RpcResponse rpcResponse = (RpcResponse)cliClientService.getRpcClient().invokeSync(endpoint, saveRequest, 5000000);
         System.out.println("result:"+rpcResponse);
         return rpcResponse.getSuccess();
     }
@@ -93,7 +93,7 @@ public class RaftRpcRequest {
     public static LocationVo get(final CliClientServiceImpl cliClientService, final PeerId leader, String etag) throws RemotingException, InterruptedException {
         Endpoint endpoint = leader.getEndpoint();
         GetRequest getRequest = new GetRequest(true,etag);
-        RpcResponse rpcResponse = (RpcResponse)cliClientService.getRpcClient().invokeSync(endpoint, getRequest, 5000);
+        RpcResponse rpcResponse = (RpcResponse)cliClientService.getRpcClient().invokeSync(endpoint, getRequest, 5000000);
         System.out.println("getData:"+rpcResponse.getData());
         LocationVo data = (LocationVo)rpcResponse.getData();
         System.out.println("result:"+rpcResponse);
@@ -103,7 +103,7 @@ public class RaftRpcRequest {
     public static boolean del(final CliClientServiceImpl cliClientService, final PeerId leader, String etag) throws RemotingException, InterruptedException {
         Endpoint endpoint = leader.getEndpoint();
         DelRequest delRequest = new DelRequest(etag);
-        RpcResponse rpcResponse = (RpcResponse)cliClientService.getRpcClient().invokeSync(endpoint, delRequest, 5000);
+        RpcResponse rpcResponse = (RpcResponse)cliClientService.getRpcClient().invokeSync(endpoint, delRequest, 5000000);
         System.out.println("result:"+rpcResponse);
         return rpcResponse.getSuccess();
     }

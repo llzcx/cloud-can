@@ -96,7 +96,7 @@ public class Init {
     }
 
     public void registerNacos() throws NacosException {
-        NamingService namingService = NamingFactory.createNamingService("101.35.43.156:8848");
+        NamingService namingService = NamingFactory.createNamingService(OssDataConstant.NACOS_SERVER_ADDR);
         String ip = IpUtils.getIp(OssDataConstant.RPC_ADDR);
         Integer port = IpUtils.getPort(OssDataConstant.RPC_ADDR);
         Instance instance = new Instance();

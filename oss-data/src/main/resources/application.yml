@@ -1,31 +1,30 @@
 server:
   port: ${server.port:8021}
-  address: 0.0.0.0
+  address: ${server.address:0.0.0.0}
 
 group: ${group:group1}
 cluster: ${cluster:192.168.50.236:8031,192.168.50.236:8032,192.168.50.236:8033}
-logPath:
 position: ${position:D:\\oss\\00\\position}
 jraft-data-path: ${jraft-data-path:D:\\oss\\00\\jraft_data_path}
-rpc-addr: ${rpc-addr:127.0.0.1:8031}
+rpc-addr: ${rpc-addr:192.168.50.236:8031}
 
 dubbo:
   provider:
     timeout: 30000
     retries: 0
   protocol:
-    port: -1
+    port: ${dubbo.protocol.port:-1}
     name: dubbo
-    host: 192.168.50.236
+    host: ${dubbo.protocol.host:192.168.50.236}
   scan:
     basePackages: ccw.serviceinnovation.ossdata
   application:
     name: oss-data-provide
     register-mode: instance
   registry:
-    address: nacos://101.35.43.156:8848?registry-type=service
-    username: nacos
-    password: nacos
+    address: nacos://${nacos.addr:192.168.50.236:8848}?registry-type=service
+    username: ${nacos.username:nacos}
+    password: ${nacos.password:nacos}
 
 spring:
   profiles:
@@ -36,25 +35,9 @@ spring:
       max-request-size: 100MB
   main:
     allow-bean-definition-overriding: true
-  datasource:
-    druid:
-      driver-class-name: com.mysql.jdbc.Driver
-      url: jdbc:mysql://101.35.43.156:3306/oss?useSSL=false&amp&serverTimezone=UTC
-      username: root
-      password: 123abc456
   redis:
-    redisson:
-      config: |
-        singleServerConfig:
-          password:
-          address: "redis://192.168.50.236:6379"
-          database: 1
-        threads: 0
-        nettyThreads: 0
-        codec: !<org.redisson.codec.FstCodec> {}
-        transportMode: "NIO"
-    host: 192.168.50.236
-    port: 6379
+    host: ${redis.ip:192.168.50.236}
+    port: ${redis.port:6379}
     timeout: 1000
     password:
     lettuce:

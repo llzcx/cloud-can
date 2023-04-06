@@ -29,7 +29,7 @@ public class ObjectStateRedisService {
 
 
     public boolean setState(String bucketName,String objectName,Integer state){
-        redisUtil.hset(STATE_PREFIX,bucketName+"/"+objectName,state);
+        redisUtil.hset(STATE_PREFIX,bucketName+"/"+objectName,state.toString());
         return true;
     }
 

@@ -7,6 +7,8 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 
 import java.io.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * 压缩工具类
@@ -118,5 +120,27 @@ public class ZipUtil {
             }
         }
         return true;
+    }
+    public static String unzip(String filePath, String destPath) throws IOException {
+        byte[] buffer = new byte[1024];
+        ZipInputStream zis = new ZipInputStream(new FileInputStream(filePath));
+        ZipEntry zipEntry = zis.getNextEntry();
+        if (zipEntry != null) {
+            String fileName = zipEntry.getName();
+            File newFile = new File(destPath + File.separator + fileName);
+            if (!newFile.exists()) {
+                newFile.getParentFile().mkdirs();
+                FileOutputStream fos = new FileOutputStream(newFile);
+                int len;
+                while ((len = zis.read(buffer)) > 0) {
+                    fos.write(buffer, 0, len);
+                }
+                fos.close();
+            }
+            return fileName;
+        }
+        zis.closeEntry();
+        zis.close();
+        return null;
     }
 }

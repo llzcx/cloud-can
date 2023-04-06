@@ -13,9 +13,9 @@ spring:
   datasource:
     druid:
       driver-class-name: com.mysql.jdbc.Driver
-      url: jdbc:mysql://101.35.43.156:3306/oss?useSSL=false&amp&serverTimezone=UTC
-      username: root
-      password: 123abc456
+      url: jdbc:mysql://${mysql.addr:101.35.43.156:3306}/oss?useSSL=false&amp&serverTimezone=UTC
+      username: ${mysql.username:root}
+      password: ${mysql.password:123abc456}
   cloud:
     gateway:
       discovery:

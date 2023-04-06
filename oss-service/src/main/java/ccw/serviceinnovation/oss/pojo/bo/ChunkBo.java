@@ -9,10 +9,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Data
 public class ChunkBo {
-    /**
-     * 当前已经上传到第几个分块
-     */
-    private Integer currentChunk;
+
 
 
     /**
@@ -49,9 +46,9 @@ public class ChunkBo {
 
     private Integer objectAcl;
 
-    public ChunkBo(Integer currentChunk, String etag, Long userId, Long bucketId, Long size, String ip,Integer port,Long parentObjectId,Integer secret,
+    public ChunkBo(String etag, Long userId, Long bucketId, Long size, String ip,Integer port,Long parentObjectId,Integer secret,
                    Integer objectAcl,String name,String groupId) {
-        this.currentChunk = currentChunk;
+
         this.etag = etag;
         this.userId = userId;
         this.bucketId = bucketId;

@@ -39,17 +39,4 @@ public interface StorageObjectService {
      */
     LocationVo location(String etag);
 
-    public static void main(String[] args) {
-        //创建消费者
-//        ReferenceConfig<StorageObjectService> reference = new ReferenceConfig<>();
-//        reference.setInterface(StorageObjectService.class);
-//        reference.setGroup("object");
-//        reference.setVersion("1.0.0");
-//        reference.setTimeout(3000);
-//        reference.setCheck(false);
-//        reference.setServices("oss-data-provide");
-//        storageObjectService = reference.get();
-//        System.out.println("storageObjectService:"+storageObjectService);
-    }
-
 }

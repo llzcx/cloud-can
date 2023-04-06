@@ -223,6 +223,16 @@ public class RedisUtil {
    }
 
    /**
+    * 实现命令：HGET key field，返回哈希表 key中给定域 field的值
+    *
+    * @param key
+    * @return
+    */
+   public Map<Object, Object> hmget(String key) {
+      return stringRedisTemplate.opsForHash().entries(key);
+   }
+
+   /**
     * 实现命令：HDEL key field [field ...]，删除哈希表 key 中的一个或多个指定域，不存在的域将被忽略。
     * 
     * @param key

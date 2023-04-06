@@ -17,6 +17,7 @@
 package ccw.serviceinnovation.ossdata.manager.raft.server.service;
 
 import ccw.serviceinnovation.common.entity.LocationVo;
+import ccw.serviceinnovation.common.util.IpUtils;
 import ccw.serviceinnovation.common.util.net.NetUtil;
 import ccw.serviceinnovation.ossdata.constant.OssDataConstant;
 import ccw.serviceinnovation.ossdata.manager.raft.server.DataClosure;
@@ -37,6 +38,8 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.Executor;
+
+import static ccw.serviceinnovation.ossdata.constant.OssDataConstant.RPC_ADDR;
 
 /**
  * @author likun (saimu.msm@antfin.com)
@@ -117,7 +120,7 @@ public class DataServiceImpl implements DataService {
                     if(value!=null){
                         LOG.info("本地存在该文件:{},在{}",etag,value);
                         //NetUtil.getLANAddressOnWindows().getHostAddress()
-                        closure.success(new LocationVo(NetUtil.getIP(),Integer.valueOf(OssDataConstant.PORT)));
+                        closure.success(new LocationVo(IpUtils.getIp(RPC_ADDR),Integer.valueOf(OssDataConstant.PORT)));
                     }else{
                         LOG.info("本地不存在该文件:{}",etag);
                         closure.success(null);

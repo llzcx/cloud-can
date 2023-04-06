@@ -49,4 +49,29 @@ public interface IBucketService extends IService<Bucket> {
      */
     Bucket getBucketInfo(String bucketName);
 
+    /**
+     * 更新存储类型
+     * @param bucketName
+     * @param storageLevel
+     * @return
+     */
+    Boolean updateStorageLevel(String bucketName,Integer storageLevel);
+
+
+    /**
+     * 更新bucket的权限
+     * @param bucketName
+     * @param bucketAcl
+     * @return
+     */
+    Boolean updateBucketAcl(String bucketName,Integer bucketAcl);
+
+
+    /**
+     * 更新加密方式
+     * @param bucketName
+     * @param secret
+     * @return
+     */
+    Boolean updateSecret(String bucketName,Integer secret);
 }

@@ -1,6 +1,7 @@
 package ccw.serviceinnovation.oss.service.impl;
 
-import ccw.serviceinnovation.common.constant.BucketACLEnum;
+
+import ccw.serviceinnovation.common.constant.ObjectACLEnum;
 import ccw.serviceinnovation.common.constant.StorageTypeEnum;
 import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.entity.OssObject;
@@ -109,7 +110,7 @@ public class ManageBucketServiceImpl extends ServiceImpl<ManageBucketMapper, Buc
 
             bucketVo.setCapacity(sum);
             bucketVo.setStorageLevelString(StorageTypeEnum.getEnum(bucket.getStorageLevel()).getMessage());
-            bucketVo.setBucketAcl(BucketACLEnum.getEnum(bucket.getBucketAcl()).getMessage());
+            bucketVo.setBucketAcl(ObjectACLEnum.getEnum(bucket.getBucketAcl()).getMessage());
             bucketVo.setStandardCapacity(standardSum);
             bucketVo.setPigeonholeCapacity(pigeonholeSum);
             bucketVos.add(bucketVo);

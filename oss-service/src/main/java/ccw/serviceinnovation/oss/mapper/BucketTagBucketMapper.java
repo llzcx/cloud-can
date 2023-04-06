@@ -2,11 +2,13 @@ package ccw.serviceinnovation.oss.mapper;
 
 import ccw.serviceinnovation.common.entity.BucketTagBucket;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 
 
 /**
  * @author Joy Yang
  */
+@Mapper
 public interface BucketTagBucketMapper extends BaseMapper<BucketTagBucket> {
 
     /**

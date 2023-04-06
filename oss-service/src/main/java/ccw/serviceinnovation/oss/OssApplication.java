@@ -30,5 +30,7 @@ public class OssApplication {
         //对2种消费者进行初始化
         coldConsumer.initMqUnfreeze();
         coldConsumer.initMqFreeze();
+        coldConsumer.initDeleteTmp();
+        coldConsumer.initColdDeleteTmp();
     }
 }

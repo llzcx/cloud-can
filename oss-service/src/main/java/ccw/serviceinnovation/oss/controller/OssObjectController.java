@@ -21,6 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static ccw.serviceinnovation.common.constant.AuthorityConstant.API_BUCKET;
+import static ccw.serviceinnovation.common.constant.AuthorityConstant.API_OBJECT;
+
 /**
  * 对象接口
  * @author 陈翔
@@ -96,18 +99,18 @@ public class OssObjectController {
 
     /**
      * 创建一个文件分块上传事件
-     * @param bucketName
-     * @param objectName
-     * @param etag
-     * @param size
-     * @param chunks
-     * @param parentObjectId
-     * @return 该事件的唯一ID
+     * @param bucketName 桶名字
+     * @param objectName 对象名字
+     * @param etag hash值
+     * @param size 大小(单位:B)
+     * @param chunks 总块数
+     * @param parentObjectId 父级对象id(文件夹对象)
+     * @return 该事件的唯一ID / 或者直接上传成功
      * @throws Exception
      */
     @PostMapping("/createChunkToken")
     @OssApi(target = AuthorityConstant.API_BUCKET,type = AuthorityConstant.API_WRITER,name = "createChunkToken",description = "创建一个文件分块上传事件[大文件]")
-    public ApiResp<BlockTokenBo> putBigObject(@RequestParam("bucketName") String bucketName,
+    public ApiResp<BlockTokenBo> createChunkToken(@RequestParam("bucketName") String bucketName,
                                               String objectName,
                                               String etag,
                                               Long size,
@@ -120,21 +123,22 @@ public class OssObjectController {
 
     /**
      * 合并文件分块
-     * @param blockToken
+     * @param blockToken 文件事件的id
+     * @param bucketName 桶名字
      * @return
      * @throws Exception
      */
     @PostMapping("/merge")
     @OssApi(target = AuthorityConstant.API_BUCKET,type = AuthorityConstant.API_WRITER,name = "putBigObject",description = "在桶中添加一个对象[大文件]")
-    public ApiResp<Boolean> merge(String blockToken) throws Exception{
-        return ApiResp.success(objectService.mergeObjectChunk(blockToken));
+    public ApiResp<Boolean> merge(String bucketName,String blockToken) throws Exception{
+        return ApiResp.success(objectService.mergeObjectChunk(bucketName,blockToken));
     }
 
 
     /**
      * 从桶中删除一个对象
-     * @param bucketName
-     * @param objectName
+     * @param bucketName 桶名
+     * @param objectName 对象名
      * @return 返回添加的桶对象
      * @throws Exception
      */
@@ -150,7 +154,12 @@ public class OssObjectController {
 
     /**
      * 获取对象列表
-     * @param bucketName
+     * @param bucketName 桶名
+     * @param key 桶名的关键字
+     * @param pageNum 第几页
+     * @param size 每页大小
+     * @param parentObjectId 父级文件夹id
+     * @param isImages 是否筛选出图片
      * @return
      * @throws Exception
      */
@@ -166,7 +175,8 @@ public class OssObjectController {
 
     /**
      * 归档一个文件
-     * @param bucketName
+     * @param bucketName 桶名
+     * @param objectName 对象名
      * @return
      * @throws Exception
      */
@@ -179,7 +189,8 @@ public class OssObjectController {
 
     /**
      * 解冻一个文件
-     * @param bucketName
+     * @param bucketName 桶名
+     * @param objectName 待解冻的对象名
      * @return
      * @throws Exception
      */
@@ -191,21 +202,26 @@ public class OssObjectController {
 
     /**
      * 备份一个对象
-     * @param bucketName
+     * @param bucketName 源对象所处的桶名
+     * @param objectName  源对象的对象名
+     * @param targetBucketName 目标桶
+     * @param newObjectName 在目标桶中的新名字
      * @return
      * @throws Exception
      */
     @PostMapping("/backup")
     @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_WRITER,name = "backup",description = "备份一个对象")
     public ApiResp<Boolean> backup(@RequestParam("bucketName") String bucketName,@RequestParam("objectName") String objectName,
-                                   @RequestParam("newObjectName")String newObjectName) throws Exception{
-        return ApiResp.success(objectService.backup(bucketName, objectName,objectName,newObjectName));
+                                   @RequestParam("targetBucketName") String targetBucketName,
+                                   @RequestParam(value = "newObjectName",required = false)String newObjectName) throws Exception{
+        return ApiResp.success(objectService.backup(bucketName, targetBucketName,objectName,newObjectName));
     }
 
 
     /**
      * 复原一个对象
-     * @param bucketName
+     * @param bucketName 备份对象-桶名
+     * @param objectName 备份对象-对象名
      * @return
      * @throws Exception
      */
@@ -215,5 +231,36 @@ public class OssObjectController {
         return ApiResp.success(objectService.backupRecovery(bucketName, objectName));
     }
 
+    /**
+     * 重命名对象
+     * @param bucketName 桶名
+     * @param objectName 对象名
+     * @param newtName 新名字
+     * @return
+     * @throws Exception
+     */
+    @PutMapping("/updateObjectName")
+    @OssApi(target = API_OBJECT,type = AuthorityConstant.API_WRITER, name = "updateObjectName",description = "重命名对象")
+    public ApiResp<Boolean> updateObjectName(@RequestParam(value = "bucketName") String bucketName
+            ,@RequestParam(value = "objectName") String objectName,@RequestParam(value = "newtName") String newtName) throws Exception {
+        Boolean flag = objectService.updateObjectName(bucketName,objectName,newtName);
+        return ApiResp.ifResponse(flag,flag,ResultCode.COMMON_FAIL);
+    }
+
+    /**
+     * 更新objectAcl
+     * @param bucketName 桶名
+     * @param objectName 对象名
+     * @param objectAcl objectAcl编码
+     * @return
+     * @throws Exception
+     */
+    @PutMapping("/updateObjectAcl")
+    @OssApi(target = API_OBJECT,type = AuthorityConstant.API_WRITER, name = "updateObjectAcl",description = "更新objectAcl")
+    public ApiResp<Boolean> updateObjectAcl(@RequestParam(value = "bucketName") String bucketName
+            ,@RequestParam(value = "objectName") String objectName,@RequestParam(value = "newtName") Integer objectAcl) throws Exception {
+        Boolean flag = objectService.updateObjectAcl(bucketName,objectName,objectAcl);
+        return ApiResp.ifResponse(flag,flag,ResultCode.COMMON_FAIL);
+    }
 }
 

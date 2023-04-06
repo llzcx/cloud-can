@@ -30,6 +30,25 @@ public interface IObjectService extends IService<OssObject> {
 
 
     /**
+     * 更改对象名字
+     * @param bucketName
+     * @param objectName
+     * @param newName
+     * @return
+     */
+    Boolean updateObjectName(String bucketName, String objectName,String newName);
+
+
+    /**
+     * 更新对象权限
+     * @param bucketName
+     * @param objectName
+     * @param objectAcl
+     * @return
+     */
+    Boolean updateObjectAcl(String bucketName, String objectName,Integer objectAcl);
+
+    /**
      * 用户从桶里添加一个对象[小文件上传]
      * @param bucketName
      * @param objectName
@@ -46,10 +65,11 @@ public interface IObjectService extends IService<OssObject> {
      * @param file 文件
      * @param chunk 第几块
      * @param blockToken 凭证
+     * @param bucketName
      * @return
      * @throws Exception
      */
-    Boolean addObjectChunk(MultipartFile file, Integer chunk, String blockToken) throws Exception;
+    Boolean addObjectChunk(MultipartFile file, Integer chunk, String blockToken,String bucketName) throws Exception;
 
     /**
      * 合并分块
@@ -57,7 +77,7 @@ public interface IObjectService extends IService<OssObject> {
      * @return
      * @throws Exception
      */
-    Boolean mergeObjectChunk(String blockToken) throws Exception;
+    Boolean mergeObjectChunk(String bucketName,String blockToken) throws Exception;
     /**
      *
      * @param etag 对象MD5值

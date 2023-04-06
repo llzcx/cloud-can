@@ -44,4 +44,6 @@ public class OssColdDataConstant {
         OssColdDataConstant.NACOS_SERVER_ADDR = nacosServerAddress;
     }
 
+
+
 }

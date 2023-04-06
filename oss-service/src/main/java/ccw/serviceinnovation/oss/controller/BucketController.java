@@ -68,7 +68,9 @@ public class BucketController {
 
     /**
      * 创建一个桶
-     * @return 返回添加的桶对象
+     * @param addBucketDto dto
+     * @return
+     * @throws Exception
      */
     @PostMapping("/createBucket")
     @OssApi(target = AuthorityConstant.API_USER,type = AuthorityConstant.API_WRITER, name = "createBucket",description = "创建一个桶")
@@ -79,7 +81,9 @@ public class BucketController {
 
     /**
      * 删除一个桶
-     * @return 返回是否删除成功
+     * @param bucketName 桶名
+     * @return
+     * @throws Exception
      */
     @DeleteMapping("/deleteBucket")
     @OssApi(target = API_BUCKET,type = AuthorityConstant.API_WRITER, name = "deleteBucket",description = "删除一个桶")
@@ -87,6 +91,55 @@ public class BucketController {
         Boolean flag = bucketService.deleteBucket(bucketName);
         return ApiResp.ifResponse(flag,flag,ResultCode.COMMON_FAIL);
     }
+
+
+    /**
+     * 更新bucketAcl
+     * @param bucketName 桶名
+     * @param bucketAcl bucketAcl编码
+     * @return
+     * @throws Exception
+     */
+    @PutMapping("/updateBucketAcl")
+    @OssApi(target = API_BUCKET,type = AuthorityConstant.API_WRITER, name = "updateBucketAcl",description = "更新bucketAcl")
+    public ApiResp<Boolean> updateBucketAcl(@RequestParam(value = "bucketName") String bucketName
+    ,@RequestParam(value = "bucketAcl") Integer bucketAcl) throws Exception {
+        Boolean flag = bucketService.updateBucketAcl(bucketName,bucketAcl);
+        return ApiResp.ifResponse(flag,flag,ResultCode.COMMON_FAIL);
+    }
+
+
+    /**
+     * 更新Secret
+     * @param bucketName 桶名
+     * @param secret 加密方式对应的编码 为NULL则代表 不加密
+     * @return
+     * @throws Exception
+     */
+    @PutMapping("/updateSecret")
+    @OssApi(target = API_BUCKET,type = AuthorityConstant.API_WRITER, name = "updateSecret",description = "更新Secret")
+    public ApiResp<Boolean> updateSecret(@RequestParam(value = "bucketName") String bucketName
+            ,@RequestParam(value = "secret") Integer secret) throws Exception {
+        Boolean flag = bucketService.updateSecret(bucketName,secret);
+        return ApiResp.ifResponse(flag,flag,ResultCode.COMMON_FAIL);
+    }
+
+    /**
+     * 更新StorageLevel
+     * @param bucketName 桶名
+     * @param storageLevel 存储类型对应的编码
+     * @return
+     * @throws Exception
+     */
+    @PutMapping("/updateStorageLevel")
+    @OssApi(target = API_BUCKET,type = AuthorityConstant.API_WRITER, name = "updateSecret",description = "更新StorageLevel")
+    public ApiResp<Boolean> updateStorageLevel(@RequestParam(value = "bucketName") String bucketName
+            ,@RequestParam(value = "storageLevel") Integer storageLevel) throws Exception {
+        Boolean flag = bucketService.updateStorageLevel(bucketName,storageLevel);
+        return ApiResp.ifResponse(flag,flag,ResultCode.COMMON_FAIL);
+    }
+
+
 
 }
 

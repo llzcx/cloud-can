@@ -7,4 +7,6 @@ package ccw.serviceinnovation.common.constant;
 public interface MessageQueueConstant {
     String TOPIC_FREEZE = "Topic-freeze";
     String TOPIC_UNFREEZE = "Topic-unfreeze";
+    String TOPIC_DELETE_TMP = "Topic-delete-tmp";
+    String TOPIC_COLD_DELETE_TMP = "Topic-cold-delete-tmp";
 }

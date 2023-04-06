@@ -30,7 +30,6 @@ public interface RedisConstant {
      */
     String NOR_COUNT = "NOR_COUNT:";
 
-
     /**
      * 归档数据去重
      */
@@ -39,7 +38,7 @@ public interface RedisConstant {
     /**
      * 归档数据去重
      */
-    String COLD_COUNT = "COLD:";
+    String COLD_COUNT = "COLD_COUNT:";
 
     /**
      * 文件服务器 etag=>address
@@ -61,6 +60,8 @@ public interface RedisConstant {
      * 分块相关信息 UUID=>{userId,bucketId,etag}
      */
     String BLOCK_TOKEN = "BLOCK_TOKEN:";
+
+    String BUCKET_NAME = "BUCKET_NAME:";
 
     /**
      * 文件归档事件 etag=>hash

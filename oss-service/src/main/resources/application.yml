@@ -16,22 +16,12 @@ spring:
   datasource:
     druid:
       driver-class-name: com.mysql.jdbc.Driver
-      url: jdbc:mysql://101.35.43.156:3306/oss?useSSL=false&amp&serverTimezone=UTC
-      username: root
-      password: 123abc456
+      url: jdbc:mysql://${mysql.addr:101.35.43.156:3306}/oss?useSSL=false&amp&serverTimezone=UTC
+      username: ${mysql.username:root}
+      password: ${mysql.password:123abc456}
   redis:
-    redisson:
-      config: |
-        singleServerConfig:
-          password:
-          address: "redis://192.168.50.236:6379"
-          database: 1
-        threads: 0
-        nettyThreads: 0
-        codec: !<org.redisson.codec.FstCodec> {}
-        transportMode: "NIO"
-    host: 192.168.50.236
-    port: 6379
+    host: ${redis.ip:192.168.50.236}
+    port: ${redis.port:6379}
     timeout: 1000
     password:
     lettuce:
@@ -64,17 +54,7 @@ myoss:
   package: ccw.serviceinnovation.oss
   controller: ccw.serviceinnovation.oss.controller
   apiBatPath: D:\API文档\api\upload.bat
-  ftp:
-    ip: 101.35.43.156
-    port: 21
-    username: ftpuser
-    password: 123456
-    base-path: /root/ftp/ftpuser
-    postman_token: PMAK-63d8f9ef8e04bf3923326ae4-3f74d135145deba97df9e4b5702717d81f
-  location:
-    production: D:\OSS\production
-    place_on_file: D:\OSS\place_on_file
-    backups: D:\OSS\backups
+  postman_token: PMAK-63d8f9ef8e04bf3923326ae4-3f74d135145deba97df9e4b5702717d81f
 
 dubbo:
   consumer:
@@ -83,8 +63,9 @@ dubbo:
   protocol:
     id: dubbo
     name: dubbo
-    port: 8085
-    host: 192.168.50.236
+    port: ${dubbo.protocol.port:8085}
+    host: ${dubbo.protocol.host:192.168.50.236}
+
   scan:
     basePackages: ccw.serviceinnovation.oss
   application:
@@ -101,6 +82,10 @@ dubbo:
 #      migration: APPLICATION_FIRST
     name: oss-service-consumer
   registry:
-    address: nacos://101.35.43.156:8848
-    username: nacos
-    password: nacos
+    address: nacos://${nacos.addr:192.168.50.236:8848}
+    username: ${nacos.username:nacos}
+    password: ${nacos.password:nacos}
+
+
+rocketmq:
+  addr: ${rocketmq.addr:192.168.50.236:9876}

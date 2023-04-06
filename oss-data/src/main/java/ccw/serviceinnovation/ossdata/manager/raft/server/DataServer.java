@@ -121,7 +121,6 @@ public class DataServer {
         final String serverIdStr = args[2];
         final String initConfStr = args[3];
         log.info("Server:{} {} {} {}",dataPath,groupId,serverIdStr,initConfStr);
-
         final NodeOptions nodeOptions = new NodeOptions();
         // for test, modify some params
         // set election timeout to 1s
@@ -139,7 +138,6 @@ public class DataServer {
         }
         // set cluster configuration
         nodeOptions.setInitialConf(initConf);
-
         // start raft server
         final DataServer dataServer = new DataServer(dataPath, groupId, serverId, nodeOptions);
         System.out.println("Started counter server at port:" + dataServer.getNode().getNodeId().getPeerId().getPort());

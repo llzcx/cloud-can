@@ -116,4 +116,60 @@ public class BucketServiceImpl extends ServiceImpl<BucketMapper, Bucket> impleme
     public Bucket getBucketInfo(String bucketName) {
         return bucketMapper.selectOne(MPUtil.queryWrapperEq("name", bucketName));
     }
+
+    @Override
+    public Boolean updateStorageLevel(String bucketName, Integer storageLevel) {
+        Bucket bucket = bucketMapper.selectBucketByName(bucketName);
+        if(bucket==null){
+            throw new OssException(ResultCode.BUCKET_IS_DEFECT);
+        }else{
+            StorageTypeEnum anEnum = StorageTypeEnum.getEnum(storageLevel);
+            if(anEnum==null){
+                throw new OssException(ResultCode.UNDEFINED);
+            }else{
+                bucket.setStorageLevel(anEnum.getCode());
+                bucketMapper.updateById(bucket);
+                return true;
+            }
+        }
+    }
+
+    @Override
+    public Boolean updateBucketAcl(String bucketName, Integer bucketAcl) {
+        Bucket bucket = bucketMapper.selectBucketByName(bucketName);
+        if(bucket==null){
+            throw new OssException(ResultCode.BUCKET_IS_DEFECT);
+        }else{
+            ObjectACLEnum anEnum = ObjectACLEnum.getEnum(bucketAcl);
+            if(anEnum==null || anEnum.equals(ObjectACLEnum.DEFAULT)){
+                throw new OssException(ResultCode.UNDEFINED);
+            }else{
+                bucket.setBucketAcl(anEnum.getCode());
+                bucketMapper.updateById(bucket);
+                return true;
+            }
+        }
+    }
+
+    @Override
+    public Boolean updateSecret(String bucketName, Integer secret) {
+        Bucket bucket = bucketMapper.selectBucketByName(bucketName);
+        if(bucket==null){
+            throw new OssException(ResultCode.BUCKET_IS_DEFECT);
+        }else{
+            if(secret==null){
+                bucket.setSecret(null);
+            }else{
+                SecretEnum anEnum = SecretEnum.getEnum(secret);
+                if(anEnum==null){
+                    throw new OssException(ResultCode.UNDEFINED);
+                }else{
+                    bucket.setSecret(anEnum.getCode());
+                    bucketMapper.updateById(bucket);
+                }
+            }
+            bucketMapper.updateById(bucket);
+            return true;
+        }
+    }
 }

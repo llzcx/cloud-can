@@ -1,5 +1,8 @@
 package ccw.serviceinnovation.common.nacos;
 
+import ccw.serviceinnovation.common.entity.LocationVo;
+import ccw.serviceinnovation.common.exception.OssException;
+import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.common.util.http.HttpUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -71,7 +74,7 @@ public class TrackerService {
      */
     public static List<Host> getColdList(String nacosPath){
         try {
-            String response = HttpUtils.request("http://"+nacosPath + "/nacos/v1/ns/instance/list?serviceName=oss-cold-data");
+            String response = HttpUtils.request("http://"+nacosPath + "/nacos/v1/ns/instance/list?serviceName=oss-cold-data-server");
             List<Host> hosts = JSONObject.parseObject(response, Response.class).getHosts();
             return hosts;
         } catch (Exception exception) {
@@ -108,5 +111,7 @@ public class TrackerService {
         }
         return null;
     }
+
+
 
 }

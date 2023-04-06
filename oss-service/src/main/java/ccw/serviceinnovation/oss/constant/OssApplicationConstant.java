@@ -10,38 +10,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class OssApplicationConstant {
 
-
-    /**
-     * 生产环境主机
-     */
-    public static String LOCATION_PRODUCTION;
-    @Value("${myoss.location.production}")
-    public void setLocationProduction(String locationProduction) {
-        LOCATION_PRODUCTION = locationProduction;
-    }
-
-    /**
-     * 备份主机
-     */
-    public static String LOCATION_BACKUPS;
-    @Value("${myoss.location.backups}")
-    public void setLocationBackups(String locationBackups) {
-        LOCATION_BACKUPS = locationBackups;
-    }
-
-    /**
-     * 归档主机
-     */
-    public static String LOCATION_PLACE_ON_FILE;
-    @Value("${myoss.location.place_on_file}")
-    public void setLocationPlaceOnFile(String locationPlaceOnFile) {
-        LOCATION_PLACE_ON_FILE = locationPlaceOnFile;
-    }
-
     /**
      *包路径
      */
-
     public static String PACKAGE;
     @Value("${myoss.package}")
     public void setPACKAGE(String PACKAGE) {
@@ -58,17 +29,10 @@ public class OssApplicationConstant {
         OssApplicationConstant.CONTROLLER = CONTROLLER;
     }
 
-    /**
-     * 批指令上传接口文档到github
-     */
-    public static String API_BAT_PATH;
-    @Value("${myoss.apiBatPath}")
-    public void setApiBatPath(String apiBatPath) {
-        OssApplicationConstant.API_BAT_PATH = apiBatPath;
-    }
+
 
     /**
-     * 批指令上传接口文档到github
+     * addr
      */
     public static String ADDRESS;
     @Value("${server.address}")
@@ -77,7 +41,7 @@ public class OssApplicationConstant {
     }
 
     /**
-     * 批指令上传接口文档到github
+     * nacos
      */
     public static String NACOS_SERVER_ADDR;
     @Value("${spring.cloud.nacos.server-addr}")
@@ -85,11 +49,23 @@ public class OssApplicationConstant {
         OssApplicationConstant.NACOS_SERVER_ADDR = nacosServerAddress;
     }
 
+    /**
+     * http port
+     */
     public static String PORT;
     @Value("${server.port}")
     public void setPort(String port) {
         OssApplicationConstant.PORT = port;
     }
 
+
+    /**
+     * http port
+     */
+    public static String MQ_ADDR;
+    @Value("${rocketmq.addr}")
+    public void setMqAddr(String addr) {
+        OssApplicationConstant.MQ_ADDR = addr;
+    }
 
 }

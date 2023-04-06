@@ -1,5 +1,6 @@
 package ccw.serviceinnovation.common.util.http;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
@@ -9,6 +10,7 @@ import java.net.URL;
  * @author FeianLing
  * @date 2019/9/16
  */
+@Slf4j
 public class FileUtil {
     private FileUtil() {
         //ignore this method
@@ -16,24 +18,35 @@ public class FileUtil {
 
     /**
      * @param
-     * @param fileUrl
-     * @param filePath
+     * @param fileUrl 网络地址
+     * @param filePath 文件地址
      * @return void
      * @author FeianLing
      * @date 2019/9/16
      * @desc 通过url请求将文件保存到本地
      */
     public static boolean saveFile(String fileUrl, String filePath) throws IOException {
-        URL url = new URL(fileUrl);
-        File file = new File(filePath);
-        if (!file.getParentFile().exists()) {
-            file.mkdirs();
+        try {
+            URL url = new URL(fileUrl);
+            File file = new File(filePath);
+            if (!file.getParentFile().exists()) {
+                file.mkdirs();
+            }
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            FileUtils.copyURLToFile(url, file);
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.info("无法从{}同步,原因:{}",fileUrl,e.getCause());
+            return false;
         }
-        if (!file.exists()) {
-            file.createNewFile();
-        }
-        FileUtils.copyURLToFile(url, file);
         return true;
+    }
+
+    public static void main(String[] args) throws IOException {
+        boolean b = FileUtil.saveFile("http://192.168.50.236:5555/object/preview-image/mybucket", "D:\\OSS\\uneducated");
+        System.out.println(b);
     }
 
     //使用lastIndexOf()结合subString()获取后缀名
@@ -45,9 +58,7 @@ public class FileUtil {
         return filename.substring(filename.lastIndexOf("."));
     }
 
-    public static void main(String[] args) throws IOException {
 
-    }
 
     /**
      * 方法功能：读取文件内容返回字节流

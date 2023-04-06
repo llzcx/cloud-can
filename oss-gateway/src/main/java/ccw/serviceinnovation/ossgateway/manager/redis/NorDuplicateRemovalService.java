@@ -33,7 +33,7 @@ public class NorDuplicateRemovalService {
 
     public long del(String etag) {
         long hincr = redisUtil.hincr(COUNT_PREFIX, etag, -1);
-        if(hincr==0){
+        if(hincr<=0){
             redisUtil.hdel(GROUP_PREFIX, etag);
             redisUtil.hdel(COUNT_PREFIX, etag);
         }

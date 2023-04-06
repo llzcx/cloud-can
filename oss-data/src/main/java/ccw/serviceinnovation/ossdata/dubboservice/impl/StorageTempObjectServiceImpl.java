@@ -4,7 +4,6 @@ import ccw.serviceinnovation.common.constant.FileTypeConstant;
 import ccw.serviceinnovation.common.constant.SecretEnum;
 import ccw.serviceinnovation.common.util.file.JpegCompress;
 import ccw.serviceinnovation.common.util.file.VideoCompress;
-import ccw.serviceinnovation.common.util.sm4.SM4;
 import ccw.serviceinnovation.common.util.sm4.SM4Utils;
 import ccw.serviceinnovation.ossdata.constant.OssDataConstant;
 import cn.hutool.core.io.FileTypeUtil;
@@ -15,10 +14,7 @@ import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.stereotype.Service;
 import service.StorageTempObjectService;
 import service.bo.FilePrehandleBo;
-
 import java.io.*;
-import java.util.Arrays;
-
 import static ccw.serviceinnovation.common.constant.FileConstant.READ_WRITER_SIZE;
 import static ccw.serviceinnovation.ossdata.constant.FilePrefixConstant.FILE_NOR;
 import static ccw.serviceinnovation.ossdata.constant.FilePrefixConstant.FILE_TMP_BLOCK;
@@ -58,8 +54,6 @@ public class StorageTempObjectServiceImpl implements StorageTempObjectService {
                 return null;
             }
         }
-
-
         if("mp4".equals(type)){
             fileCompressBo.setFileType(FileTypeConstant.VIDEO);
             if(press){
@@ -77,7 +71,7 @@ public class StorageTempObjectServiceImpl implements StorageTempObjectService {
         }else if("txt".equals(type)){
             fileCompressBo.setFileType(FileTypeConstant.TEXT);
             return fileCompressBo;
-        }else if("jpg".equals(type)){
+        }else if("jpg".equals(type) || "png".equals(type)){
             fileCompressBo.setFileType(FileTypeConstant.IMG);
             if (press){
                 JpegCompress.compress(TMP_BLOCK + objectKey, TMP_BLOCK + objectKey);
@@ -93,8 +87,7 @@ public class StorageTempObjectServiceImpl implements StorageTempObjectService {
     }
 
     public static void main(String[] args) {
-        File file = new File("D:\\OSS\\02\\position\\TMP_BLOCK&aaac15f9_1006_463a_933f_a45768c18f08");
-        JpegCompress.compress("D:\\OSS\\02\\position\\TMP_BLOCK&aaac15f9_1006_463a_933f_a45768c18f08", "123");
+        System.out.println(SecureUtil.md5("C:\\Users\\陈翔\\Desktop\\预备役笔记\\数学函数2.jpg"));
     }
 
     @Override
@@ -121,17 +114,7 @@ public class StorageTempObjectServiceImpl implements StorageTempObjectService {
     }
 
     private Boolean  deleteFile(File file){
-        if(file.exists() && file.isDirectory() && file.list()!=null){
-            String[] list = file.list();
-            assert list != null;
-            if(list.length==0){
-                return file.delete();
-            }else{
-                return false;
-            }
-        }else{
-            return false;
-        }
+        return file.delete();
     }
 
 
@@ -139,7 +122,10 @@ public class StorageTempObjectServiceImpl implements StorageTempObjectService {
     @Override
     public Boolean deleteBlockObject(String objectKey) throws Exception {
         File file = new File(TMP_BLOCK +objectKey);
-        return deleteFile(file);
+        if(!file.exists()){
+            return true;
+        }
+        return file.delete();
     }
 
 

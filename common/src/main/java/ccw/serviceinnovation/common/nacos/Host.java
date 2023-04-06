@@ -18,4 +18,12 @@ public class Host{
         private Integer port;
         private String group;
         private Metadata metadata;
+
+        public Host(String ip, Integer port) {
+                this.ip = ip;
+                this.port = port;
+        }
+
+        public Host() {
+        }
 }

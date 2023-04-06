@@ -1,9 +1,9 @@
 server:
-  port: ${server.port:8021}
+  port: ${server.port:5700}
   address: 0.0.0.0
 
 
-position: D:\OSS\cold_01
+position: ${position:D:\OSS\cold_01}
 
 spring:
   profiles:
@@ -17,22 +17,12 @@ spring:
   datasource:
     druid:
       driver-class-name: com.mysql.jdbc.Driver
-      url: jdbc:mysql://101.35.43.156:3306/oss?useSSL=false&amp&serverTimezone=UTC
-      username: root
-      password: 123abc456
+      url: jdbc:mysql://${redis.addr:101.35.43.156:3306}/oss?useSSL=false&amp&serverTimezone=UTC
+      username: ${redis.username:root}
+      password: ${redis.password:123abc456}
   redis:
-    redisson:
-      config: |
-        singleServerConfig:
-          password:
-          address: "redis://192.168.50.236:6379"
-          database: 1
-        threads: 0
-        nettyThreads: 0
-        codec: !<org.redisson.codec.FstCodec> {}
-        transportMode: "NIO"
-    host: 101.35.43.156
-    port: 6379
+    host: ${redis.ip:192.168.50.236}
+    port: ${redis.port:6379}
     timeout: 1000
     password:
     lettuce:
@@ -42,7 +32,7 @@ spring:
         maxWait: 10000
         maxActive: 8
   application:
-    name: oss-data-server
+    name: oss-cold-data-server
 
 
 
