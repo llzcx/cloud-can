@@ -15,9 +15,96 @@
 
 #### 使用说明
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+oss-gateway5555:
+--server.address=0.0.0.0
+--server.port=5555
+--nacos.addr=192.168.50.236:8848
+--naocs.username=nacos
+--nacos.password=nacos
+--redis.ip=192.168.50.236
+--redis.port=6379
+--mysql.addr=101.35.43.156:3306
+--mysql.username=root
+--mysql.password=123abc456
+
+oss-data8021:
+--server.address=0.0.0.0
+--server.port=8021
+--group=group1
+--cluster=192.168.50.236:8031,192.168.50.236:8032,192.168.50.236:8033
+--jraft-data-path=D:\oss\01\jraft_data_path
+--position=D:\oss\01\position
+--rpc-addr=192.168.50.236:8031
+--dubbo.protocol.port=20881
+--dubbo.protocol.host=192.168.50.236
+--nacos.addr=192.168.50.236:8848
+--naocs.username=nacos
+--nacos.password=nacos
+--redis.ip=192.168.50.236
+--redis.port=6379
+
+oss-data8022:
+--server.address=0.0.0.0
+--server.port=8022
+--group=group1
+--cluster=192.168.50.236:8031,192.168.50.236:8032,192.168.50.236:8033
+--jraft-data-path=D:\oss\02\jraft_data_path
+--position=D:\oss\02\position
+--rpc-addr=192.168.50.236:8032
+--dubbo.protocol.host=192.168.50.236
+--dubbo.protocol.port=20882
+--nacos.addr=192.168.50.236:8848
+--naocs.username=nacos
+--nacos.password=nacos
+--redis.ip=192.168.50.236
+--redis.port=6379
+
+oss-data8023:
+--server.address=0.0.0.0
+--server.port=8023
+--group=group1
+--cluster=192.168.50.236:8031,192.168.50.236:8032,192.168.50.236:8033
+--jraft-data-path=D:\oss\03\jraft_data_path
+--position=D:\oss\03\position
+--rpc-addr=192.168.50.236:8033
+--dubbo.protocol.host=192.168.50.236
+--dubbo.protocol.port=20883
+--nacos.addr=192.168.50.236:8848
+--naocs.username=nacos
+--nacos.password=nacos
+--redis.ip=192.168.50.236
+--redis.port=6379
+
+oss-service8080:
+--server.address=0.0.0.0
+--server.port=8080
+--nacos.addr=192.168.50.236:8848
+--naocs.username=nacos
+--nacos.password=nacos
+--redis.ip=192.168.50.236
+--redis.port=6379
+--mysql.addr=101.35.43.156:3306
+--mysql.username=root
+--mysql.password=123abc456
+--dubbo.protocol.host=192.168.50.236
+--dubbo.protocol.port=8085
+--rocketmq.addr=192.168.50.236:9876
+
+oss-cold-data5700:
+--server.address=0.0.0.0
+--server.port=5700
+--nacos.addr=192.168.50.236:8848
+--naocs.username=nacos
+--nacos.password=nacos
+--redis.ip=192.168.50.236
+--redis.port=6379
+--mysql.addr=101.35.43.156:3306
+--mysql.username=root
+--mysql.password=123abc456
+--rocketmq.addr=192.168.50.236:9876
+--cold_storage_name=cold-storage1
+--position=D:\OSS\cold_01
+
 
 
 #### 参与贡献
