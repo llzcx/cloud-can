@@ -6,7 +6,6 @@ import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.oss.common.util.JwtUtil;
 import ccw.serviceinnovation.oss.service.IBucketService;
 import ccw.serviceinnovation.oss.service.IUserFavoriteService;
-import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,10 +48,10 @@ public class UserFavoriteController {
      * @throws Exception
      */
     @PutMapping("/putUserFavorite")
-    public ApiResp<Boolean> putUserFavorite(@RequestParam(value = "bucketName") String bucketName) throws Exception{
+    public ApiResp<List<Bucket>> putUserFavorite(@RequestParam(value = "bucketName") String bucketName) throws Exception{
         Long userId = JwtUtil.getID(request);
-        Boolean put = userFavoriteService.putUserFavorite(bucketName, userId);
-        return ApiResp.ifResponse(put, put, ResultCode.COMMON_FAIL);
+        List<Bucket> list = userFavoriteService.putUserFavorite(bucketName, userId);
+        return ApiResp.ifResponse(list != null,list,ResultCode.BUCKET_NOT_EXIST);
     }
 
     /**
@@ -62,9 +61,9 @@ public class UserFavoriteController {
      * @throws Exception
      */
     @DeleteMapping("/deleteUserFavorite")
-    public ApiResp<Boolean> deleteUserFavorite(@RequestParam(value = "bucketName") String bucketName) throws Exception{
+    public ApiResp<List<Bucket>> deleteUserFavorite(@RequestParam(value = "bucketName") String bucketName) throws Exception{
         Long id = JwtUtil.getID(request);
-        Boolean flag = userFavoriteService.delete(id, bucketName);
-        return ApiResp.ifResponse(flag,flag,ResultCode.COMMON_FAIL);
+        List<Bucket> delete = userFavoriteService.delete(id, bucketName);
+        return ApiResp.success(delete);
     }
 }

@@ -1,4 +1,5 @@
 package ccw.serviceinnovation.oss.service.impl;
+import ccw.serviceinnovation.common.constant.ObjectACLEnum;
 
 
 import ccw.serviceinnovation.common.constant.ObjectACLEnum;
@@ -15,6 +16,8 @@ import ccw.serviceinnovation.oss.service.IManageBucketService;
 import ccw.serviceinnovation.oss.service.IObjectService;
 import ccw.serviceinnovation.oss.service.IUserFavoriteService;
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,10 +70,13 @@ public class ManageBucketServiceImpl extends ServiceImpl<ManageBucketMapper, Buc
             List<BucketVo> bucketVos = getBucketVos(bucketList);
 
             bucketVoRPage = new RPage<>(pageNum,size,bucketVos);
-            bucketVoRPage.setTotalCountAndTotalPage(manageBucketMapper.selectCount(MPUtil.queryWrapperEq("user_id", longKeyword, "name", keyword)));
+            QueryWrapper eq = new QueryWrapper<>().eq("user_id", longKeyword).or().eq("name", keyword);
+            bucketVoRPage.setTotalCountAndTotalPage(manageBucketMapper.selectCount(eq));
+//            MPUtil.queryWrapperEq("user_id", longKeyword, "name", keyword));
         }
         return bucketVoRPage;
     }
+
 
     @Override
     public Boolean deleteBucket(Long userId,String name) throws Exception{

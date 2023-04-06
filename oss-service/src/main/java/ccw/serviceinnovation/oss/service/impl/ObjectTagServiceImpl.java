@@ -6,6 +6,7 @@ import ccw.serviceinnovation.oss.common.util.MPUtil;
 import ccw.serviceinnovation.oss.mapper.ObjectTagMapper;
 import ccw.serviceinnovation.oss.mapper.ObjectTagObjectMapper;
 import ccw.serviceinnovation.oss.mapper.OssObjectMapper;
+import ccw.serviceinnovation.oss.pojo.dto.TagDto;
 import ccw.serviceinnovation.oss.service.IObjectTagService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -47,15 +48,20 @@ public class ObjectTagServiceImpl extends ServiceImpl<ObjectTagMapper, ObjectTag
      * 删除标签
      * @param bucketName
      * @param objectName
-     * @param tagId
+     * @param objectTags
      * @return
      */
     @Override
-    public Boolean deleteObjectTag(String bucketName, String objectName, Long tagId) {
+    public List<ObjectTag> deleteObjectTag(String bucketName, String objectName, List<ObjectTag> objectTags) {
         Long objectId = ossObjectMapper.selectObjectIdByName(bucketName, objectName);
-        int delete = objectTagObjectMapper.delete(MPUtil.queryWrapperEq("object_id", objectId, "tag_id", tagId));
-        int deleteTag = objectTagMapper.delete(MPUtil.queryWrapperEq("id", tagId));
-        return delete>0 && deleteTag>0;
+
+        for (ObjectTag objectTag : objectTags) {
+            objectTagObjectMapper.delete(MPUtil.queryWrapperEq("object_id", objectId, "tag_id", objectTag.getId()));
+            objectTagMapper.delete(MPUtil.queryWrapperEq("id", objectTag.getId()));
+        }
+
+        List<ObjectTag> objectTag = getObjectTag(bucketName, objectName);
+        return objectTag;
     }
 
     /**
@@ -66,18 +72,23 @@ public class ObjectTagServiceImpl extends ServiceImpl<ObjectTagMapper, ObjectTag
      * @return
      */
     @Override
-    public List<ObjectTag> putObjectTag(String bucketName, String objectName, List<ObjectTag> objectTags) {
+    public List<ObjectTag> putObjectTag(String bucketName, String objectName, List<TagDto> objectTags) {
         Long objectId = ossObjectMapper.selectObjectIdByName(bucketName, objectName);
 
         List<ObjectTag> objectTagsOld = getObjectTag(bucketName, objectName);
 
-        for (ObjectTag objectTag : objectTags) {
+        for (TagDto objectTag : objectTags) {
 
             //判断是否有相同的key
+            int flag= 0;
             for (ObjectTag objectTagOld : objectTagsOld) {
                 if (objectTagOld.getKey().equals(objectTag.getKey())){
-                    return null;
+                    flag = 1;
                 }
+            }
+
+            if (flag == 1){
+                continue;
             }
 
             ObjectTag newObjectTag = new ObjectTag();
@@ -88,7 +99,7 @@ public class ObjectTagServiceImpl extends ServiceImpl<ObjectTagMapper, ObjectTag
             ObjectTagObject objectTagObject = new ObjectTagObject();
             objectTagObject.setObjectId(objectId);
             objectTagObject.setTagId(newObjectTag.getId());
-            objectTagObjectMapper.insert(objectTagObject);
+            objectTagObjectMapper.insertTag(objectTagObject);
         }
 
         List<ObjectTag> newObjectTags = getObjectTag(bucketName, objectName);

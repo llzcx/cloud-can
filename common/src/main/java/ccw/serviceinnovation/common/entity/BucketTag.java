@@ -1,5 +1,7 @@
 package ccw.serviceinnovation.common.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,6 +17,7 @@ public class BucketTag implements Serializable {
     /**
      * Bucket标签唯一ID
      */
+    @TableId(value = "id",type = IdType.AUTO)
     private Long id;
 
     /**

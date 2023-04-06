@@ -40,7 +40,7 @@ public class FileUtil {
             "MP4",
             "MOV",
             "RM",
-            "RAM",
+            "CreateRamUserDto",
             "SWF",
             "FLV",
     };

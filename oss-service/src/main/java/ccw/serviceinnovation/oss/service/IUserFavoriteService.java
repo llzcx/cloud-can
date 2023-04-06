@@ -19,7 +19,7 @@ public interface IUserFavoriteService extends IService<UserFavorite> {
      * @return 是否添加成功
      * @throws Exception
      */
-    Boolean putUserFavorite(String bucketName, Long userId) throws Exception;
+    List<Bucket> putUserFavorite(String bucketName, Long userId) throws Exception;
 
     /**
      * 删除bucket收藏
@@ -28,7 +28,7 @@ public interface IUserFavoriteService extends IService<UserFavorite> {
      * @return 是否删除成功
      * @throws Exception
      */
-    Boolean delete(Long id, String bucketName) throws Exception;
+    List<Bucket> delete(Long id, String bucketName) throws Exception;
 
     /**
      * 获取用户收藏的桶

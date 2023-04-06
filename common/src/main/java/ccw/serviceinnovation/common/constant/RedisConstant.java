@@ -73,4 +73,9 @@ public interface RedisConstant {
      */
     String OBJECT_STATE = "OBJECT_STATE:";
 
+    /**
+     * AccessKeyId存入redis
+     */
+    String ACCESSKEY_ID = "ACCESSKEY_ID:";
+
 }

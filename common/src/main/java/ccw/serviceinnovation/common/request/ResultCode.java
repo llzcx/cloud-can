@@ -77,9 +77,11 @@ public enum ResultCode {
     CANT_SET_STATE(3032,"不能设置为该状态"),
     BUCKET_NAME_NULL(3033,"桶名字为空"),
     BLOCK_TOKEN_NULL(3034,"blockToken为NULL"),
-    EVENT_NULL(3035,"该事件不存在"),
-    NAME_IS_EXIST(3036,"该名字已经被其他对象占用"),
-    FILE_IS_BIG(3037,"文件必须<=5MB,请更换上传方式(分片上传)"),
+    CREATE_USER_EXIST(3035,"用户名已存在"),
+    BUCKET_NOT_EXIST(3036,"bucket不存在"),
+    EVENT_NULL(3037,"该事件不存在"),
+    NAME_IS_EXIST(3038,"该名字已经被其他对象占用"),
+    FILE_IS_BIG(3039,"文件必须<=5MB,请更换上传方式(分片上传)"),
 
     ;
     private Integer code;

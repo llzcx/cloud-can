@@ -2,4 +2,29 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ccw.serviceinnovation.oss.mapper.UserMapper">
 
+    <select id="selectUsersByName" resultType="ccw.serviceinnovation.common.entity.User">
+        SELECT * FROM `user`
+        <where>
+            <if test="id != null">
+                parent = #{id}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND username like concat('%',#{keyword},'%')
+            </if>
+        </where>
+        <if test="offset != null and size != null">
+            LIMIT ${offset}, ${size}
+        </if>
+    </select>
+    <select id="selectCountByName" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM user
+        <where>
+            <if test="id != null">
+                parent = #{id}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND username like concat('%',#{keyword},'%')
+            </if>
+        </where>
+    </select>
 </mapper>

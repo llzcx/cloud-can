@@ -3,6 +3,8 @@ package ccw.serviceinnovation.oss.controller;
 import ccw.serviceinnovation.common.entity.ObjectTag;
 import ccw.serviceinnovation.common.request.ApiResp;
 import ccw.serviceinnovation.common.request.ResultCode;
+import ccw.serviceinnovation.oss.pojo.dto.DeleteObjectTagDto;
+import ccw.serviceinnovation.oss.pojo.dto.PutObjectTagDto;
 import ccw.serviceinnovation.oss.service.IObjectTagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -42,27 +44,23 @@ public class ObjectTagController {
      * 2-判断key是否相同
      * 3-添加
      * 可同时添加多个标签
-     * @param bucketName
-     * @param objectName
-     * @param objectTags
+     * @param objectTagDto
      * @return
      */
     @PutMapping("/putObjectTag")
-    public ApiResp<List<ObjectTag>> putObjectTag(@RequestParam("bucketName")String bucketName, @RequestParam("objectName") String objectName, @RequestBody List<ObjectTag> objectTags){
-        objectTagService.putObjectTag(bucketName,objectName,objectTags);
-        return ApiResp.success();
+    public ApiResp<List<ObjectTag>> putObjectTag(@RequestBody PutObjectTagDto objectTagDto){
+        List<ObjectTag> newObjectTags = objectTagService.putObjectTag(objectTagDto.getBucketName(),objectTagDto.getObjectName(),objectTagDto.getObjectTags());
+        return ApiResp.success(newObjectTags);
     }
 
     /**
      * 删除对象标签
-     * @param bucketName
-     * @param objectName
-     * @param tagId 标签的id
+     * @param objectTagDto
      * @return
      */
     @DeleteMapping("/deleteObjectTag")
-    public ApiResp<Boolean> deleteObjectTag(@RequestParam("bucketName") String bucketName, @RequestParam("objectName") String objectName, @RequestParam("TagId") Long tagId){
-        Boolean aBoolean = objectTagService.deleteObjectTag(bucketName, objectName, tagId);
-        return ApiResp.ifResponse(aBoolean,aBoolean, ResultCode.COMMON_FAIL);
+    public ApiResp<List<ObjectTag>> deleteObjectTag(@RequestBody DeleteObjectTagDto objectTagDto){
+        List<ObjectTag> newObjectTags = objectTagService.deleteObjectTag(objectTagDto.getBucketName(),objectTagDto.getObjectName(),objectTagDto.getObjectTags());
+        return ApiResp.success(newObjectTags);
     }
 }

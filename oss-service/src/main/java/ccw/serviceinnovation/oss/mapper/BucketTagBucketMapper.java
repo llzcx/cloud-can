@@ -17,4 +17,11 @@ public interface BucketTagBucketMapper extends BaseMapper<BucketTagBucket> {
      * @return
      */
     Long deleteTagByBucketId(Long bucketId);
+
+    /**
+     * 插入标签
+     * @param tagId
+     * @param bucketId
+     */
+    void insertTag(Long tagId, Long bucketId);
 }

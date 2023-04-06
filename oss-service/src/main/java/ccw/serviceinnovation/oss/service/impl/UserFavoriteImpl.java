@@ -29,11 +29,11 @@ public class UserFavoriteImpl extends ServiceImpl<UserFavoriteMapper, UserFavori
     private BucketMapper bucketMapper;
 
     @Override
-    public Boolean putUserFavorite(String bucketName, Long userId) throws Exception {
+    public List<Bucket> putUserFavorite(String bucketName, Long userId) throws Exception {
         Long bucketId = bucketMapper.selectBucketIdByName(bucketName);
 
         if (bucketId==null) {
-            return false;
+            return null;
         }
 
         UserFavorite userFavorite = new UserFavorite();
@@ -42,21 +42,26 @@ public class UserFavoriteImpl extends ServiceImpl<UserFavoriteMapper, UserFavori
 
         userFavoriteMapper.putUserFavorite(userFavorite);
 
-        return true;
+        List<Bucket> list = getUserFavorite(userId);
+
+        return list;
     }
 
     @Override
-    public Boolean delete(Long id, String bucketName) throws Exception {
-        int delete1 = userFavoriteMapper.delete(MPUtil.queryWrapperEq("name", bucketName));
-        return delete1>0;
+    public List<Bucket> delete(Long id, String bucketName) throws Exception {
+        Long bucketId = bucketMapper.selectBucketIdByName(bucketName);
+        userFavoriteMapper.delete(MPUtil.queryWrapperEq("bucket_id", bucketId,"user_id",id));
+
+        List<Bucket> list = getUserFavorite(id);
+
+        return list;
     }
 
 
     @Override
     public List<Bucket> getUserFavorite(Long userId) {
-        List<UserFavorite> userFavoriteList = userFavoriteMapper.selectList(MPUtil.queryWrapperEq("userId", userId));
+        List<UserFavorite> userFavoriteList = userFavoriteMapper.selectList(MPUtil.queryWrapperEq("user_id", userId));
         List<Bucket> bucketList =  new LinkedList<>();
-        Iterator<UserFavorite> iterator = userFavoriteList.iterator();
         for (UserFavorite userFavorite : userFavoriteList) {
             bucketList.add(bucketMapper.selectOne(MPUtil.queryWrapperEq("id",userFavorite.getBucketId())));
         }

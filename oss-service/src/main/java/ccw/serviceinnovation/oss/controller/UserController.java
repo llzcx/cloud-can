@@ -1,20 +1,22 @@
 package ccw.serviceinnovation.oss.controller;
 
 
+import ccw.serviceinnovation.common.entity.Api;
 import ccw.serviceinnovation.common.entity.User;
 import ccw.serviceinnovation.common.request.ApiResp;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.oss.common.util.JwtUtil;
+import ccw.serviceinnovation.oss.pojo.dto.CreateRamUserDto;
 import ccw.serviceinnovation.oss.pojo.dto.LoginDto;
 import ccw.serviceinnovation.oss.pojo.dto.RegisterDto;
+import ccw.serviceinnovation.oss.pojo.vo.RPage;
+import ccw.serviceinnovation.oss.pojo.vo.UserVo;
 import ccw.serviceinnovation.oss.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * 用户接口
@@ -23,6 +25,9 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
+    @Autowired
+    HttpServletRequest request;
 
     @Autowired
     IUserService userService;
@@ -57,8 +62,33 @@ public class UserController {
      * @return
      */
     @PostMapping("/createRam")
-    public ApiResp createRamUser(@RequestBody RegisterDto registerDto) {
-        User user = userService.createRamUser(registerDto.getUsername(),registerDto.getPassword(),registerDto.getPhone(), JwtUtil.getID(httpServletRequest));
-        return ApiResp.success(user.getId());
+    public ApiResp createRamUser(@RequestBody CreateRamUserDto createRamUserDto) {
+        User user = userService.createRamUser(createRamUserDto.getUsername(),createRamUserDto.getPassword(), JwtUtil.getID(httpServletRequest));
+
+        System.out.println(createRamUserDto);
+        return ApiResp.ifResponse(user!=null,user,ResultCode.CREATE_USER_EXIST);
+    }
+
+    /**
+     * 获取子用户列表
+     * @return
+     */
+    @GetMapping("/getSubUsers")
+    public ApiResp<RPage<UserVo>> getSubUsers(@RequestParam("keyword")String keyword,
+                                      @RequestParam("pageNum")Integer pageNum,
+                                      @RequestParam("size")Integer size){
+        RPage<UserVo> userVos = userService.getSubUsers(JwtUtil.getID(request),keyword,pageNum,size);
+        return ApiResp.success(userVos);
+    }
+
+    /**
+     * 删除子用户
+     * @param userId
+     * @return
+     */
+    @DeleteMapping("/deleteSubUser")
+    public ApiResp<List<UserVo>> deleteSubUser(@RequestParam("userId")Long userId){
+        List<UserVo> userVos = userService.deleteSubUser(userId, JwtUtil.getID(request));
+        return ApiResp.success(userVos);
     }
 }
