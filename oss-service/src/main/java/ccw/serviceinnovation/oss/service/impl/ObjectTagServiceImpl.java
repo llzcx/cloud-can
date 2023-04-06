@@ -6,6 +6,7 @@ import ccw.serviceinnovation.oss.common.util.MPUtil;
 import ccw.serviceinnovation.oss.mapper.ObjectTagMapper;
 import ccw.serviceinnovation.oss.mapper.ObjectTagObjectMapper;
 import ccw.serviceinnovation.oss.mapper.OssObjectMapper;
+import ccw.serviceinnovation.oss.pojo.dto.TagDto;
 import ccw.serviceinnovation.oss.service.IObjectTagService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -71,12 +72,12 @@ public class ObjectTagServiceImpl extends ServiceImpl<ObjectTagMapper, ObjectTag
      * @return
      */
     @Override
-    public List<ObjectTag> putObjectTag(String bucketName, String objectName, List<ObjectTag> objectTags) {
+    public List<ObjectTag> putObjectTag(String bucketName, String objectName, List<TagDto> objectTags) {
         Long objectId = ossObjectMapper.selectObjectIdByName(bucketName, objectName);
 
         List<ObjectTag> objectTagsOld = getObjectTag(bucketName, objectName);
 
-        for (ObjectTag objectTag : objectTags) {
+        for (TagDto objectTag : objectTags) {
 
             //判断是否有相同的key
             int flag= 0;

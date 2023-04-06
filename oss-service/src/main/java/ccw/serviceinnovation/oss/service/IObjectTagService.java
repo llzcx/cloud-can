@@ -1,6 +1,7 @@
 package ccw.serviceinnovation.oss.service;
 
 import ccw.serviceinnovation.common.entity.ObjectTag;
+import ccw.serviceinnovation.oss.pojo.dto.TagDto;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public interface IObjectTagService extends IService<ObjectTag> {
      * @param objectTags
      * @return
      */
-    List<ObjectTag> putObjectTag(String bucketName, String objectName, List<ObjectTag> objectTags);
+    List<ObjectTag> putObjectTag(String bucketName, String objectName, List<TagDto> objectTags);
 
     /**
      * 获取对象标签

@@ -3,6 +3,7 @@ package ccw.serviceinnovation.oss.mapper;
 import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.entity.BucketTag;
 import ccw.serviceinnovation.common.entity.ObjectTag;
+import ccw.serviceinnovation.oss.pojo.dto.TagDto;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
@@ -25,8 +26,8 @@ public interface BucketTagMapper extends BaseMapper<BucketTag> {
 
     /**
      * 插入bucket标签
-     * @param bucketTag
+     * @param tagDto
      * @return
      */
-    Long insertTag(BucketTag bucketTag);
+    Long insertTag(BucketTag tagDto);
 }

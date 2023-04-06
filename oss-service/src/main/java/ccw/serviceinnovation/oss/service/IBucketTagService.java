@@ -1,6 +1,9 @@
 package ccw.serviceinnovation.oss.service;
 
 import ccw.serviceinnovation.common.entity.BucketTag;
+import ccw.serviceinnovation.oss.pojo.dto.DeleteBucketTagDto;
+import ccw.serviceinnovation.oss.pojo.dto.PutBucketTagDto;
+import ccw.serviceinnovation.oss.pojo.dto.PutObjectTagDto;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -19,17 +22,15 @@ public interface IBucketTagService extends IService<BucketTag> {
 
     /**
      * 添加Bucket标签
-     * @param bucketName
      * @param bucketTags
      * @return
      */
-    List<BucketTag> putBucketTag(String bucketName, List<BucketTag> bucketTags);
+    List<BucketTag> putBucketTag(PutBucketTagDto bucketTags);
 
     /**
      * 删除对应的Bucket标签
-     * @param bucketName
-     * @param tagId
+     * @param bucketTags
      * @return
      */
-    Boolean deleteBucketTag(String bucketName, Long tagId);
+    List<BucketTag> deleteBucketTag(DeleteBucketTagDto bucketTags);
 }

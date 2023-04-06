@@ -2,11 +2,13 @@ package ccw.serviceinnovation.oss.service.impl;
 
 import ccw.serviceinnovation.common.entity.BucketTag;
 import ccw.serviceinnovation.common.entity.BucketTagBucket;
-import ccw.serviceinnovation.common.entity.ObjectTag;
 import ccw.serviceinnovation.oss.common.util.MPUtil;
 import ccw.serviceinnovation.oss.mapper.BucketMapper;
 import ccw.serviceinnovation.oss.mapper.BucketTagBucketMapper;
 import ccw.serviceinnovation.oss.mapper.BucketTagMapper;
+import ccw.serviceinnovation.oss.pojo.dto.DeleteBucketTagDto;
+import ccw.serviceinnovation.oss.pojo.dto.PutBucketTagDto;
+import ccw.serviceinnovation.oss.pojo.dto.TagDto;
 import ccw.serviceinnovation.oss.service.IBucketTagService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,18 +39,23 @@ public class BucketTagServiceImpl extends ServiceImpl<BucketTagMapper, BucketTag
     }
 
     @Override
-    public List<BucketTag> putBucketTag(String bucketName, List<BucketTag> bucketTags) {
-        Long bucketId = bucketMapper.selectBucketIdByName(bucketName);
+    public List<BucketTag> putBucketTag(PutBucketTagDto bucketTags) {
+        Long bucketId = bucketMapper.selectBucketIdByName(bucketTags.getBucketName());
 
-        List<BucketTag> bucketTagsOld = getBucketTag(bucketName);
+        List<BucketTag> bucketTagsOld = getBucketTag(bucketTags.getBucketName());
 
-        for (BucketTag bucketTag : bucketTags) {
-
+        for (TagDto bucketTag : bucketTags.getTags()) {
+            int flag = 0;
             //判断是否有相同的key
             for (BucketTag bucketTagOld : bucketTagsOld) {
+
                 if (bucketTagOld.getKey().equals(bucketTag.getKey())){
-                    return null;
+                    flag = 1;
                 }
+            }
+
+            if (flag==1){
+                continue;
             }
 
             BucketTag newBucketTag = new BucketTag();
@@ -59,18 +66,23 @@ public class BucketTagServiceImpl extends ServiceImpl<BucketTagMapper, BucketTag
             BucketTagBucket bucketTagBucket = new BucketTagBucket();
             bucketTagBucket.setBucketId(bucketId);
             bucketTagBucket.setTagId(newBucketTag.getId());
-            bucketTagBucketMapper.insert(bucketTagBucket);
+            bucketTagBucketMapper.insertTag(bucketTagBucket.getTagId(),bucketTagBucket.getBucketId());
         }
 
-        List<BucketTag> newBucketTagsOld = getBucketTag(bucketName);
+        List<BucketTag> newBucketTagsOld = getBucketTag(bucketTags.getBucketName());
         return newBucketTagsOld;
     }
 
     @Override
-    public Boolean deleteBucketTag(String bucketName, Long tagId) {
-        Long bucketId = bucketMapper.selectBucketIdByName(bucketName);
-        int delete = bucketTagBucketMapper.delete(MPUtil.queryWrapperEq("bucket_id",bucketId,"tag_id",tagId));
-        int deleteTag = bucketTagMapper.delete(MPUtil.queryWrapperEq("id",tagId));
-        return delete>0 && deleteTag>0;
+    public List<BucketTag> deleteBucketTag(DeleteBucketTagDto bucketTags) {
+        Long bucketId = bucketMapper.selectBucketIdByName(bucketTags.getBucketName());
+
+        for (BucketTag bucketTag : bucketTags.getBucketTags()) {
+            bucketTagBucketMapper.delete(MPUtil.queryWrapperEq("bucket_id",bucketId,"tag_id",bucketTag));
+            bucketTagMapper.delete(MPUtil.queryWrapperEq("id",bucketTag.getId()));
+        }
+
+        List<BucketTag> newBucketTagsOld = getBucketTag(bucketTags.getBucketName());
+        return newBucketTagsOld;
     }
 }

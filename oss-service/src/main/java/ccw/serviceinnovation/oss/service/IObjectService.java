@@ -151,7 +151,4 @@ public interface IObjectService extends IService<OssObject> {
      * @return
      */
     Boolean backupRecovery(String bucketName,String objectName);
-
-
-
 }

@@ -75,6 +75,8 @@ public enum ResultCode {
     CANT_SET_STATE(3032,"不能设置为该状态"),
     BUCKET_NAME_NULL(3033,"桶名字为空"),
     BLOCK_TOKEN_NULL(3034,"blockToken为NULL"),
+    CREATE_USER_EXIST(3035,"用户名已存在"),
+    BUCKET_NOT_EXIST(3036,"bucket不存在"),
     ;
     private Integer code;
     private String message;
