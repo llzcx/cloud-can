@@ -5,9 +5,8 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * @author Joy Yang
- *
- * AccessKeyDto 的基础信息
+ * AccessKey 中的基础信息
+ * @author 杨世博
  */
 @Data
 public class MessageDto implements Serializable {

@@ -14,9 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * @author Joy Yang
- *
  * Bucket标签接口
+ * @author Joy Yang
  */
 @RestController
 @RequestMapping("/bucketTag")
@@ -27,7 +26,7 @@ public class BucketTagController {
 
     /**
      * 获取Bucket标签列表
-     * @param bucketName
+     * @param bucketName 桶名
      * @return
      */
     @GetMapping("/getBucketTag")
@@ -38,11 +37,8 @@ public class BucketTagController {
 
     /**
      * 添加Bucket标签
-     * 1-判断是否有更改标签权限
-     * 2-判断key是否相同
-     * 3-添加
      * 可同时添加多个标签
-     * @param bucketTags
+     * @param bucketTags 添加的标签的信息
      * @return
      */
     @PutMapping("/putBucketTag")

@@ -4,7 +4,8 @@ import lombok.Data;
 
 import java.io.Serializable;
 
-/**用户为桶添加一个对象的dto
+/**
+ * 用户为桶添加一个对象的dto
  * @author 陈翔
  */
 @Data

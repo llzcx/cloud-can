@@ -5,11 +5,8 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
-<<<<<<< HEAD
- * 杨世博
-=======
->>>>>>> origin/master
- * @author Joy Yang
+ * 创建子用户的Dto
+ * @author 杨世博
  */
 @Data
 public class CreateRamUserDto implements Serializable {

@@ -5,6 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
+ * 注册的传输类
  * @author 陈翔
  */
 @Data

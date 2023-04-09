@@ -1,6 +1,7 @@
 package ccw.serviceinnovation.oss.service;
 
 import ccw.serviceinnovation.common.entity.User;
+import ccw.serviceinnovation.oss.pojo.vo.LoginVo;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import ccw.serviceinnovation.oss.pojo.vo.UserVo;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -17,7 +18,7 @@ public interface IUserService extends IService<User> {
      * @param password
      * @return
      */
-    String login(String username, String password);
+    LoginVo login(String username, String password);
 
     /**
      * 注册账号

@@ -8,6 +8,7 @@ import ccw.serviceinnovation.oss.common.util.JwtUtil;
 import ccw.serviceinnovation.oss.manager.authority.OssApi;
 import ccw.serviceinnovation.oss.pojo.dto.AddBucketDto;
 import ccw.serviceinnovation.oss.pojo.dto.BatchDeletionObjectDto;
+import ccw.serviceinnovation.oss.pojo.vo.BucketFileTypeVo;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import ccw.serviceinnovation.oss.service.IBucketService;
 import io.swagger.annotations.ApiOperation;
@@ -141,6 +142,25 @@ public class BucketController {
     }
 
 
+    /**
+     * 获取bucket中存在的文件类型
+     * @param bucketName 桶名
+     * @return
+     */
+    @GetMapping("/getBucketFileType")
+    public ApiResp<BucketFileTypeVo> getBucketFileType(@RequestParam("bucketName")String bucketName){
+        BucketFileTypeVo bucketFileType = bucketService.getBucketFileType(bucketName);
+        return ApiResp.success(bucketFileType);
+    }
 
+    /**
+     * 获取该用户的所有bucket中的文件类型
+     * @return
+     */
+    @GetMapping("/getUserBucketFileType")
+    public ApiResp<List<BucketFileTypeVo>> getUserBucketFileType(){
+        List<BucketFileTypeVo> bucketFileTypes =  bucketService.getUserBucketFileType(JwtUtil.getID(request));
+        return ApiResp.success(bucketFileTypes);
+    }
 }
 

@@ -17,7 +17,6 @@ import java.util.List;
 /**
  * 管理对象接口
  * @author 杨世博
- *
  */
 @RestController
 @RequestMapping("/manageObject")
@@ -33,9 +32,9 @@ public class ManageObjectController {
      * 获取Object列表
      * 1-根据用户Id筛选
      * 2-根据bucketId，bucketName筛选
-     * @param keyword
-     * @param pageNum
-     * @param size
+     * @param keyword 用户id，桶id，桶名
+     * @param pageNum 当前页数
+     * @param size 每页大小
      * @return
      */
     @GetMapping("/listObjects")
@@ -48,8 +47,7 @@ public class ManageObjectController {
 
     /**
      * 删除Object及其相关信息
-     * 1-标签
-     * @param objectIdList
+     * @param objectIdList 删除对象的id
      * @return
      */
     @DeleteMapping("/deleteObject")
@@ -60,7 +58,7 @@ public class ManageObjectController {
 
     /**
      * 获取这个对象的详细信息
-     * @param id
+     * @param id 对象id
      * @return
      */
     @GetMapping("/getObject")
@@ -73,8 +71,8 @@ public class ManageObjectController {
      * 获取文件夹中的对象
      * @param keyword 搜索的关键词：文件前缀名
      * @param parent 父文件夹
-     * @param pageNum
-     * @param size
+     * @param pageNum 当前页数
+     * @param size 每页数据条数
      * @return
      */
     @GetMapping("/getSubObjects")

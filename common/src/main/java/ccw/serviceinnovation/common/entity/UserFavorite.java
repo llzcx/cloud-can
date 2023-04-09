@@ -6,10 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * <p>
- *
- * </p>
- *
+ * 收藏桶
  * @author 杨世博
  */
 @Data

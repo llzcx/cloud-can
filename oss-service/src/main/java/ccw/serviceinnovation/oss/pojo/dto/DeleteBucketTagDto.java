@@ -8,18 +8,13 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * @author Joy Yang
+ * 删除bucket标签的Dto
+ * @author 杨世博
  */
 @Data
 public class DeleteBucketTagDto implements Serializable {
 
-    /**
-     *
-     */
     private String bucketName;
 
-    /**
-     *
-     */
     private List<BucketTag> bucketTags;
 }

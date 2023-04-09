@@ -7,9 +7,8 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * @author Joy Yang
- *
  * 用户列表展示类
+ * @author 杨世博
  */
 @Data
 public class UserVo implements Serializable {

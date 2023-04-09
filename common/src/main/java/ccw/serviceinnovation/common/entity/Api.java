@@ -8,10 +8,7 @@ import lombok.EqualsAndHashCode;
 import java.io.Serializable;
 
 /**
- * <p>
- * 
- * </p>
- *
+ * 接口信息
  * @author 陈翔
  * @since 2023-01-30
  */

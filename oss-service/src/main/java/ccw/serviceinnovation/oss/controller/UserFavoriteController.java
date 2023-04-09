@@ -43,7 +43,7 @@ public class UserFavoriteController {
 
     /**
      *用户收藏一个桶
-     * @param bucketName ID
+     * @param bucketName 桶id
      * @return 返回是否成功
      * @throws Exception
      */
@@ -56,7 +56,7 @@ public class UserFavoriteController {
 
     /**
      * 用户删除一个桶
-     * @param bucketName
+     * @param bucketName 桶名
      * @return
      * @throws Exception
      */

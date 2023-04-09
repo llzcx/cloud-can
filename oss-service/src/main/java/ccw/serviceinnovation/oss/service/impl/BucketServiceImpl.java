@@ -10,7 +10,9 @@ import ccw.serviceinnovation.common.exception.OssException;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.oss.common.util.MPUtil;
 import ccw.serviceinnovation.oss.mapper.*;
+import ccw.serviceinnovation.oss.pojo.bo.FileTypeBo;
 import ccw.serviceinnovation.oss.pojo.dto.AddBucketDto;
+import ccw.serviceinnovation.oss.pojo.vo.BucketFileTypeVo;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import ccw.serviceinnovation.oss.service.IBucketService;
 import ccw.serviceinnovation.oss.service.IObjectService;
@@ -20,6 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 /**
@@ -171,6 +175,18 @@ public class BucketServiceImpl extends ServiceImpl<BucketMapper, Bucket> impleme
             bucketMapper.updateById(bucket);
             return true;
         }
+    }
+
+    @Override
+    public BucketFileTypeVo getBucketFileType(String bucketName) {
+        List<FileTypeBo> fileTypes = bucketMapper.getFileType(bucketName);
+        BucketFileTypeVo bucketFileTypeVo = new BucketFileTypeVo();
+        return  bucketFileTypeVo;
+    }
+
+    @Override
+    public List<BucketFileTypeVo> getUserBucketFileType(Long userId) {
+        return null;
     }
 
 

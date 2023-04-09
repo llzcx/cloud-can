@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 /**
+ * 获取对象元数据的Vo
  * @author 陈翔
  */
 @Data

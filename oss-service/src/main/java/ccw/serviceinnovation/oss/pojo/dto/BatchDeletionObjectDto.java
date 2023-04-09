@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
+ * 对象名集合的Json
  * @author 陈翔
  */
 @Data
