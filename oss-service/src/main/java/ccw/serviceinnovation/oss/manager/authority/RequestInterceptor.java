@@ -5,12 +5,12 @@ import ccw.serviceinnovation.common.entity.OssObject;
 import ccw.serviceinnovation.common.entity.User;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.oss.common.util.ControllerUtils;
+import ccw.serviceinnovation.oss.manager.authority.accesskey.ObjectAccessKeyService;
 import ccw.serviceinnovation.oss.manager.authority.bucketacl.BucketAclService;
 import ccw.serviceinnovation.oss.manager.authority.bucketpolicy.BucketPolicyService;
 import ccw.serviceinnovation.oss.manager.authority.identity.IdentityAuthentication;
 import ccw.serviceinnovation.oss.manager.authority.objectacl.ObjectAclService;
 import ccw.serviceinnovation.oss.mapper.BucketMapper;
-import ccw.serviceinnovation.oss.service.IAccessKeyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static ccw.serviceinnovation.common.constant.AuthorityConstant.*;
+import static ccw.serviceinnovation.common.constant.RequestHeadersConstant.ACCESS_KEY;
 
 /**
  * 拦截器类
@@ -50,6 +51,9 @@ public class RequestInterceptor implements HandlerInterceptor {
 
     @Autowired
     BucketPolicyService bucketPolicyService;
+
+    @Autowired
+    ObjectAccessKeyService objectAccessKeyService;
 
 
 
@@ -111,6 +115,7 @@ public class RequestInterceptor implements HandlerInterceptor {
         String[] params = u.getParameterNames(method);
         String readAndWriteType = ossApi.type();
         String target = ossApi.target();
+        String accessKey = request.getParameter(ACCESS_KEY);
         /*-------------------验证令牌-------------------*/
         User user = identityAuthentication.verify(request);
         //目标接口含有ossApi注解,并且接口含有参数
@@ -121,10 +126,12 @@ public class RequestInterceptor implements HandlerInterceptor {
             return ControllerUtils.writeIfReturn(response, ResultCode.BUCKET_ACL_BLOCK,
                     bucketAclService.checkBucketAcl(user, readAndWriteType, bucket));
         }else if(ossApi.target().equals(API_OBJECT)){
-            if(readAndWriteType.equals(API_READ)){
-
-            }
             OssObject ossObject = objectAclService.getObjectFromParam(request, params);
+            if(readAndWriteType.equals(API_READ) &&  accessKey!=null){
+                if(objectAccessKeyService.handle(ossObject,accessKey)){
+                    return true;
+                }
+            }
             log.info("object is {}",ossObject.getName());
             Bucket bucket = bucketMapper.selectById(ossObject.getBucketId());
             /*-------------------判断bucketPolicy-------------------*/
