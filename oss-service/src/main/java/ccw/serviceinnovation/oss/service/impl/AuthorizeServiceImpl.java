@@ -2,18 +2,25 @@ package ccw.serviceinnovation.oss.service.impl;
 import ccw.serviceinnovation.common.entity.Authorize;
 import ccw.serviceinnovation.common.entity.AuthorizePath;
 import ccw.serviceinnovation.common.entity.AuthorizeUser;
+import ccw.serviceinnovation.common.entity.Bucket;
+import ccw.serviceinnovation.common.exception.OssException;
+import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.oss.common.util.MPUtil;
 import ccw.serviceinnovation.oss.mapper.AuthorizeMapper;
 import ccw.serviceinnovation.oss.mapper.AuthorizePathMapper;
 import ccw.serviceinnovation.oss.mapper.AuthorizeUserMapper;
 import ccw.serviceinnovation.oss.mapper.BucketMapper;
 import ccw.serviceinnovation.oss.pojo.dto.PutAuthorizeDto;
+import ccw.serviceinnovation.oss.pojo.vo.AuthorizeVo;
 import ccw.serviceinnovation.oss.service.IAuthorizeService;
+import com.alibaba.fastjson.JSONObject;
+import nonapi.io.github.classgraph.fileslice.ArraySlice;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,9 +46,34 @@ public class AuthorizeServiceImpl implements IAuthorizeService {
     BucketMapper bucketMapper;
 
     @Override
-    public List<Authorize> listAuthorizes(String bucketName) {
-        Long id = bucketMapper.selectBucketIdByName(bucketName);
-        return authorizeMapper.selectByMap(MPUtil.getMap("bucket_id", id));
+    public List<AuthorizeVo> listAuthorizes(String bucketName, Integer pageNum, Integer pageSize) {
+        Bucket bucket = bucketMapper.selectBucketByName(bucketName);
+        List<AuthorizeVo> list = authorizeMapper.selectAuthorizeList(bucketName, pageSize * (pageNum - 1), pageSize);
+        for (AuthorizeVo item : list) {
+            List<AuthorizePath> paths = authorizePathMapper.selectList(MPUtil.queryWrapperEq("authorize_id", item.getId()));
+            String[] PathArr = new String[paths.size()];
+            for (int i = 0; i < paths.size(); i++) {
+                String pathName = paths.get(i).getPath();
+                if(pathName.charAt(pathName.length()-1)=='%'){
+                    pathName = pathName.substring(0,pathName.length()-1)+"*";
+                }
+                PathArr[i] = pathName;
+            }
+            item.setPaths(PathArr);
+            List<AuthorizeUser> authorizeUsers = authorizeUserMapper.selectAuthorizeMainUserList(bucket.getUserId(),item.getId());
+            String[] mainArr = new String[authorizeUsers.size()];
+            for (int i = 0; i < authorizeUsers.size(); i++) {
+                mainArr[i] = authorizeUsers.get(i).getUserId().toString();
+            }
+            item.setSonUser(mainArr);
+            List<AuthorizeUser> sonUsers = authorizeUserMapper.selectAuthorizeRAMUserList(bucket.getUserId(),item.getId());
+            String[] sonArr = new String[sonUsers.size()];
+            for (int i = 0; i < sonUsers.size(); i++) {
+                sonArr[i] = sonUsers.get(i).getUserId().toString();
+            }
+            item.setSonUser(sonArr);
+        }
+        return list;
     }
 
     /**
@@ -83,6 +115,14 @@ public class AuthorizeServiceImpl implements IAuthorizeService {
         return true;
     }
 
+    public static void main(String[] args) {
+        String[] arr1 = new String[]{"1","2"};
+        String[] arr2 = new String[]{"3","4"};;
+        String[] arr3 = Arrays.copyOf(arr1, arr1.length + arr2.length);
+        System.arraycopy(arr2, 0, arr3, arr1.length, arr2.length);
+        System.out.println(JSONObject.toJSON(arr3));
+    }
+
     @Override
     public Boolean putAuthorize(PutAuthorizeDto putAuthorizeDto, String bucketName, Long authorizeId) {
         String[] arr1 = putAuthorizeDto.getSonUser();
@@ -103,13 +143,11 @@ public class AuthorizeServiceImpl implements IAuthorizeService {
             bucketId = bucketMapper.selectBucketIdByName(bucketName);
             Authorize authorize = new Authorize();
             authorize.setBucketId(bucketId);
+            authorize.setId(authorizeId);
             BeanUtils.copyProperties(putAuthorizeDto, authorize);
-            int update = authorizeMapper.update(authorize, MPUtil.queryWrapperEq("id",authorizeId));
+            int update = authorizeMapper.updateById(authorize);
             int delete1 = authorizeUserMapper.delete(MPUtil.queryWrapperEq("authorize_id", authorizeId));
             int delete2 = authorizePathMapper.delete(MPUtil.queryWrapperEq("authorize_id",authorizeId));
-            if(!(update > 0 && delete1 > 0 && delete2 > 0)){
-                return false;
-            }
         }
         return insertUsers(arr3, authorizeId,bucketId) && insertPath(putAuthorizeDto.getPaths(), authorizeId,bucketId);
     }
@@ -117,7 +155,7 @@ public class AuthorizeServiceImpl implements IAuthorizeService {
     @Override
     public Boolean deleteAuthorize(String bucketName, Long authorizeId) {
         Long id = bucketMapper.selectBucketIdByName(bucketName);
-        int delete1 = authorizeMapper.delete(MPUtil.queryWrapperEq("id", authorizeId, "bucket_id", id));
+        int delete1 = authorizeMapper.deleteById(authorizeId);
         int delete2 = authorizeUserMapper.delete(MPUtil.queryWrapperEq("authorize_id", authorizeId));
         int delete3 = authorizePathMapper.delete(MPUtil.queryWrapperEq("authorize_id", authorizeId));
         return delete1>0 && delete2>0 && delete3>0;

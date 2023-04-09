@@ -12,5 +12,7 @@ public interface RequestHeadersConstant {
      */
     String AUTHORIZATION = "Authorization";
 
+    String ACCESS_KEY = "AccessKey";
+
 
 }

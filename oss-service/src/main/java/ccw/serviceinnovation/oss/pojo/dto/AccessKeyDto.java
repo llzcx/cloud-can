@@ -2,13 +2,15 @@ package ccw.serviceinnovation.oss.pojo.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @author Joy Yang
  *
  * AccessKeyDto
  */
 @Data
-public class AccessKeyDto {
+public class AccessKeyDto implements Serializable {
 
     /**
      * AccessKeyID

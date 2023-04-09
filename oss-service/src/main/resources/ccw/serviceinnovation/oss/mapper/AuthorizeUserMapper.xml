@@ -3,4 +3,18 @@
 <mapper namespace="ccw.serviceinnovation.oss.mapper.AuthorizeUserMapper">
 
 
+    <select id="selectAuthorizeMainUserList" resultType="ccw.serviceinnovation.common.entity.AuthorizeUser">
+        select *
+        from authorize_user
+                 join user u on authorize_user.user_id = u.id
+        where authorize_id = #{authorizeId}
+          and u.parent = #{userId}
+    </select>
+    <select id="selectAuthorizeRAMUserList" resultType="ccw.serviceinnovation.common.entity.AuthorizeUser">
+        select *
+        from authorize_user
+                 join user u on authorize_user.user_id = u.id
+        where authorize_id = #{authorizeId}
+          and u.parent != #{userId}
+    </select>
 </mapper>

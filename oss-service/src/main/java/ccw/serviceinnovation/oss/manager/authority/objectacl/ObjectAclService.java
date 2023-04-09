@@ -3,9 +3,9 @@ package ccw.serviceinnovation.oss.manager.authority.objectacl;
 import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.entity.OssObject;
 import ccw.serviceinnovation.common.entity.User;
-import ccw.serviceinnovation.oss.common.util.MPUtil;
-import ccw.serviceinnovation.common.constant.AuthorityConstant;
-import ccw.serviceinnovation.common.constant.ObjectACLEnum;
+import ccw.serviceinnovation.common.exception.OssException;
+import ccw.serviceinnovation.common.request.ResultCode;
+import ccw.serviceinnovation.common.constant.ACLEnum;
 import ccw.serviceinnovation.oss.manager.authority.bucketacl.BucketAclService;
 import ccw.serviceinnovation.oss.mapper.BucketMapper;
 import ccw.serviceinnovation.oss.mapper.OssObjectMapper;
@@ -37,30 +37,19 @@ public class ObjectAclService {
      * @return 返回是否成功
      */
     public Boolean checkObjectAcl(Bucket bucket, User user, String apiType, OssObject ossObject) {
+        if(user.getId().equals(bucket.getUserId())){
+            //主用户直接过
+            return true;
+        }
         if (ossObject != null && bucket!=null) {
             //获取对象的acl权限
-            Integer objectAcl = ossObject.getObjectAcl();
-            //目标接口是否为读接口
-            Boolean read = apiType.equals(AuthorityConstant.API_READ) || apiType.equals(AuthorityConstant.API_LIST);
-            //目标接口是否为写接口
-            Boolean write = apiType.equals(AuthorityConstant.API_WRITER);
-            Boolean mainUserPower = user.getParent().equals(bucket.getUserId());
-            Boolean ramUserPower = user.getParent() != null && (user.getParent().equals(bucket.getUserId()));
-            if (objectAcl.equals(ObjectACLEnum.PRIVATE.getCode())) {
-                //私有权限->只有user本身可以访问
-                return mainUserPower;
-            } else if (objectAcl.equals(ObjectACLEnum.PUBLIC_READ.getCode())) {
-                return read;
-            }if (objectAcl.equals(ObjectACLEnum.RAM_READ.getCode())) {
-                return read && ramUserPower;
-            } else if (objectAcl.equals(ObjectACLEnum.PUBLIC_READ_WRITE.getCode())) {
-                return read || write;
-            }else if (objectAcl.equals(ObjectACLEnum.RAM_READ_WRITE.getCode())) {
-                return ramUserPower && (read || write);
-            }  else if (objectAcl.equals(ObjectACLEnum.DEFAULT.getCode())) {
-                //调用bucketAcl进行验证
-                return bucketAclService.checkBucketAcl(user,apiType,bucket);
+            if(!ossObject.getObjectAcl().equals(ACLEnum.DEFAULT.getCode())){
+                Integer objectAcl = ossObject.getObjectAcl();
+                bucketAclService.checkAcl(user, apiType, bucket.getUserId(), objectAcl);
+            }else{
+                bucketAclService.checkAcl(user, apiType, bucket.getUserId(), bucket.getBucketAcl());
             }
+
         }
         return false;
     }
@@ -77,9 +66,14 @@ public class ObjectAclService {
                 bucket = bucketMapper.selectById(Long.valueOf(request.getParameter("bucketId")));
             }
         }
-        if(objectName==null || bucket==null){
-            return null;
+        if(bucket==null){
+            throw new OssException(ResultCode.BUCKET_IS_DEFECT);
         }
-        return ossObjectMapper.selectObjectByName(bucket.getName(), objectName);
+
+        OssObject ossObject = ossObjectMapper.selectObjectByName(bucket.getName(), objectName);
+        if(ossObject==null){
+            throw new OssException(ResultCode.OBJECT_IS_DEFECT);
+        }
+        return ossObject;
     }
 }

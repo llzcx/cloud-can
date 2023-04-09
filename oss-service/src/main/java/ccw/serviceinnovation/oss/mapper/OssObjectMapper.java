@@ -72,7 +72,7 @@ public interface OssObjectMapper extends BaseMapper<OssObject> {
      * @param key
      * @return
      */
-    Integer selectObjectListLength(@Param("bucketName") String bucketName, @Param("key") String key);
+    Integer selectObjectListLength(@Param("bucketName") String bucketName,@Param("key") String key,@Param("parentObjectId")Long parentObjectId,@Param("type")Integer type);
 
     /**
      * 对象去重前查一下是否存过这个文件

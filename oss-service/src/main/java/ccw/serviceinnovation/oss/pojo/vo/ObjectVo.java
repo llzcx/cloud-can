@@ -14,7 +14,7 @@ import java.util.Map;
  * @author 陈翔
  */
 @Data
-public class    ObjectVo {
+public class ObjectVo {
 
     private static final long serialVersionUID = 1L;
 
@@ -23,11 +23,6 @@ public class    ObjectVo {
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
-
-    /**
-     * 指向真实数据的key
-     */
-    private String objectKey;
 
     /**
      * 对象名字[全称]
@@ -42,12 +37,12 @@ public class    ObjectVo {
     /**
      * 文件扩展名
      */
-    private String ext;
+    private Integer ext;
 
     /**
      * 文件的MD5值
      */
-    private String md5;
+    private String etag;
 
     /**
      * 文件总大小
@@ -74,16 +69,25 @@ public class    ObjectVo {
      */
     private Integer objectAcl;
 
+    /**
+     * 父级对象id
+     */
+    private Long parent;
 
     /**
-     * 所处文件夹全名
+     * 加密方式
      */
-    private String folderName;
+    private Integer secret;
 
     /**
-     * 短名字
+     * 存储水平
      */
-    private String shortName;
+    private Integer storageLevel;
+
+    /**
+     * 是否为备份文件
+     */
+    private Boolean isBackup;
 
 
 }

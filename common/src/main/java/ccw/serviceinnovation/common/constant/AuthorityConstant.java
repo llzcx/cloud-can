@@ -10,6 +10,8 @@ public interface AuthorityConstant {
     String API_BUCKET = "api_bucket";
     String API_OBJECT = "api_object";
     String API_USER = "api_user";
+    String API_MANAGE = "api_manage";
+    String API_OPEN = "api_open";
     String API_OTHER = "api_other";
 
     /**

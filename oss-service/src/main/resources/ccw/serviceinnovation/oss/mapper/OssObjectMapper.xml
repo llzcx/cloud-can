@@ -28,15 +28,21 @@
 
     <select id="selectObjectList" resultType="ccw.serviceinnovation.oss.pojo.vo.ObjectVo">
         select * from oss_object where bucket_id=(select id from bucket where bucket.name=#{bucketName})
+        <choose>
+            <when test="parentObjectId!=null">
+                and parent = #{parentObjectId}
+            </when>
+            <otherwise>
+                and parent is null
+            </otherwise>
+        </choose>
         <if test="key != null">
             and name like #{key}
-        </if>
-        <if test="parentObjectId != null">
-            and parent = #{parentObjectId}
         </if>
         <if test="type != null">
             and ext = #{type}
         </if>
+        order by is_folder DESC
         <if test="offset != null and size != null">
             limit ${offset}, ${size}
         </if>
@@ -44,8 +50,19 @@
     </select>
     <select id="selectObjectListLength" resultType="java.lang.Integer">
         select count(*) from oss_object where bucket_id=(select id from bucket where bucket.name=#{bucketName})
+        <choose>
+            <when test="parentObjectId!=null">
+                and parent = #{parentObjectId}
+            </when>
+            <otherwise>
+                and parent is null
+            </otherwise>
+        </choose>
         <if test="key != null">
             and name like #{key}
+        </if>
+        <if test="type != null">
+            and ext = #{type}
         </if>
     </select>
     <select id="getOssObjectByEtag" resultType="ccw.serviceinnovation.common.entity.OssObject">

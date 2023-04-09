@@ -49,7 +49,6 @@ public class AccessKeyServiceImpl implements IAccessKeyService {
     public Map<String, MessageDto> getAccessKeys(Long objectId) {
         //获取所有AccessKey
         Map<String, MessageDto> allAccessKey = (Map<String, MessageDto>) (Object) redisUtil.hgetall(ACCESSKEY_ID + objectId);
-
         for (Map.Entry<String, MessageDto> entry : allAccessKey.entrySet()) {
             MessageDto messageDto = JSONObject.parseObject(String.valueOf(entry.getValue()),MessageDto.class);
 

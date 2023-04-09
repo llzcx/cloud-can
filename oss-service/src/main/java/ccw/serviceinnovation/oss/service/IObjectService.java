@@ -3,6 +3,7 @@ package ccw.serviceinnovation.oss.service;
 import ccw.serviceinnovation.common.entity.OssObject;
 import ccw.serviceinnovation.oss.pojo.bo.BlockTokenBo;
 import ccw.serviceinnovation.oss.pojo.bo.GetObjectBo;
+import ccw.serviceinnovation.oss.pojo.dto.BatchDeletionObjectDto;
 import ccw.serviceinnovation.oss.pojo.vo.ObjectStateVo;
 import ccw.serviceinnovation.oss.pojo.vo.ObjectVo;
 import ccw.serviceinnovation.oss.pojo.vo.OssObjectVo;
@@ -171,4 +172,6 @@ public interface IObjectService extends IService<OssObject> {
      * @return
      */
     Boolean backupRecovery(String bucketName,String objectName);
+
+    Boolean batchDeletion(String bucketName, BatchDeletionObjectDto batchDeletionObjectDto) throws Exception;
 }

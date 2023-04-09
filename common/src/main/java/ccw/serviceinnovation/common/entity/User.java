@@ -59,5 +59,10 @@ public class User implements Serializable {
      */
     private Long parent;
 
+    /**
+     * 是否为管理员
+     */
+    private Boolean admin;
+
 
 }

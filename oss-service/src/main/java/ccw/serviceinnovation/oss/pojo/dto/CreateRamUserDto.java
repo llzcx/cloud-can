@@ -5,7 +5,10 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
+<<<<<<< HEAD
  * 杨世博
+=======
+>>>>>>> origin/master
  * @author Joy Yang
  */
 @Data

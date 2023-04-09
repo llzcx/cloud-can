@@ -1,11 +1,9 @@
 package ccw.serviceinnovation.oss.service.impl;
 
 
-import ccw.serviceinnovation.common.constant.ObjectACLEnum;
+import ccw.serviceinnovation.common.constant.ACLEnum;
 import ccw.serviceinnovation.common.constant.SecretEnum;
 import ccw.serviceinnovation.common.constant.StorageTypeEnum;
-import ccw.serviceinnovation.common.entity.AuthorizePath;
-import ccw.serviceinnovation.common.entity.AuthorizeUser;
 import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.entity.User;
 import ccw.serviceinnovation.common.exception.OssException;
@@ -22,11 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.xml.transform.Result;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -79,9 +72,9 @@ public class BucketServiceImpl extends ServiceImpl<BucketMapper, Bucket> impleme
         }
         Integer bucketAcl = addBucketDto.getBucketAcl();
         if(bucketAcl!=null){
-            bucket.setBucketAcl(ObjectACLEnum.getEnum(bucketAcl).getCode());
+            bucket.setBucketAcl(ACLEnum.getEnum(bucketAcl).getCode());
         }else{
-            bucket.setBucketAcl(ObjectACLEnum.PRIVATE.getCode());
+            bucket.setBucketAcl(ACLEnum.PRIVATE.getCode());
         }
         Integer storageType = addBucketDto.getStorageType();
         if(storageType!=null){
@@ -92,6 +85,8 @@ public class BucketServiceImpl extends ServiceImpl<BucketMapper, Bucket> impleme
         bucketMapper.insert(bucket);
         return bucket;
     }
+
+
 
     @Override
     public Boolean deleteBucket(String bucketName) throws Exception {
@@ -107,6 +102,11 @@ public class BucketServiceImpl extends ServiceImpl<BucketMapper, Bucket> impleme
     @Override
     public RPage<Bucket> getBucketList(Long userId,Integer pageNum,Integer pageSize,String key) {
         RPage<Bucket> rPage = new RPage<>();
+        //扎到父级
+        User user = userMapper.selectById(userId);
+        if(user.getParent()!=null){
+            userId = user.getParent();
+        }
         rPage.setRows(bucketMapper.selectBucketList(userId,key,(pageNum-1)*pageSize ,pageSize));
         rPage.setTotalCountAndTotalPage(bucketMapper.selectBucketListSize(userId,key));
         return rPage;
@@ -140,8 +140,8 @@ public class BucketServiceImpl extends ServiceImpl<BucketMapper, Bucket> impleme
         if(bucket==null){
             throw new OssException(ResultCode.BUCKET_IS_DEFECT);
         }else{
-            ObjectACLEnum anEnum = ObjectACLEnum.getEnum(bucketAcl);
-            if(anEnum==null || anEnum.equals(ObjectACLEnum.DEFAULT)){
+            ACLEnum anEnum = ACLEnum.getEnum(bucketAcl);
+            if(anEnum==null || anEnum.equals(ACLEnum.DEFAULT)){
                 throw new OssException(ResultCode.UNDEFINED);
             }else{
                 bucket.setBucketAcl(anEnum.getCode());
@@ -172,4 +172,6 @@ public class BucketServiceImpl extends ServiceImpl<BucketMapper, Bucket> impleme
             return true;
         }
     }
+
+
 }

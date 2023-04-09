@@ -47,8 +47,8 @@ public class ObjectUtil {
 
 
     public static void main(String[] args) {
-        String path = "file1/file2/file3/";
+        String path = "file1/file2/file3/123.txt";
         String  str = "123/awdw.txt";
-        System.out.println(JSONObject.toJSON(getAllFolder(str)));
+        System.out.println(JSONObject.toJSON(getAllFolder(path)));
     }
 }

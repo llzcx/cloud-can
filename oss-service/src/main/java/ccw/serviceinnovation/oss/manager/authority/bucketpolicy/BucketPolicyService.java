@@ -1,11 +1,13 @@
 package ccw.serviceinnovation.oss.manager.authority.bucketpolicy;
 
+import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.exception.OssException;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.common.constant.AuthorizeOperationEnum;
 import ccw.serviceinnovation.oss.mapper.AuthorizeMapper;
 import ccw.serviceinnovation.oss.mapper.AuthorizePathMapper;
 import ccw.serviceinnovation.oss.mapper.AuthorizeUserMapper;
+import ccw.serviceinnovation.oss.mapper.BucketMapper;
 import ccw.serviceinnovation.oss.pojo.bo.AuthorizeBo;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +35,9 @@ public class BucketPolicyService {
     @Autowired
     AuthorizeUserMapper authorizeUserMapper;
 
+    @Autowired
+    BucketMapper bucketMapper;
+
     /**
      * 获取一个桶所有权限
      * @param userId
@@ -50,16 +55,17 @@ public class BucketPolicyService {
      * @param check 判断值
      * @return  返回bool最终值
      */
-    public Boolean changeBoolean(Value bool,boolean check){
+    public Boolean updateValue(Value bool, boolean check){
+        log.info("updateValue {},{}",bool,check);
         //满足前置条件
-        if (check && bool==null){
+        if (check && bool.getFlag()==null){
             //bool没有被赋值过则可以被赋值为true 如果存在允许策略且之前没有被赋值过拒绝策略
             bool.setFlag(true);
             return true;
         }else if(!check){
             //check为false 只要出现拒绝策略直接拒绝
             bool.setFlag(false);
-            return bool.getFlag();
+            return false;
         }
         return bool.getFlag();
     }
@@ -77,6 +83,7 @@ public class BucketPolicyService {
         if(operation.equals(FULL_CONTROL) || operation.equals(ACCESS_DENIED)){
             throw new OssException(ResultCode.NULL_POINT_EXCEPTION);
         }
+        //每个AuthorizeOperationEnum对应了可以允许哪种哪个接口
         for (String s : operation.getOperation()) {
             if(s.equals(type)){
                 return true;
@@ -95,14 +102,16 @@ public class BucketPolicyService {
         if(front){
             if(Objects.equals(operation, ACCESS_DENIED)){
                 //拒绝访问      待赋值      拒绝
-                changeBoolean(value,false);
+                updateValue(value,false);
             }else if(Objects.equals(operation, FULL_CONTROL)){
                 //完全控制
-                changeBoolean(value,true);
+                updateValue(value,true);
             }else{
                 //这个效力 可以作用于目标接口时
                 if(checkInclude(operation, type)){
-                    changeBoolean(value,true);
+                    updateValue(value,true);
+                }else{
+                    updateValue(value,false);
                 }
             }
         }
@@ -110,7 +119,7 @@ public class BucketPolicyService {
 
     @Data
     static class Value{
-        Boolean flag = null;
+        Boolean flag;
         public Value(Boolean flag){
             this.flag = flag;
         }
@@ -125,14 +134,25 @@ public class BucketPolicyService {
      * @return
      */
     public Boolean check(Long accessUserId, Long accessBucketId, String accessPath, String type){
+        Bucket bucket = bucketMapper.selectById(accessBucketId);
+        Long sourceUser = bucket.getUserId();
+        if(sourceUser.equals(accessUserId)){
+            //bucket的拥有者拥有最高权限
+            return true;
+        }
+        //先置为null 拒绝就设置false 允许就设置false
         Value value = new Value(null);
+        //先left join 三表连接
         List<AuthorizeBo> authorizeBos = selectAuthorize(accessUserId,accessBucketId, accessPath);
-        //遍历所有涉及到这个用户这个桶和这个路径的 bucketPolicy
+        System.out.println("size:"+authorizeBos.size());
+        //遍历所有涉及到 这个用户 这个桶 和 这个路径的 bucketPolicy,
+        //只要进了for循环,必然是允许或者拒绝
         for (AuthorizeBo authorizeBo : authorizeBos) {
             Boolean pathIsAll = authorizeBo.getPathIsAll();
             Boolean userIsAll = authorizeBo.getUserIsAll();
             Long userId = authorizeBo.getUserId();
             String path = authorizeBo.getPath();
+            log.info("{},{},{}",authorizeBo.getId(),userId,path);
             //这个policy的效力 ONLY_READ, ONLY_READ_INCLUDE_LIST, READ_AND_WRITER, FULL_CONTROL, ACCESS_DENIED
             AuthorizeOperationEnum operation = AuthorizeOperationEnum.getEnum(authorizeBo.getOperation());
             if(pathIsAll && userIsAll){
@@ -149,6 +169,9 @@ public class BucketPolicyService {
                 checkOperationType(operation, type, value,path!=null && userId!=null);
             }
         }
+        if(!value.getFlag()){
+            throw new OssException(ResultCode.BUCKET_POLICY_BLOCK);
+        }
         return value.getFlag();
     }
 
@@ -157,8 +180,6 @@ public class BucketPolicyService {
     }
 
     public static void main(String[] args) {
-        Boolean a = false;
-        alter(a);
-        System.out.println(a);
+
     }
 }

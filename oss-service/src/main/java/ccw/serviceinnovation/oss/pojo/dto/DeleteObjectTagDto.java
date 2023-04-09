@@ -11,7 +11,7 @@ import java.util.List;
  * @author Joy Yang
  */
 @Data
-public class DeleteObjectTagDto{
+public class DeleteObjectTagDto implements Serializable{
 
     /**
      *

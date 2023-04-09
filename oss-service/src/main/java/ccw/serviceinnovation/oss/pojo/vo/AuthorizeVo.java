@@ -1,16 +1,23 @@
-package ccw.serviceinnovation.oss.pojo.dto;
+package ccw.serviceinnovation.oss.pojo.vo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.io.Serializable;
 
 /**
- * 添加bucket权限的传输类
  * @author 陈翔
  */
 @Data
-public class PutAuthorizeDto implements Serializable {
+public class AuthorizeVo implements Serializable {
+    private static final long serialVersionUID = 1L;
 
+    /**
+     * 授权策略唯一ID
+     */
+    @TableId(value = "id",type = IdType.AUTO)
+    private Long id;
 
     /**
      * 该Authorize的授权用户是否为所有人[包括了子用户和外用户]
@@ -42,6 +49,5 @@ public class PutAuthorizeDto implements Serializable {
      * 其他用户的id列表[其他用户可以是子用户,也可以是主用户]
      */
     String[] otherUser;
-
 
 }

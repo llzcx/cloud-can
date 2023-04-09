@@ -4,7 +4,7 @@
     <select id="selectAuthorize" resultType="ccw.serviceinnovation.oss.pojo.bo.AuthorizeBo">
         ##user_is_all为true的时候 保证在authorize_user表中没有数据
         ##path_is_all为true的时候 保证在authorize_path表中没有数据
-        SELECT tb2.authorize_id, user_is_all, path_is_all, operation, user_id, path
+        SELECT tb1.id, user_is_all, path_is_all, operation, user_id, path
         FROM (SELECT id, user_is_all, path_is_all, operation, bucket_id
               FROM authorize
               ##找出关于这个bucket的bucketPolicy
@@ -13,11 +13,27 @@
                  LEFT JOIN (select authorize_id, path
                             from authorize_path
                                                                             ##bucket/file1/file2/objectName like bucket/file1%
-                            where bucket_id=#{bucketId} and CONCAT((select name from bucket where id = #{bucketId}), '/', #{path}) like path) tb3
+                            where bucket_id=#{bucketId} and #{path} like path) tb3
                            ON tb1.`id` = tb3.`authorize_id`
                  ##返回左表全部 右表在这个桶中跟这个用户相关的
                  LEFT JOIN (select authorize_id, user_id from authorize_user where bucket_id=#{bucketId} and user_id = #{userId}) as tb2
                            ON tb1.`id` = tb2.`authorize_id`
     </select>
-
+    <select id="selectAuthorizeList" resultType="ccw.serviceinnovation.oss.pojo.vo.AuthorizeVo">
+        select *
+        from authorize
+        <where>
+            bucket_id = (select id from bucket where name = #{bucketName})
+        </where>
+        <if test="offset!=null and pagesize!= null">
+            limit ${offset}, ${pagesize}
+        </if>
+    </select>
+    <select id="selectAuthorizeListCount" resultType="java.lang.Integer">
+        select count(*)
+        from authorize
+        <where>
+            bucket_id = (select id from bucket where name = #{bucketName})
+        </where>
+    </select>
 </mapper>

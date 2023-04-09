@@ -41,7 +41,7 @@ public class IdentityAuthentication {
         if(user!=null && user.getUsername().equals(account) && user.getPassword().equals(secret)) {
             return user;
         }else{
-            return  null;
+            throw new OssException(ResultCode.TOKEN_ERROR);
         }
     }
 

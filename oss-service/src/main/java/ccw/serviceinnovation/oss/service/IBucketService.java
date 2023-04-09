@@ -2,6 +2,7 @@ package ccw.serviceinnovation.oss.service;
 
 import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.oss.pojo.dto.AddBucketDto;
+import ccw.serviceinnovation.oss.pojo.dto.BatchDeletionObjectDto;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -74,4 +75,6 @@ public interface IBucketService extends IService<Bucket> {
      * @return
      */
     Boolean updateSecret(String bucketName,Integer secret);
+
+
 }

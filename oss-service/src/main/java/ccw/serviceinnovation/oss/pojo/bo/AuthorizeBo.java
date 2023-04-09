@@ -10,7 +10,7 @@ public class AuthorizeBo {
     /**
      * 授权id
      */
-    private Long authorizeId;
+    private Long id;
 
     /**
      * 目标是否为所有用户

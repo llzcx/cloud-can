@@ -1,6 +1,9 @@
 package ccw.serviceinnovation.oss.mapper;
 
+import ccw.serviceinnovation.common.entity.Authorize;
 import ccw.serviceinnovation.common.entity.Bucket;
+import ccw.serviceinnovation.oss.pojo.dto.PutAuthorizeDto;
+import ccw.serviceinnovation.oss.pojo.vo.AuthorizeVo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -19,6 +22,8 @@ public interface BucketMapper extends BaseMapper<Bucket> {
      * @return
      */
     Long selectBucketIdByName(@Param("bucketName")String bucketName);
+
+
 
     /**
      * 根据桶名字查找桶

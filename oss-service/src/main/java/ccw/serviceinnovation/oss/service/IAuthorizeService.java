@@ -3,6 +3,8 @@ package ccw.serviceinnovation.oss.service;
 
 import ccw.serviceinnovation.common.entity.Authorize;
 import ccw.serviceinnovation.oss.pojo.dto.PutAuthorizeDto;
+import ccw.serviceinnovation.oss.pojo.vo.AuthorizeVo;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -18,7 +20,7 @@ public interface IAuthorizeService {
      * @param bucketName
      * @return
      */
-    List<Authorize> listAuthorizes(String bucketName);
+    List<AuthorizeVo> listAuthorizes(String bucketName, Integer pageNum, Integer pageSize);
 
     /**
      *为bucket添加一个授权策略(当authorizeId为null)

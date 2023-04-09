@@ -7,6 +7,7 @@ import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.oss.common.util.JwtUtil;
 import ccw.serviceinnovation.oss.manager.authority.OssApi;
 import ccw.serviceinnovation.oss.pojo.dto.AddBucketDto;
+import ccw.serviceinnovation.oss.pojo.dto.BatchDeletionObjectDto;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import ccw.serviceinnovation.oss.service.IBucketService;
 import io.swagger.annotations.ApiOperation;

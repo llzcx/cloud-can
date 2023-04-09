@@ -1,6 +1,6 @@
 package ccw.serviceinnovation.oss.service.impl;
 
-import ccw.serviceinnovation.common.constant.ObjectACLEnum;
+import ccw.serviceinnovation.common.constant.ACLEnum;
 import ccw.serviceinnovation.common.constant.StorageTypeEnum;
 import ccw.serviceinnovation.common.entity.ObjectTagObject;
 import ccw.serviceinnovation.common.entity.OssObject;
@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author 杨世博
@@ -108,7 +107,7 @@ public class ManageObjectServiceImpl extends ServiceImpl<ManageObjectMapper, Oss
         ManageObjectDetailedVo objectVo = new ManageObjectDetailedVo();
         BeanUtil.copyProperties(ossObject,objectVo);
         objectVo.setStorageLevelString(StorageTypeEnum.getEnum(ossObject.getStorageLevel()).getMessage());
-        objectVo.setObjectAclString(ObjectACLEnum.getEnum(ossObject.getObjectAcl()).getMessage());
+        objectVo.setObjectAclString(ACLEnum.getEnum(ossObject.getObjectAcl()).getMessage());
 
         String bucketName = manageObjectMapper.getBucketName(id);
         String objectName = manageObjectMapper.getObjectName(id);

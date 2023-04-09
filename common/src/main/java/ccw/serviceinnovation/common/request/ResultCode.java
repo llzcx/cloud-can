@@ -43,7 +43,8 @@ public enum ResultCode {
     UNDEFINED(2010,"不确定的后台常量"),
     SYSTEM_ERROR_DATA_NULL(2011,"系统错误-对象存储数据丢失"),
     RPC_JRAFT(2008,"RPC-JRAFT服务器异常"),
-
+    AUTHORITY_TYPE_EXCEPTION(2010,"接口Type异常"),
+    UN_KNOW_API(2011,"未知API类型,请联系管理员"),
 
     /* 业务异常 */
     UPLOAD_ERROR(3005,"上传失败"),
@@ -82,6 +83,9 @@ public enum ResultCode {
     EVENT_NULL(3037,"该事件不存在"),
     NAME_IS_EXIST(3038,"该名字已经被其他对象占用"),
     FILE_IS_BIG(3039,"文件必须<=5MB,请更换上传方式(分片上传)"),
+    FILE_DELETE_ERROR(3040,"批量删除终止"),
+    CANT_BACKUP_BY_STORAGE(3041,"非标准存储不支持备份"),
+    UPDATE_AUTHORIZE_EXCEPTION(3041,"权限更新异常"),
 
     ;
     private Integer code;

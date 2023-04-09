@@ -10,6 +10,7 @@ import ccw.serviceinnovation.oss.manager.authority.bucketpolicy.BucketPolicyServ
 import ccw.serviceinnovation.oss.manager.authority.identity.IdentityAuthentication;
 import ccw.serviceinnovation.oss.manager.authority.objectacl.ObjectAclService;
 import ccw.serviceinnovation.oss.mapper.BucketMapper;
+import ccw.serviceinnovation.oss.service.IAccessKeyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
@@ -25,8 +26,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
-import static ccw.serviceinnovation.common.constant.AuthorityConstant.API_BUCKET;
-import static ccw.serviceinnovation.common.constant.AuthorityConstant.API_OBJECT;
+import static ccw.serviceinnovation.common.constant.AuthorityConstant.*;
 
 /**
  * 拦截器类
@@ -50,6 +50,9 @@ public class RequestInterceptor implements HandlerInterceptor {
 
     @Autowired
     BucketPolicyService bucketPolicyService;
+
+
+
 
     /**
      * 忽略拦截的url
@@ -102,61 +105,47 @@ public class RequestInterceptor implements HandlerInterceptor {
         if(checkCanPassByStatic(request,handler)){
             return true;
         }
-        /*-------------------验证令牌-------------------*/
-        User user = identityAuthentication.verify(request);
-        if(user==null) {
-            ControllerUtils.writeReturn(response,ResultCode.TOKEN_ERROR);
-            return false;
-        }
-        HandlerMethod handlerMethod = (HandlerMethod) handler;
-        Method method = handlerMethod.getMethod();
+        HandlerMethod handlerMethod = (HandlerMethod) handler;Method method = handlerMethod.getMethod();OssApi ossApi = method.getAnnotation(OssApi.class);LocalVariableTableParameterNameDiscoverer u = new LocalVariableTableParameterNameDiscoverer();
         log.info("methodName:{}",method.getName());
-        OssApi ossApi = method.getAnnotation(OssApi.class);
-        LocalVariableTableParameterNameDiscoverer u = new LocalVariableTableParameterNameDiscoverer();
         //获取接口的方法名列表
         String[] params = u.getParameterNames(method);
-        if(ossApi!=null && params!=null && params.length != 0){          //目标接口含有ossApi注解,并且接口含有参数
-            log.info("API_BUCKET");
-            String type = ossApi.type();
-            //判断目标接口是针对桶 / 对象而言的
-            if(ossApi.target().equals(API_BUCKET)){
-                Bucket bucket = bucketAclService.getBucketFromParam(request, params);
-                log.info("bucket is {}",bucket.getName());
-                if(bucket==null) {
-                    ControllerUtils.writeReturn(response, ResultCode.BUCKET_IS_DEFECT);
-                    return false;
-                }
-                /*-------------------验证bucketAcl-------------------*/
-                return ControllerUtils.writeIfReturn(response, ResultCode.BUCKET_ACL_BLOCK,
-                        bucketAclService.checkBucketAcl(user, type, bucket));
-            } else if(ossApi.target().equals(API_OBJECT)){
-                log.info("API_OBJECT");
-                OssObject ossObject = objectAclService.getObjectFromParam(request, params);
-                log.info("object is {}",ossObject.getName());
-                if(ossObject==null){
-                    ControllerUtils.writeReturn(response, ResultCode.OBJECT_IS_DEFECT);
-                    return false;
-                }
-                Bucket bucket = bucketMapper.selectById(ossObject.getBucketId());
-                /*-------------------判断bucketPolicy-------------------*/
-                String accessPath = bucket.getName()+"/"+ossObject.getName();
-                Boolean flag = bucketPolicyService.check(user.getId(), bucket.getId(),accessPath,type);
-                if(flag != null){
-                    //有允许策略但没有拒绝侧类直接放过,有拒绝策略直接拒绝
-                    return ControllerUtils.writeIfReturn(response, ResultCode.BUCKET_POLICY_BLOCK,flag);
-                }
-                /*-------------------验证objectAcl-------------------*/
-                return ControllerUtils.writeIfReturn(response, ResultCode.OBJECT_ACL_BLOCK,
-                        objectAclService.checkObjectAcl(bucket,user, ossApi.type(), ossObject));
-            }else{
-                //针对其他(不是对象 或者 桶)而言
-                return true;
-            }
-        }else{
-            //目标接口不含有ossApi注解,并且接口含有参数
-            return true;
-        }
+        String readAndWriteType = ossApi.type();
+        String target = ossApi.target();
+        /*-------------------验证令牌-------------------*/
+        User user = identityAuthentication.verify(request);
+        //目标接口含有ossApi注解,并且接口含有参数
+        if(target.equals(API_BUCKET)){
+            /*-------------------验证bucketAcl-------------------*/
+            Bucket bucket = bucketAclService.getBucketFromParam(request, params);
+            log.info("bucket is {}",bucket.getName());
+            return ControllerUtils.writeIfReturn(response, ResultCode.BUCKET_ACL_BLOCK,
+                    bucketAclService.checkBucketAcl(user, readAndWriteType, bucket));
+        }else if(ossApi.target().equals(API_OBJECT)){
+            if(readAndWriteType.equals(API_READ)){
 
+            }
+            OssObject ossObject = objectAclService.getObjectFromParam(request, params);
+            log.info("object is {}",ossObject.getName());
+            Bucket bucket = bucketMapper.selectById(ossObject.getBucketId());
+            /*-------------------判断bucketPolicy-------------------*/
+            String accessPath = bucket.getName()+"/"+ossObject.getName();
+            Boolean check = bucketPolicyService.check(user.getId(), bucket.getId(), accessPath, readAndWriteType);
+            if(check==null){
+                return ControllerUtils.writeIfReturn(response, ResultCode.BUCKET_POLICY_BLOCK,
+                        bucketAclService.checkBucketAcl(user, readAndWriteType, bucket));
+            }
+            return check;
+            /*-------------------验证objectAcl-------------------*/
+        }else if(ossApi.target().equals(API_USER)){
+            return true;
+        }else if(ossApi.target().equals(API_OPEN)){
+            return true;
+        }if(ossApi.target().equals(API_OTHER)){
+            return ControllerUtils.writeIfReturn(response, ResultCode.UN_KNOW_API,
+                    true);
+
+        }
+        return false;
     }
 
 
@@ -164,21 +153,11 @@ public class RequestInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-//        if(response.getStatus()==500){
-//            response.getWriter().println(ApiResponse.fail(ResultCode.ERROR_505));
-//        }else if(response.getStatus()==404){
-//            response.getWriter().println(ApiResponse.fail(ResultCode.ERROR_404));
-//        }
+
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
 
     }
-
-
-    public static void main(String[] args) {
-
-    }
-
 }

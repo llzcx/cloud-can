@@ -5,6 +5,7 @@ import ccw.serviceinnovation.common.entity.Authorize;
 import ccw.serviceinnovation.common.request.ApiResp;
 import ccw.serviceinnovation.oss.manager.authority.OssApi;
 import ccw.serviceinnovation.oss.pojo.dto.PutAuthorizeDto;
+import ccw.serviceinnovation.oss.pojo.vo.AuthorizeVo;
 import ccw.serviceinnovation.oss.service.IAuthorizeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -29,9 +30,9 @@ public class AuthorizeController {
 
     /**
      * 添加/更新一个bucket授权策略
-     * @param putAuthorizeDto
-     * @param bucketName
-     * @param authorizeId
+     * @param putAuthorizeDto Dto
+     * @param bucketName 桶名字
+     * @param authorizeId Authorize的唯一ID,如果需要进行Authorize更新,请带上此参数
      * @return
      * @throws IOException
      */
@@ -42,27 +43,28 @@ public class AuthorizeController {
                                 @RequestParam(value = "bucketName")String bucketName,
                                 @RequestParam(value = "authorizeId",required = false)Long authorizeId) throws IOException {
         return ApiResp.success(authorizeService.putAuthorize(putAuthorizeDto, bucketName, authorizeId));
-
     }
 
     /**
      * 获取权限策略列表
-     * @param bucketName
+     * @param bucketName 桶名字
      * @return
      * @throws IOException
      */
     @GetMapping("/listAuthorizes")
     @ResponseBody
     @OssApi(target = AuthorityConstant.API_BUCKET,type = AuthorityConstant.API_READ, name = "putAuthorize",description = "获取权限策略列表")
-    public ApiResp<List<Authorize>> listAuthorizes(@RequestParam("bucketName")String bucketName) throws IOException {
-        return ApiResp.success(authorizeService.listAuthorizes(bucketName));
+    public ApiResp<List<AuthorizeVo>> listAuthorizes(@RequestParam("bucketName")String bucketName,
+                                                     @RequestParam("pageNum")Integer pageNum,
+                                                     @RequestParam("pageSize")Integer pageSize) throws IOException {
+        return ApiResp.success(authorizeService.listAuthorizes(bucketName,pageNum,pageSize));
     }
 
 
     /**
      * 删除一个授权策略
-     * @param bucketName
-     * @param authorizeId
+     * @param bucketName 桶名字
+     * @param authorizeId Authorize的唯一ID
      * @return
      * @throws IOException
      */

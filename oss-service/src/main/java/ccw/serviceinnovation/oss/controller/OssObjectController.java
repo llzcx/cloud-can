@@ -9,17 +9,23 @@ import ccw.serviceinnovation.oss.common.util.ControllerUtils;
 import ccw.serviceinnovation.oss.manager.authority.OssApi;
 import ccw.serviceinnovation.oss.pojo.bo.BlockTokenBo;
 import ccw.serviceinnovation.oss.pojo.bo.GetObjectBo;
+import ccw.serviceinnovation.oss.pojo.dto.BatchDeletionObjectDto;
 import ccw.serviceinnovation.oss.pojo.vo.ObjectStateVo;
 import ccw.serviceinnovation.oss.pojo.vo.ObjectVo;
 import ccw.serviceinnovation.oss.pojo.vo.OssObjectVo;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import ccw.serviceinnovation.oss.service.IObjectService;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.io.BufferedReader;
+import java.io.IOException;
 
 import static ccw.serviceinnovation.common.constant.AuthorityConstant.API_BUCKET;
 import static ccw.serviceinnovation.common.constant.AuthorityConstant.API_OBJECT;
@@ -260,6 +266,31 @@ public class OssObjectController {
     public ApiResp<Boolean> updateObjectAcl(@RequestParam(value = "bucketName") String bucketName
             ,@RequestParam(value = "objectName") String objectName,@RequestParam(value = "newtName") Integer objectAcl) throws Exception {
         Boolean flag = objectService.updateObjectAcl(bucketName,objectName,objectAcl);
+        return ApiResp.ifResponse(flag,flag,ResultCode.COMMON_FAIL);
+    }
+    public static String getRequestBody(HttpServletRequest request) throws IOException {
+
+        BufferedReader reader = request.getReader();
+        StringBuilder stringBuilder = new StringBuilder();
+        String line = null;
+
+        while ((line = reader.readLine()) != null) {
+            stringBuilder.append(line);
+        }
+
+        return stringBuilder.toString();
+    }
+    /**
+     * 批量删除
+     * @param bucketName 桶名
+     * @return
+     * @throws Exception
+     */
+    @DeleteMapping("/batchDeletion")
+    @OssApi(target = API_BUCKET,type = AuthorityConstant.API_WRITER, name = "batchDeletion",description = "批量删除")
+    public ApiResp<Boolean> batchDeletion(@RequestParam(value = "bucketName") String bucketName
+            , @RequestBody BatchDeletionObjectDto batchDeletionObjectDto,HttpServletRequest request) throws Exception {
+        Boolean flag = objectService.batchDeletion(bucketName,batchDeletionObjectDto);
         return ApiResp.ifResponse(flag,flag,ResultCode.COMMON_FAIL);
     }
 }

@@ -109,4 +109,15 @@ public class OssColdController {
             return oldFile.delete();
         }
     }
+
+    @DeleteMapping("/deleteNor/{etag}")
+    public Boolean deleteNor(@PathVariable String etag) {
+        //将文件解压缩
+        File oldFile = new File(OssColdDataConstant.POSITION+"\\"+FILE_COLD+etag);
+        if(!oldFile.exists()){
+            return true;
+        }else{
+            return oldFile.delete();
+        }
+    }
 }

@@ -1,8 +1,7 @@
 package ccw.serviceinnovation.oss.service.impl;
-import ccw.serviceinnovation.common.constant.ObjectACLEnum;
+import ccw.serviceinnovation.common.constant.ACLEnum;
 
 
-import ccw.serviceinnovation.common.constant.ObjectACLEnum;
 import ccw.serviceinnovation.common.constant.StorageTypeEnum;
 import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.entity.OssObject;
@@ -14,9 +13,7 @@ import ccw.serviceinnovation.oss.pojo.vo.BucketVo;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import ccw.serviceinnovation.oss.service.IManageBucketService;
 import ccw.serviceinnovation.oss.service.IObjectService;
-import ccw.serviceinnovation.oss.service.IUserFavoriteService;
 import cn.hutool.core.bean.BeanUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -116,7 +113,7 @@ public class ManageBucketServiceImpl extends ServiceImpl<ManageBucketMapper, Buc
 
             bucketVo.setCapacity(sum);
             bucketVo.setStorageLevelString(StorageTypeEnum.getEnum(bucket.getStorageLevel()).getMessage());
-            bucketVo.setBucketAcl(ObjectACLEnum.getEnum(bucket.getBucketAcl()).getMessage());
+            bucketVo.setBucketAcl(ACLEnum.getEnum(bucket.getBucketAcl()).getMessage());
             bucketVo.setStandardCapacity(standardSum);
             bucketVo.setPigeonholeCapacity(pigeonholeSum);
             bucketVos.add(bucketVo);
