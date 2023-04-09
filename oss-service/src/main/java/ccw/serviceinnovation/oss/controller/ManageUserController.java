@@ -25,7 +25,7 @@ public class ManageUserController {
 
     /**
      * 删除用户
-     * @param userId
+     * @param userId 用户id
      * @return 是否删除成功
      */
     @DeleteMapping("/deleteUser")
@@ -36,9 +36,9 @@ public class ManageUserController {
 
     /**
      * 获取用户列表
-     * @param keyword
-     * @param pageNum
-     * @param size
+     * @param keyword 用户名，用户id
+     * @param pageNum 当前页数
+     * @param size 每页数据条数
      * @return
      */
     @GetMapping("/listUsers")
@@ -51,10 +51,10 @@ public class ManageUserController {
 
     /**
      * 分页获取该用户的子用户
-     * @param userId
-     * @param keyword
-     * @param pageNum
-     * @param size
+     * @param userId 主用户id
+     * @param keyword 用户名，用户id
+     * @param pageNum 当前页数
+     * @param size 每页数据条数
      * @return
      * @throws Exception
      */

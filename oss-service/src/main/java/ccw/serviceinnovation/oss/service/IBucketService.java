@@ -3,6 +3,7 @@ package ccw.serviceinnovation.oss.service;
 import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.oss.pojo.dto.AddBucketDto;
 import ccw.serviceinnovation.oss.pojo.dto.BatchDeletionObjectDto;
+import ccw.serviceinnovation.oss.pojo.vo.BucketFileTypeVo;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -77,4 +78,17 @@ public interface IBucketService extends IService<Bucket> {
     Boolean updateSecret(String bucketName,Integer secret);
 
 
+    /**
+     * 获取bucket中存在的文件类型
+     * @param bucketName
+     * @returnu
+     */
+    BucketFileTypeVo getBucketFileType(String bucketName);
+
+    /**
+     * 获取该用户所有bucket内的文件类型
+     * @param userId
+     * @return
+     */
+    List<BucketFileTypeVo> getUserBucketFileType(Long userId);
 }

@@ -29,7 +29,7 @@ public class ObjectTagController {
 
     /**
      * 获取对象标签
-     * @param objectName
+     * @param objectName 对象名
      * @return
      */
     @GetMapping("/getObjectTag")
@@ -40,11 +40,8 @@ public class ObjectTagController {
 
     /**
      * 添加对象标签
-     * 1-判断是否有更改标签权限
-     * 2-判断key是否相同
-     * 3-添加
      * 可同时添加多个标签
-     * @param objectTagDto
+     * @param objectTagDto 对象标签
      * @return
      */
     @PutMapping("/putObjectTag")
@@ -55,7 +52,7 @@ public class ObjectTagController {
 
     /**
      * 删除对象标签
-     * @param objectTagDto
+     * @param objectTagDto 对象标签
      * @return
      */
     @DeleteMapping("/deleteObjectTag")

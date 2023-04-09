@@ -9,6 +9,7 @@ import ccw.serviceinnovation.oss.common.util.JwtUtil;
 import ccw.serviceinnovation.oss.pojo.dto.CreateRamUserDto;
 import ccw.serviceinnovation.oss.pojo.dto.LoginDto;
 import ccw.serviceinnovation.oss.pojo.dto.RegisterDto;
+import ccw.serviceinnovation.oss.pojo.vo.LoginVo;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import ccw.serviceinnovation.oss.pojo.vo.UserVo;
 import ccw.serviceinnovation.oss.service.IUserService;
@@ -42,8 +43,8 @@ public class UserController {
      */
     @PostMapping("/login")
     public ApiResp<String> login(@RequestBody LoginDto loginDto) {
-        String token = userService.login(loginDto.getUsername(), loginDto.getPassword());
-        return ApiResp.ifResponse(token!=null,token,ResultCode.LOGIN_ERROR);
+        LoginVo login = userService.login(loginDto.getUsername(), loginDto.getPassword());
+        return ApiResp.ifResponse(login!=null,login,ResultCode.LOGIN_ERROR);
     }
 
     /**
@@ -83,7 +84,7 @@ public class UserController {
 
     /**
      * 删除子用户
-     * @param userId
+     * @param userId 子用户id
      * @return
      */
     @DeleteMapping("/deleteSubUser")

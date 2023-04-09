@@ -8,9 +8,8 @@ import lombok.EqualsAndHashCode;
 import java.io.Serializable;
 
 /**
- * @author Joy Yang
- *
- * 后台管理的详细对象展示Vo
+ * 后台管理中对象管理的详细信息展示
+ * @author 杨世博
  */
 @Data
 @EqualsAndHashCode(callSuper = false)

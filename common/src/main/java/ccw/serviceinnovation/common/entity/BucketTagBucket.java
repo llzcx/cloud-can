@@ -8,7 +8,8 @@ import lombok.EqualsAndHashCode;
 import java.io.Serializable;
 
 /**
- * @author Joy Yang
+ * 桶标签与桶的关系
+ * @author 杨世博
  */
 @Data
 @EqualsAndHashCode(callSuper = false)

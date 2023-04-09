@@ -3,6 +3,7 @@ package ccw.serviceinnovation.oss.service.impl;
 import ccw.serviceinnovation.common.entity.User;
 import ccw.serviceinnovation.oss.common.util.JwtUtil;
 import ccw.serviceinnovation.oss.mapper.UserMapper;
+import ccw.serviceinnovation.oss.pojo.vo.LoginVo;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import ccw.serviceinnovation.oss.pojo.vo.UserVo;
 import ccw.serviceinnovation.oss.service.IUserService;
@@ -28,10 +29,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     UserMapper userMapper;
 
     @Override
-    public String login(String username, String password) {
+    public LoginVo login(String username, String password) {
         User user = userMapper.selectOne(MPUtil.queryWrapperEq("username", username,"password",password));
         if(user!=null){
-            return JwtUtil.sign(user.getId(), user.getUsername(), user.getPassword());
+            LoginVo login = new LoginVo();
+            login.setToken(JwtUtil.sign(user.getId(), user.getUsername(), user.getPassword()));
+            login.setAdmin(user.getAdmin());
+            return login;
         }
         return null;
     }

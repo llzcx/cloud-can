@@ -24,11 +24,11 @@ public class ManageBucketController {
 
     /**
      * 获取bucket列表
-     * 1-分页（无筛选）
+     * 1-分页
      * 2-根据用户名、用户ID筛选
-     * @param keyword
-     * @param pageNum
-     * @param size
+     * @param keyword 用户名、用户ID
+     * @param pageNum 当前页数
+     * @param size 每页大小
      * @return
      */
     @GetMapping("/listBuckets")
@@ -41,7 +41,6 @@ public class ManageBucketController {
 
     /**
      * 删除Bucket及其与之相关的所有信息所有
-     * 1-收藏
      * @param userId Bucket拥有者的Id
      * @param name Bucket的名字
      * @return

@@ -7,7 +7,8 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * @author Joy Yang
+ * 桶标签
+ * @author 杨世博
  */
 @Data
 public class BucketTag implements Serializable {

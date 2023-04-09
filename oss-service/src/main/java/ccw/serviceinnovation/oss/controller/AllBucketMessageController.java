@@ -20,6 +20,10 @@ public class AllBucketMessageController {
     @Autowired
     IAllBucketMessageService allBucketMessageService;
 
+    /**
+     * 获取用户所有bucket中的展示数据
+     * @return
+     */
     @GetMapping("getMessage")
     public ApiResp<AllBucketMessageVo> getMessage(){
         return ApiResp.success(allBucketMessageService.getMessage());

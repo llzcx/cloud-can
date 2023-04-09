@@ -7,18 +7,13 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * @author Joy Yang
+ * 创建标签的Dto
+ * @author 杨世博
  */
 @Data
 public class PutBucketTagDto implements Serializable {
 
-    /**
-     *
-     */
     private String bucketName;
 
-    /**
-     *
-     */
     private List<TagDto> tags;
 }

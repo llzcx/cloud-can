@@ -6,7 +6,8 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * @author Joy Yang
+ * 添加对象标签的dto
+ * @author 杨世博
  */
 @Data
 public class PutObjectTagDto implements Serializable {

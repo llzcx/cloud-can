@@ -10,9 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 /**
- * @author Joy Yang
- *
- * 对象AccessKey 接口
+ * 对象的AccessKey 接口
+ * @author 杨世博
  */
 @RestController
 @RequestMapping("/accessKey")
@@ -33,7 +32,7 @@ public class AccessKeyController {
 
     /**
      * 获取该对象的 全部AccessKey
-     * @param objectId
+     * @param objectId 对象的id
      * @return
      */
     @GetMapping("/getAccessKeys")
@@ -43,7 +42,7 @@ public class AccessKeyController {
     }
 
     /**
-     * 删除对象 AccessKeyDto
+     * 删除对象的 AccessKey
      * @return
      */
     @DeleteMapping("/deleteAccessKey")

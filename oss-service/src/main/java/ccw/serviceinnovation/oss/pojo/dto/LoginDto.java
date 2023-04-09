@@ -5,6 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
+ * 登录的Dto
  * @author 陈翔
  */
 @Data

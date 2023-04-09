@@ -3,8 +3,8 @@ package ccw.serviceinnovation.oss.pojo.bo;
 import lombok.Data;
 
 /**
- * @author 杨世博
  * 总的调用统计
+ * @author 杨世博
  */
 @Data
 public class MethodBo {

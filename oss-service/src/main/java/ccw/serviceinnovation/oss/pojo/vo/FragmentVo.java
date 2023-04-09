@@ -3,6 +3,7 @@ package ccw.serviceinnovation.oss.pojo.vo;
 import lombok.Data;
 
 /**
+ * bucket内上传碎片Vo
  * @author 陈翔
  */
 @Data

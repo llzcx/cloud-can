@@ -5,7 +5,8 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * @author Joy Yang
+ * 标签的传输类
+ * @author 杨世博
  */
 @Data
 public class TagDto  implements Serializable {

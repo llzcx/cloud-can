@@ -9,8 +9,8 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * @author 杨世博
  * 向用户展示对象存储内可展示的数据
+ * @author 杨世博
  */
 @Data
 public class AllBucketMessageVo implements Serializable {

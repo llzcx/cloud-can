@@ -3,8 +3,8 @@ package ccw.serviceinnovation.oss.pojo.bo;
 import lombok.Data;
 
 /**
- * @author 杨世博
  * 对该存储类型的对象进行增删操作时对总大小的影响
+ * @author 杨世博
  */
 @Data
 public class ObjectSizeBo {

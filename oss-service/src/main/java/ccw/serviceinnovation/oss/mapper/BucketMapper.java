@@ -2,6 +2,7 @@ package ccw.serviceinnovation.oss.mapper;
 
 import ccw.serviceinnovation.common.entity.Authorize;
 import ccw.serviceinnovation.common.entity.Bucket;
+import ccw.serviceinnovation.oss.pojo.bo.FileTypeBo;
 import ccw.serviceinnovation.oss.pojo.dto.PutAuthorizeDto;
 import ccw.serviceinnovation.oss.pojo.vo.AuthorizeVo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -50,4 +51,11 @@ public interface BucketMapper extends BaseMapper<Bucket> {
      */
     List<Bucket> selectBucketList(@Param("userId") Long userId,@Param("key") String key,@Param("offset") Integer offset,@Param("pagesize") Integer pagesize);
     Integer selectBucketListSize(@Param("userId") Long userId,@Param("key") String key);
+
+    /**
+     * 获取bucket中文件的类型
+     * @param bucketName
+     * @return
+     */
+    List<FileTypeBo> getFileType(String bucketName);
 }

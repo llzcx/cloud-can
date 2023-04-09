@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import java.io.Serializable;
 
 /**
+ * 后台管理bucket时向管理员展示的bucket列表中的信息
  * @author 杨世博
  */
 @Data
@@ -41,16 +42,6 @@ public class BucketVo implements Serializable {
      * 更新时间
      */
     private String updateTime;
-
-//    /**
-//     * 是否开启版本控制
-//     */
-//    private Boolean versionControl;
-
-//    /**
-//     * 存储等级
-//     */
-//    private Integer storageLevel;
 
     /**
      * 存储等级

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 获取对象列表Vo
  * @author 陈翔
  */
 @Data

@@ -7,6 +7,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
+ * 获取权限策略的Vo
  * @author 陈翔
  */
 @Data

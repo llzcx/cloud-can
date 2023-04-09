@@ -3,8 +3,8 @@ package ccw.serviceinnovation.oss.pojo.bo;
 import lombok.Data;
 
 /**
- * @author 杨世博
  * 用户所有存储的对象的存储类型，及其数量
+ * @author 杨世博
  */
 @Data
 public class ObjectTypeBo {
