@@ -6,9 +6,8 @@ import ccw.serviceinnovation.common.request.ApiResp;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.oss.common.util.JwtUtil;
 import ccw.serviceinnovation.oss.manager.authority.OssApi;
-import ccw.serviceinnovation.oss.mapper.UserMapper;
 import ccw.serviceinnovation.oss.pojo.dto.AddBucketDto;
-import ccw.serviceinnovation.oss.pojo.vo.BucketFileTypeVo;
+import ccw.serviceinnovation.oss.pojo.vo.FileTypeVo;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import ccw.serviceinnovation.oss.service.IBucketService;
 import ccw.serviceinnovation.oss.service.IUserService;
@@ -157,9 +156,9 @@ public class BucketController {
      */
     @GetMapping("/getBucketFileType")
     @OssApi(target = API_BUCKET,type = AuthorityConstant.API_READ, name = "getBucketFileType",description = "获取bucket中存在的文件类型")
-    public ApiResp<BucketFileTypeVo> getBucketFileType(@RequestParam("bucketName")String bucketName){
-        BucketFileTypeVo bucketFileType = bucketService.getBucketFileType(bucketName);
-        return ApiResp.success(bucketFileType);
+    public ApiResp<List<FileTypeVo>> getBucketFileType(@RequestParam("bucketName")String bucketName){
+        List<FileTypeVo> fileTypes = bucketService.getBucketFileType(bucketName);
+        return ApiResp.success(fileTypes);
     }
 
     /**
@@ -168,8 +167,8 @@ public class BucketController {
      */
     @GetMapping("/getUserBucketFileType")
     @OssApi(target = API_BUCKET,type = AuthorityConstant.API_READ, name = "getUserBucketFileType",description = "获取该用户的所有bucket中的文件类型")
-    public ApiResp<List<BucketFileTypeVo>> getUserBucketFileType(){
-        List<BucketFileTypeVo> bucketFileTypes =  bucketService.getUserBucketFileType(JwtUtil.getID(request));
+    public ApiResp<List<FileTypeVo>> getUserBucketFileType(){
+        List<FileTypeVo> bucketFileTypes =  bucketService.getUserBucketFileType(JwtUtil.getID(request));
         return ApiResp.success(bucketFileTypes);
     }
 }

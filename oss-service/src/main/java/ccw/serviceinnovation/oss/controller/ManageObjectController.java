@@ -37,11 +37,11 @@ public class ManageObjectController {
      * @param keyword 用户id，桶id，桶名
      * @param pageNum 当前页数
      * @param size 每页大小
-     * @return
+     * @return 筛选后的object列表
      */
     @GetMapping("/listObjects")
     @OssApi(target = AuthorityConstant.API_MANAGE,type = AuthorityConstant.API_READ, name = "listObject",description = "获取Object列表")
-    public ApiResp<RPage<ManageObjectListVo>> listObject(@RequestParam("keyword")String keyword,
+    public ApiResp<RPage<ManageObjectListVo>> listObject(@RequestParam(value = "keyword", required = false)String keyword,
                                                          @RequestParam("pageNum")Integer pageNum,
                                                          @RequestParam("size")Integer size) throws Exception{
         RPage<ManageObjectListVo> ossObjectRPage = manageObjectService.getObjectList(keyword,pageNum,size);
@@ -51,7 +51,7 @@ public class ManageObjectController {
     /**
      * 删除Object及其相关信息
      * @param objectIdList 删除对象的id
-     * @return
+     * @return 删除是否成功
      */
     @DeleteMapping("/deleteObject")
     @OssApi(target = AuthorityConstant.API_MANAGE,type = AuthorityConstant.API_WRITER, name = "deleteObject",description = "删除Object及其相关信息")
@@ -63,7 +63,7 @@ public class ManageObjectController {
     /**
      * 获取这个对象的详细信息
      * @param id 对象id
-     * @return
+     * @return 对象的星系详细信息
      */
     @GetMapping("/getObject")
     @OssApi(target = AuthorityConstant.API_MANAGE,type = AuthorityConstant.API_READ, name = "getObject",description = "获取这个对象的详细信息")
@@ -78,11 +78,11 @@ public class ManageObjectController {
      * @param parent 父文件夹
      * @param pageNum 当前页数
      * @param size 每页数据条数
-     * @return
+     * @return 对象列表
      */
     @GetMapping("/getSubObjects")
     @OssApi(target = AuthorityConstant.API_MANAGE,type = AuthorityConstant.API_READ, name = "listSubObject",description = "获取文件夹中的对象")
-    public ApiResp<RPage<ManageObjectListVo>> listSubObject(@RequestParam("keyword")String keyword,
+    public ApiResp<RPage<ManageObjectListVo>> listSubObject(@RequestParam(value = "keyword", required = false)String keyword,
                                                             @RequestParam("parent")String parent,
                                                             @RequestParam("pageNum")Integer pageNum,
                                                             @RequestParam("size")Integer size){
