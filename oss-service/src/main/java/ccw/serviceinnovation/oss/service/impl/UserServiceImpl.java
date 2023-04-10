@@ -96,4 +96,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         BeanUtil.copyProperties(user,subUsers);
         return subUsers;
     }
+
+
+    @Override
+    public Long getMainUserId(Long userId){
+        Long parentUserId = userMapper.selectParentUser(userId);
+        if (parentUserId==null){
+            return userId;
+        }else{
+            return parentUserId;
+        }
+    }
+
+
+
 }

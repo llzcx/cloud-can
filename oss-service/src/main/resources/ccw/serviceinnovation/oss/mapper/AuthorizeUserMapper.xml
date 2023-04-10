@@ -3,18 +3,30 @@
 <mapper namespace="ccw.serviceinnovation.oss.mapper.AuthorizeUserMapper">
 
 
-    <select id="selectAuthorizeMainUserList" resultType="ccw.serviceinnovation.common.entity.AuthorizeUser">
-        select *
-        from authorize_user
-                 join user u on authorize_user.user_id = u.id
-        where authorize_id = #{authorizeId}
-          and u.parent = #{userId}
+    <select id="selectAuthorizeOtherUserList" resultType="java.lang.String">
+        select username
+        from
+            (
+                select user_id
+                from authorize_user
+                         join user u on authorize_user.user_id = u.id
+                where authorize_id = #{authorizeId}
+                  #这些用户的父节点是主用户
+                  and u.parent = #{userId}
+            ) as t1
+                join user on user.id = t1.user_id
     </select>
-    <select id="selectAuthorizeRAMUserList" resultType="ccw.serviceinnovation.common.entity.AuthorizeUser">
-        select *
-        from authorize_user
-                 join user u on authorize_user.user_id = u.id
-        where authorize_id = #{authorizeId}
-          and u.parent != #{userId}
+    <select id="selectAuthorizeRAMUserList" resultType="java.lang.String">
+        select username
+        from
+        (
+            select user_id
+            from authorize_user
+                     join user u on authorize_user.user_id = u.id
+            where authorize_id = #{authorizeId}
+              #这些用户的父节点是主用户
+              and u.parent = #{userId}
+        ) as t1
+        join user on user.id = t1.user_id
     </select>
 </mapper>

@@ -54,4 +54,12 @@ public interface IUserService extends IService<User> {
      * @return
      */
     List<UserVo> deleteSubUser(Long userId, Long myId);
+
+
+    /**
+     * 获取账号的主用户Id
+     * @param userId 用户Id
+     * @return
+     */
+    Long getMainUserId(Long userId);
 }

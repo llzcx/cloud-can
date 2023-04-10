@@ -27,4 +27,13 @@
             </if>
         </where>
     </select>
+    <select id="selectUserIdByName" resultType="java.lang.Long">
+        select id from user where username = #{username}
+    </select>
+    <select id="selectuserNameById" resultType="java.lang.Long">
+        select username from user where id = #{userId}
+    </select>
+    <select id="selectParentUser" resultType="java.lang.Long">
+        select parent from user where id=#{userId}
+    </select>
 </mapper>

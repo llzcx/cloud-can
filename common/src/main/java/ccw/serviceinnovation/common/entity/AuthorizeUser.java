@@ -23,9 +23,16 @@ public class AuthorizeUser implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 授权用户id
+     * 主键
      */
     @TableId(value = "id",type = IdType.AUTO)
+    private Long id;
+
+
+    /**
+     * 授权用户id
+     */
+
     private Long authorizeId;
 
     /**
@@ -34,10 +41,6 @@ public class AuthorizeUser implements Serializable {
     private Long userId;
 
 
-    /**
-     * 主键
-     */
-    private Long id;
 
     /**
      * 桶id

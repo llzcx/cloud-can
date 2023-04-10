@@ -1,8 +1,10 @@
 package ccw.serviceinnovation.oss.controller;
 
+import ccw.serviceinnovation.common.constant.AuthorityConstant;
 import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.request.ApiResp;
 import ccw.serviceinnovation.common.request.ResultCode;
+import ccw.serviceinnovation.oss.manager.authority.OssApi;
 import ccw.serviceinnovation.oss.pojo.vo.BucketVo;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import ccw.serviceinnovation.oss.service.IManageBucketService;
@@ -32,6 +34,7 @@ public class ManageBucketController {
      * @return
      */
     @GetMapping("/listBuckets")
+    @OssApi(target = AuthorityConstant.API_MANAGE,type = AuthorityConstant.API_READ, name = "listsFragment",description = "获取一个桶内所有碎片")
     public ApiResp<RPage<BucketVo>> listBuckets(@RequestParam("keyword") String keyword,
                                                 @RequestParam("pageNum")Integer pageNum,
                                                 @RequestParam("size")Integer size){
@@ -46,6 +49,7 @@ public class ManageBucketController {
      * @return
      */
     @DeleteMapping("/deleteBucket")
+    @OssApi(target = AuthorityConstant.API_MANAGE,type = AuthorityConstant.API_WRITER, name = "deleteBucket",description = "删除Bucket及其与之相关的所有信息所有")
     public ApiResp<Boolean> deleteBucket(@RequestParam("userId")Long userId,@RequestParam("name")String name) throws Exception{
         Boolean flag = manageBucketService.deleteBucket(userId, name);
         return ApiResp.ifResponse(flag,flag, ResultCode.COMMON_FAIL);

@@ -6,13 +6,12 @@ import ccw.serviceinnovation.common.request.ApiResp;
 import ccw.serviceinnovation.oss.manager.authority.OssApi;
 import ccw.serviceinnovation.oss.pojo.dto.PutAuthorizeDto;
 import ccw.serviceinnovation.oss.pojo.vo.AuthorizeVo;
+import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import ccw.serviceinnovation.oss.service.IAuthorizeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * bucket授权策略接口
@@ -32,8 +31,8 @@ public class AuthorizeController {
      * 添加/更新一个bucket授权策略
      * @param putAuthorizeDto Dto
      * @param bucketName 桶名字
-     * @param authorizeId Authorize的唯一ID,如果需要进行Authorize更新,请带上此参数
-     * @return
+     * @param authorizeId Authorize的唯一ID,如果需要进行Authorize更新,带上此参数
+     * @return 是否新增/修改成功
      * @throws IOException
      */
     @PostMapping("/putAuthorize")
@@ -48,15 +47,15 @@ public class AuthorizeController {
     /**
      * 获取权限策略列表
      * @param bucketName 桶名字
-     * @return
+     * @return bucketPolicy列表
      * @throws IOException
      */
     @GetMapping("/listAuthorizes")
     @ResponseBody
     @OssApi(target = AuthorityConstant.API_BUCKET,type = AuthorityConstant.API_READ, name = "putAuthorize",description = "获取权限策略列表")
-    public ApiResp<List<AuthorizeVo>> listAuthorizes(@RequestParam("bucketName")String bucketName,
-                                                     @RequestParam("pageNum")Integer pageNum,
-                                                     @RequestParam("pageSize")Integer pageSize) throws IOException {
+    public ApiResp<RPage<AuthorizeVo>> listAuthorizes(@RequestParam("bucketName")String bucketName,
+                                                      @RequestParam("pageNum")Integer pageNum,
+                                                      @RequestParam("pageSize")Integer pageSize) throws IOException {
         return ApiResp.success(authorizeService.listAuthorizes(bucketName,pageNum,pageSize));
     }
 

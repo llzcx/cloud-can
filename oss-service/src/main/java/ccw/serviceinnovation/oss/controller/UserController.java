@@ -75,7 +75,7 @@ public class UserController {
      * @return
      */
     @GetMapping("/getSubUsers")
-    public ApiResp<RPage<UserVo>> getSubUsers(@RequestParam("keyword")String keyword,
+    public ApiResp<RPage<UserVo>> getSubUsers(@RequestParam(value = "keyword",required = false)String keyword,
                                       @RequestParam("pageNum")Integer pageNum,
                                       @RequestParam("size")Integer size){
         RPage<UserVo> userVos = userService.getSubUsers(JwtUtil.getID(request),keyword,pageNum,size);

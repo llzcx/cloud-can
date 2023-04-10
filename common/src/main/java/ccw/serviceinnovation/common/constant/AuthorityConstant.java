@@ -20,7 +20,8 @@ public interface AuthorityConstant {
     String API_READ = "api_read";
     String API_WRITER = "api_writer";
     String API_LIST = "api_list";
-
+    String API_BACK_UP = "api_back_up";
+    String API_BACKUP_RECOVERY = "api_backup_recovery";
     public static void main(String[] args) {
         switch (1){
             case 1:

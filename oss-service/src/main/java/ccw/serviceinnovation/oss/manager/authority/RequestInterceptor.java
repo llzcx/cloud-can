@@ -1,5 +1,6 @@
 package ccw.serviceinnovation.oss.manager.authority;
 
+import ccw.serviceinnovation.common.entity.Backup;
 import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.entity.OssObject;
 import ccw.serviceinnovation.common.entity.User;
@@ -10,7 +11,9 @@ import ccw.serviceinnovation.oss.manager.authority.bucketacl.BucketAclService;
 import ccw.serviceinnovation.oss.manager.authority.bucketpolicy.BucketPolicyService;
 import ccw.serviceinnovation.oss.manager.authority.identity.IdentityAuthentication;
 import ccw.serviceinnovation.oss.manager.authority.objectacl.ObjectAclService;
+import ccw.serviceinnovation.oss.mapper.BackupMapper;
 import ccw.serviceinnovation.oss.mapper.BucketMapper;
+import ccw.serviceinnovation.oss.mapper.OssObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
@@ -54,6 +57,12 @@ public class RequestInterceptor implements HandlerInterceptor {
 
     @Autowired
     ObjectAccessKeyService objectAccessKeyService;
+
+    @Autowired
+    BackupMapper backupMapper;
+
+    @Autowired
+    OssObjectMapper ossObjectMapper;
 
 
 
@@ -126,6 +135,27 @@ public class RequestInterceptor implements HandlerInterceptor {
             return ControllerUtils.writeIfReturn(response, ResultCode.BUCKET_ACL_BLOCK,
                     bucketAclService.checkBucketAcl(user, readAndWriteType, bucket));
         }else if(ossApi.target().equals(API_OBJECT)){
+            if(readAndWriteType.equals(API_BACK_UP)){
+                //源对象需要有读权限
+                String sourceBucketName = request.getParameter("bucketName");
+                String sourceObjectName = request.getParameter("objectName");
+                readAndWriteType = API_READ;
+                //目标桶需要有写权限
+                String targetBucketName = request.getParameter("targetBucketName");
+                bucketAclService.checkBucketAcl(user, API_WRITER, bucketMapper.selectBucketByName(targetBucketName));
+            }else if(readAndWriteType.equals(API_BACKUP_RECOVERY)){
+                String targetBucketName = request.getParameter("bucketName");
+                String targetObjectName = request.getParameter("objectName");
+                Backup backup = backupMapper.selectBackupByTarget(targetBucketName, targetObjectName);
+                Long sourceObjectId = backup.getSourceObjectId();
+                Long targetObjectId = backup.getTargetObjectId();
+                //目标对象需要有读权限
+                readAndWriteType = API_READ;
+                //源桶需要有写权限
+                OssObject ossObject = ossObjectMapper.selectById(sourceObjectId);
+                Long sourceBucketId = ossObject.getBucketId();
+                bucketAclService.checkBucketAcl(user, API_WRITER, bucketMapper.selectById(sourceBucketId));
+            }
             OssObject ossObject = objectAclService.getObjectFromParam(request, params);
             if(readAndWriteType.equals(API_READ) &&  accessKey!=null){
                 if(objectAccessKeyService.handle(ossObject,accessKey)){
@@ -135,7 +165,7 @@ public class RequestInterceptor implements HandlerInterceptor {
             log.info("object is {}",ossObject.getName());
             Bucket bucket = bucketMapper.selectById(ossObject.getBucketId());
             /*-------------------判断bucketPolicy-------------------*/
-            String accessPath = bucket.getName()+"/"+ossObject.getName();
+            String accessPath = ossObject.getName();
             Boolean check = bucketPolicyService.check(user.getId(), bucket.getId(), accessPath, readAndWriteType);
             if(check==null){
                 return ControllerUtils.writeIfReturn(response, ResultCode.BUCKET_POLICY_BLOCK,
@@ -147,10 +177,11 @@ public class RequestInterceptor implements HandlerInterceptor {
             return true;
         }else if(ossApi.target().equals(API_OPEN)){
             return true;
-        }if(ossApi.target().equals(API_OTHER)){
+        }else if(ossApi.target().equals(API_MANAGE)){
+            return user.getAdmin();
+        }else if(ossApi.target().equals(API_OTHER)){
             return ControllerUtils.writeIfReturn(response, ResultCode.UN_KNOW_API,
                     true);
-
         }
         return false;
     }
