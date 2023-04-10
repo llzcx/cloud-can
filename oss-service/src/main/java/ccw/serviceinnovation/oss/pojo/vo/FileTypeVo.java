@@ -1,4 +1,4 @@
-package ccw.serviceinnovation.oss.pojo.bo;
+package ccw.serviceinnovation.oss.pojo.vo;
 
 import lombok.Data;
 
@@ -7,7 +7,7 @@ import lombok.Data;
  * @author 杨世博
  */
 @Data
-public class FileTypeBo {
+public class FileTypeVo {
     /**
      * 文件类型
      */

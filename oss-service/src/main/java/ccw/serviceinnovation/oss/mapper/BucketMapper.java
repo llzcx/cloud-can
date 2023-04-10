@@ -1,10 +1,7 @@
 package ccw.serviceinnovation.oss.mapper;
 
-import ccw.serviceinnovation.common.entity.Authorize;
 import ccw.serviceinnovation.common.entity.Bucket;
-import ccw.serviceinnovation.oss.pojo.bo.FileTypeBo;
-import ccw.serviceinnovation.oss.pojo.dto.PutAuthorizeDto;
-import ccw.serviceinnovation.oss.pojo.vo.AuthorizeVo;
+import ccw.serviceinnovation.oss.pojo.vo.FileTypeVo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -57,5 +54,12 @@ public interface BucketMapper extends BaseMapper<Bucket> {
      * @param bucketName
      * @return
      */
-    List<FileTypeBo> getFileType(String bucketName);
+    List<FileTypeVo> getFileType(String bucketName);
+
+    /**
+     * 获取该用户所有的所有bucket里面的文件类型
+     * @param userId
+     * @return
+     */
+    List<FileTypeVo> getUserAllFileType(Long userId);
 }

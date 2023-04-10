@@ -22,7 +22,7 @@ public class AccessKeyController {
 
     /**
      * 生成AccessKey
-     * @return
+     * @return 创建新的AccessKey后该对象AccessKey的基本信息
      */
     @PostMapping("/createAccessKey")
     public ApiResp<Map<String, MessageDto>> createAccessKey(@RequestParam("objectId")Long objectId, @RequestParam("survivalTime")Long survivalTime){
@@ -33,7 +33,7 @@ public class AccessKeyController {
     /**
      * 获取该对象的 全部AccessKey
      * @param objectId 对象的id
-     * @return
+     * @return 该对象仍然存活的AccessKey列表
      */
     @GetMapping("/getAccessKeys")
     public ApiResp<Map<String, MessageDto>> getAccessKeys(@RequestParam("objectId")Long objectId){
@@ -43,7 +43,7 @@ public class AccessKeyController {
 
     /**
      * 删除对象的 AccessKey
-     * @return
+     * @return 删除后的AccessKey列表
      */
     @DeleteMapping("/deleteAccessKey")
     public ApiResp<Map<String, MessageDto>> deleteAccessKey(@RequestBody AccessKeyDto accessKeyDto){

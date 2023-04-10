@@ -35,10 +35,10 @@ public class ManageObjectController {
      * @param keyword 用户id，桶id，桶名
      * @param pageNum 当前页数
      * @param size 每页大小
-     * @return
+     * @return 根据关键字搜索到的object列表
      */
     @GetMapping("/listObjects")
-    public ApiResp<RPage<ManageObjectListVo>> listObject(@RequestParam("keyword")String keyword,
+    public ApiResp<RPage<ManageObjectListVo>> listObject(@RequestParam(value = "keyword", required = false)String keyword,
                                                          @RequestParam("pageNum")Integer pageNum,
                                                          @RequestParam("size")Integer size) throws Exception{
         RPage<ManageObjectListVo> ossObjectRPage = manageObjectService.getObjectList(keyword,pageNum,size);
@@ -48,7 +48,7 @@ public class ManageObjectController {
     /**
      * 删除Object及其相关信息
      * @param objectIdList 删除对象的id
-     * @return
+     * @return 删除结果
      */
     @DeleteMapping("/deleteObject")
     public ApiResp<Boolean> deleteObject(@RequestBody List<Long> objectIdList) throws Exception{
@@ -59,7 +59,7 @@ public class ManageObjectController {
     /**
      * 获取这个对象的详细信息
      * @param id 对象id
-     * @return
+     * @return 该对象的详细信息
      */
     @GetMapping("/getObject")
     public ApiResp<ManageObjectDetailedVo> getObject(@RequestParam("id")Long id){

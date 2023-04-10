@@ -30,7 +30,7 @@ public class ObjectTagController {
     /**
      * 获取对象标签
      * @param objectName 对象名
-     * @return
+     * @return 该对象的标签
      */
     @GetMapping("/getObjectTag")
     public ApiResp<List<ObjectTag>> getObjectTag(@RequestParam("bucketName") String bucketName, @RequestParam("objectName") String objectName){
@@ -42,7 +42,7 @@ public class ObjectTagController {
      * 添加对象标签
      * 可同时添加多个标签
      * @param objectTagDto 对象标签
-     * @return
+     * @return 添加对象后的该对象的标签
      */
     @PutMapping("/putObjectTag")
     public ApiResp<List<ObjectTag>> putObjectTag(@RequestBody PutObjectTagDto objectTagDto){
@@ -53,7 +53,7 @@ public class ObjectTagController {
     /**
      * 删除对象标签
      * @param objectTagDto 对象标签
-     * @return
+     * @return 删除后该对象的对象标签
      */
     @DeleteMapping("/deleteObjectTag")
     public ApiResp<List<ObjectTag>> deleteObjectTag(@RequestBody DeleteObjectTagDto objectTagDto){

@@ -57,7 +57,7 @@ public class UserFavoriteController {
     /**
      * 用户删除一个桶
      * @param bucketName 桶名
-     * @return
+     * @return 删除后的桶列表
      * @throws Exception
      */
     @DeleteMapping("/deleteUserFavorite")

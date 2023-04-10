@@ -39,10 +39,10 @@ public class ManageUserController {
      * @param keyword 用户名，用户id
      * @param pageNum 当前页数
      * @param size 每页数据条数
-     * @return
+     * @return 根据关键词搜到的用户列表
      */
     @GetMapping("/listUsers")
-    public ApiResp<RPage<User>> listUsers(@RequestParam("keyword")String keyword,
+    public ApiResp<RPage<User>> listUsers(@RequestParam(value = "keyword",required = false)String keyword,
                                           @RequestParam("pageNum")Integer pageNum,
                                           @RequestParam("size")Integer size) throws Exception{
         RPage<User> userRPage = manageUserService.getUserList(keyword, pageNum, size);
@@ -55,12 +55,12 @@ public class ManageUserController {
      * @param keyword 用户名，用户id
      * @param pageNum 当前页数
      * @param size 每页数据条数
-     * @return
+     * @return 根据关键词获取到的子用户列表
      * @throws Exception
      */
     @GetMapping("/listSubUsers")
     public ApiResp<RPage<User>> listSubUsers(@RequestParam("userId")String userId,
-                                             @RequestParam("keyword")String keyword,
+                                             @RequestParam(value = "keyword", required = false)String keyword,
                                              @RequestParam("pageNum")Integer pageNum,
                                              @RequestParam("size")Integer size) throws Exception{
         RPage<User> userRPage = manageUserService.getSubUsers(userId, keyword, pageNum, size);

@@ -22,7 +22,7 @@ public class AllBucketMessageController {
 
     /**
      * 获取用户所有bucket中的展示数据
-     * @return
+     * @return bucket中的展示数据
      */
     @GetMapping("getMessage")
     public ApiResp<AllBucketMessageVo> getMessage(){

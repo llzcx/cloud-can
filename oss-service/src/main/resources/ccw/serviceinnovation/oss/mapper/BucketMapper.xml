@@ -34,7 +34,16 @@
             </if>
         </where>
     </select>
-    <select id="getFileType" resultType="ccw.serviceinnovation.oss.pojo.bo.FileTypeBo"></select>
+    <select id="getFileType" resultType="ccw.serviceinnovation.oss.pojo.vo.FileTypeVo">
+        SELECT ext, (COUNT(*)) AS `count` FROM oss_object WHERE bucket_id IN
+        (SELECT id FROM bucket WHERE name = #{bucketName}) GROUP BY ext;
+    </select>
+    <select id="getUserAllFileType" resultType="ccw.serviceinnovation.oss.pojo.vo.FileTypeVo">
+        SELECT ext, (COUNT(*)) AS `count` FROM oss_object WHERE bucket_id IN
+        (SELECT id FROM bucket WHERE name IN (
+            SELECT `name` FROM bucket WHERE user_id = #{userId}
+        )) GROUP BY ext;
+    </select>
 
 
 </mapper>

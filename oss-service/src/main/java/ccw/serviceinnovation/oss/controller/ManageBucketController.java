@@ -29,10 +29,10 @@ public class ManageBucketController {
      * @param keyword 用户名、用户ID
      * @param pageNum 当前页数
      * @param size 每页大小
-     * @return
+     * @return 根据搜索关键词获取到的bucket列表
      */
     @GetMapping("/listBuckets")
-    public ApiResp<RPage<BucketVo>> listBuckets(@RequestParam("keyword") String keyword,
+    public ApiResp<RPage<BucketVo>> listBuckets(@RequestParam(value = "keyword",required = false) String keyword,
                                                 @RequestParam("pageNum")Integer pageNum,
                                                 @RequestParam("size")Integer size){
         RPage<BucketVo> bucketRPage = manageBucketService.getBucketList(keyword,pageNum,size);
@@ -43,7 +43,7 @@ public class ManageBucketController {
      * 删除Bucket及其与之相关的所有信息所有
      * @param userId Bucket拥有者的Id
      * @param name Bucket的名字
-     * @return
+     * @return 删除的结果
      */
     @DeleteMapping("/deleteBucket")
     public ApiResp<Boolean> deleteBucket(@RequestParam("userId")Long userId,@RequestParam("name")String name) throws Exception{

@@ -5,14 +5,14 @@ import ccw.serviceinnovation.common.constant.ACLEnum;
 import ccw.serviceinnovation.common.constant.SecretEnum;
 import ccw.serviceinnovation.common.constant.StorageTypeEnum;
 import ccw.serviceinnovation.common.entity.Bucket;
+import ccw.serviceinnovation.common.entity.BucketTagBucket;
 import ccw.serviceinnovation.common.entity.User;
 import ccw.serviceinnovation.common.exception.OssException;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.oss.common.util.MPUtil;
 import ccw.serviceinnovation.oss.mapper.*;
-import ccw.serviceinnovation.oss.pojo.bo.FileTypeBo;
+import ccw.serviceinnovation.oss.pojo.vo.FileTypeVo;
 import ccw.serviceinnovation.oss.pojo.dto.AddBucketDto;
-import ccw.serviceinnovation.oss.pojo.vo.BucketFileTypeVo;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import ccw.serviceinnovation.oss.service.IBucketService;
 import ccw.serviceinnovation.oss.service.IObjectService;
@@ -49,10 +49,19 @@ public class BucketServiceImpl extends ServiceImpl<BucketMapper, Bucket> impleme
     private AuthorizeUserMapper authorizeUserMapper;
 
     @Autowired
+    private UserFavoriteMapper userFavoriteMapper;
+
+    @Autowired
     private IObjectService objectService;
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private BucketTagBucketMapper bucketTagBucketMapper;
+
+    @Autowired
+    private BucketTagMapper bucketTagMapper;
 
 
     @Override
@@ -95,11 +104,16 @@ public class BucketServiceImpl extends ServiceImpl<BucketMapper, Bucket> impleme
     @Override
     public Boolean deleteBucket(String bucketName) throws Exception {
         Long id = bucketMapper.selectBucketIdByName(bucketName);
-        bucketMapper.delete(MPUtil.queryWrapperEq("name", bucketName));
         objectService.deleteObjects(bucketName);
+        bucketMapper.delete(MPUtil.queryWrapperEq("name", bucketName));
         authorizeMapper.delete(MPUtil.queryWrapperEq("bucket_id", id));
         authorizeUserMapper.delete(MPUtil.queryWrapperEq("bucket_id", id));
         authorizePathMapper.delete(MPUtil.queryWrapperEq("bucket_id", id));
+        //删除用户收藏
+        userFavoriteMapper.delete(MPUtil.queryWrapperEq("bucket_id", id));
+        //删除bucket标签
+        bucketTagBucketMapper.deleteTagByBucketId(id);
+        bucketTagBucketMapper.delete(MPUtil.queryWrapperEq("bucket_id",id));
         return true;
     }
 
@@ -178,15 +192,15 @@ public class BucketServiceImpl extends ServiceImpl<BucketMapper, Bucket> impleme
     }
 
     @Override
-    public BucketFileTypeVo getBucketFileType(String bucketName) {
-        List<FileTypeBo> fileTypes = bucketMapper.getFileType(bucketName);
-        BucketFileTypeVo bucketFileTypeVo = new BucketFileTypeVo();
-        return  bucketFileTypeVo;
+    public List<FileTypeVo> getBucketFileType(String bucketName) {
+        List<FileTypeVo> fileTypes = bucketMapper.getFileType(bucketName);
+        return  fileTypes;
     }
 
     @Override
-    public List<BucketFileTypeVo> getUserBucketFileType(Long userId) {
-        return null;
+    public List<FileTypeVo> getUserBucketFileType(Long userId) {
+        List<FileTypeVo> fileTypes = bucketMapper.getUserAllFileType(userId);
+        return  fileTypes;
     }
 
 
