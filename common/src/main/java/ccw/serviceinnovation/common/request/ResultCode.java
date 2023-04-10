@@ -86,6 +86,7 @@ public enum ResultCode {
     FILE_DELETE_ERROR(3040,"批量删除终止"),
     CANT_BACKUP_BY_STORAGE(3041,"非标准存储不支持备份"),
     UPDATE_AUTHORIZE_EXCEPTION(3041,"权限更新异常"),
+    USER_IS_NULL(3042,"用户不存在"),
 
     ;
     private Integer code;

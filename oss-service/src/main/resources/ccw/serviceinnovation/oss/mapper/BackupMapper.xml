@@ -6,4 +6,8 @@
         select * from backup where source_object_id = (select id from oss_object where name = #{objectName} and
         bucket_id = (select id from bucket where name=#{bucketName})) limit 0,1
     </select>
+    <select id="selectBackupByTarget" resultType="ccw.serviceinnovation.common.entity.Backup">
+        select * from backup where target_object_id = (select id from oss_object where bucket_id
+            = (select id from bucket where name = #{bucketName}) and name = #{objectName})
+    </select>
 </mapper>

@@ -1,6 +1,7 @@
 package ccw.serviceinnovation.oss.service;
 
 import ccw.serviceinnovation.common.entity.OssObject;
+import ccw.serviceinnovation.common.entity.User;
 import ccw.serviceinnovation.oss.pojo.bo.BlockTokenBo;
 import ccw.serviceinnovation.oss.pojo.bo.GetObjectBo;
 import ccw.serviceinnovation.oss.pojo.dto.BatchDeletionObjectDto;
@@ -167,11 +168,13 @@ public interface IObjectService extends IService<OssObject> {
 
     /**
      * 复原数据
-     * @param bucketName 桶名字
-     * @param objectName 对象名字
+     * @param bucketName 目标bucket的name
+     * @param objectName 目标的对象name
      * @return
      */
     Boolean backupRecovery(String bucketName,String objectName);
 
     Boolean batchDeletion(String bucketName, BatchDeletionObjectDto batchDeletionObjectDto) throws Exception;
+
+
 }

@@ -22,20 +22,22 @@ public class AuthorizePath implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 授权ID
+     * 主键
      */
     @TableId(value = "id",type = IdType.AUTO)
+    private Long id;
+
+
+    /**
+     * 授权ID
+     */
+
     private Long authorizeId;
 
     /**
      * 路径
      */
     private String path;
-
-    /**
-     * 主键
-     */
-    private Long id;
 
     /**
      * 桶id

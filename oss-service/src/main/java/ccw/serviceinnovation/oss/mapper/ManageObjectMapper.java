@@ -2,13 +2,14 @@ package ccw.serviceinnovation.oss.mapper;
 
 import ccw.serviceinnovation.common.entity.OssObject;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
 /**
  * @author 杨世博
  */
-
+@Mapper
 public interface ManageObjectMapper extends BaseMapper<OssObject> {
     /**
      * 根据bucketName筛选分页查找Object

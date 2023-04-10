@@ -6,10 +6,12 @@ import ccw.serviceinnovation.common.request.ApiResp;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.oss.common.util.JwtUtil;
 import ccw.serviceinnovation.oss.manager.authority.OssApi;
+import ccw.serviceinnovation.oss.mapper.UserMapper;
 import ccw.serviceinnovation.oss.pojo.dto.AddBucketDto;
-import ccw.serviceinnovation.oss.pojo.vo.FileTypeVo;
+import ccw.serviceinnovation.oss.pojo.vo.BucketFileTypeVo;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import ccw.serviceinnovation.oss.service.IBucketService;
+import ccw.serviceinnovation.oss.service.IUserService;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,11 @@ public class BucketController {
     IBucketService bucketService;
 
 
+    @Autowired
+    IUserService userService;
+
+
+
     /**
      * 获取桶信息
      * @param bucketName 桶名字
@@ -57,33 +64,35 @@ public class BucketController {
      * @param pageNum 当前页数
      * @param size 大小
      * @param key 桶名字关键词
-     * @return
+     * @return 分页| bucket列表
      * @throws Exception
      */
     @GetMapping("/listBuckets")
     @OssApi(target = AuthorityConstant.API_USER,type = AuthorityConstant.API_READ, name = "listBuckets",description = "获取桶列表")
     public ApiResp<RPage<Bucket>> listBuckets(Integer pageNum, Integer size, String key) throws Exception{
         log.info("{},{},{}",pageNum,size,key);
-        return ApiResp.success(bucketService.getBucketList(JwtUtil.getID(request),pageNum,size,key));
+        Long mainUserId = userService.getMainUserId(JwtUtil.getID(request));
+        return ApiResp.success(bucketService.getBucketList(mainUserId,pageNum,size,key));
     }
 
     /**
      * 创建一个桶
-     * @param addBucketDto dto
-     * @return
+     * @param addBucketDto 传输对象
+     * @return 返回桶的信息
      * @throws Exception
      */
     @PostMapping("/createBucket")
     @OssApi(target = AuthorityConstant.API_USER,type = AuthorityConstant.API_WRITER, name = "createBucket",description = "创建一个桶")
     public ApiResp<Bucket> createBucket(@RequestBody AddBucketDto addBucketDto) throws Exception{
-        return ApiResp.success(bucketService.createBucket(addBucketDto,JwtUtil.getID(request)));
+        Long mainUserId = userService.getMainUserId(JwtUtil.getID(request));
+        return ApiResp.success(bucketService.createBucket(addBucketDto,mainUserId));
     }
 
 
     /**
      * 删除一个桶
      * @param bucketName 桶名
-     * @return
+     * @return 返回是否删除成功
      * @throws Exception
      */
     @DeleteMapping("/deleteBucket")
@@ -98,7 +107,7 @@ public class BucketController {
      * 更新bucketAcl
      * @param bucketName 桶名
      * @param bucketAcl bucketAcl编码
-     * @return
+     * @return 返回是否更新成功
      * @throws Exception
      */
     @PutMapping("/updateBucketAcl")
@@ -114,7 +123,7 @@ public class BucketController {
      * 更新Secret
      * @param bucketName 桶名
      * @param secret 加密方式对应的编码 为NULL则代表 不加密
-     * @return
+     * @return 返回是否更新成功
      * @throws Exception
      */
     @PutMapping("/updateSecret")
@@ -129,11 +138,11 @@ public class BucketController {
      * 更新StorageLevel
      * @param bucketName 桶名
      * @param storageLevel 存储类型对应的编码
-     * @return
+     * @return 返回是否更新成功
      * @throws Exception
      */
     @PutMapping("/updateStorageLevel")
-    @OssApi(target = API_BUCKET,type = AuthorityConstant.API_WRITER, name = "updateSecret",description = "更新StorageLevel")
+    @OssApi(target = API_BUCKET,type = AuthorityConstant.API_WRITER, name = "updateStorageLevel",description = "更新StorageLevel")
     public ApiResp<Boolean> updateStorageLevel(@RequestParam(value = "bucketName") String bucketName
             ,@RequestParam(value = "storageLevel") Integer storageLevel) throws Exception {
         Boolean flag = bucketService.updateStorageLevel(bucketName,storageLevel);
@@ -144,21 +153,23 @@ public class BucketController {
     /**
      * 获取bucket中存在的文件类型
      * @param bucketName 桶名
-     * @return bucket中文件类型及其数量的列表
+     * @return 返回视图对象
      */
     @GetMapping("/getBucketFileType")
-    public ApiResp<List<FileTypeVo>> getBucketFileType(@RequestParam("bucketName")String bucketName){
-        List<FileTypeVo> fileType = bucketService.getBucketFileType(bucketName);
-        return ApiResp.success(fileType);
+    @OssApi(target = API_BUCKET,type = AuthorityConstant.API_READ, name = "getBucketFileType",description = "获取bucket中存在的文件类型")
+    public ApiResp<BucketFileTypeVo> getBucketFileType(@RequestParam("bucketName")String bucketName){
+        BucketFileTypeVo bucketFileType = bucketService.getBucketFileType(bucketName);
+        return ApiResp.success(bucketFileType);
     }
 
     /**
      * 获取该用户的所有bucket中的文件类型
-     * @return 该用户所有bucket中文件类型及其数量的列表
+     * @return 返回视图对象
      */
     @GetMapping("/getUserBucketFileType")
-    public ApiResp<List<FileTypeVo>> getUserBucketFileType(){
-        List<FileTypeVo> bucketFileTypes =  bucketService.getUserBucketFileType(JwtUtil.getID(request));
+    @OssApi(target = API_BUCKET,type = AuthorityConstant.API_READ, name = "getUserBucketFileType",description = "获取该用户的所有bucket中的文件类型")
+    public ApiResp<List<BucketFileTypeVo>> getUserBucketFileType(){
+        List<BucketFileTypeVo> bucketFileTypes =  bucketService.getUserBucketFileType(JwtUtil.getID(request));
         return ApiResp.success(bucketFileTypes);
     }
 }

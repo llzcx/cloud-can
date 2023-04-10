@@ -190,8 +190,10 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
 
     @Override
     public Boolean backupRecovery(String bucketName,String objectName) {
+        log.info("{}/{}",bucketName,objectName);
         //只需要一个备份对象即可
-        Backup backups = backupMapper.selectBackup(bucketName, objectName);
+        Backup backups = backupMapper.selectBackupByTarget(bucketName, objectName);
+        log.info("{}",JSONObject.toJSONString(backups));
         if(backups==null){
             throw new OssException(ResultCode.BACKUP_DATA_NULL);
         }

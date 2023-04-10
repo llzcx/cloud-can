@@ -1,9 +1,11 @@
 package ccw.serviceinnovation.oss.controller;
 
 
+import ccw.serviceinnovation.common.constant.AuthorityConstant;
 import ccw.serviceinnovation.common.entity.User;
 import ccw.serviceinnovation.common.request.ApiResp;
 import ccw.serviceinnovation.common.request.ResultCode;
+import ccw.serviceinnovation.oss.manager.authority.OssApi;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import ccw.serviceinnovation.oss.service.IManageUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,7 @@ public class ManageUserController {
      * @return 是否删除成功
      */
     @DeleteMapping("/deleteUser")
+    @OssApi(target = AuthorityConstant.API_MANAGE,type = AuthorityConstant.API_WRITER, name = "deleteUser",description = "删除用户")
     public ApiResp<Boolean> deleteUser(@RequestParam("userId")String userId) throws Exception{
         Boolean flag = manageUserService.deleteUser(userId);
         return ApiResp.ifResponse(flag,flag, ResultCode.COMMON_FAIL);
@@ -39,10 +42,11 @@ public class ManageUserController {
      * @param keyword 用户名，用户id
      * @param pageNum 当前页数
      * @param size 每页数据条数
-     * @return 根据关键词搜到的用户列表
+     * @return
      */
     @GetMapping("/listUsers")
-    public ApiResp<RPage<User>> listUsers(@RequestParam(value = "keyword",required = false)String keyword,
+    @OssApi(target = AuthorityConstant.API_MANAGE,type = AuthorityConstant.API_READ, name = "listUsers",description = "获取用户列表")
+    public ApiResp<RPage<User>> listUsers(@RequestParam("keyword")String keyword,
                                           @RequestParam("pageNum")Integer pageNum,
                                           @RequestParam("size")Integer size) throws Exception{
         RPage<User> userRPage = manageUserService.getUserList(keyword, pageNum, size);
@@ -55,12 +59,13 @@ public class ManageUserController {
      * @param keyword 用户名，用户id
      * @param pageNum 当前页数
      * @param size 每页数据条数
-     * @return 根据关键词获取到的子用户列表
+     * @return
      * @throws Exception
      */
     @GetMapping("/listSubUsers")
+    @OssApi(target = AuthorityConstant.API_MANAGE,type = AuthorityConstant.API_READ, name = "listSubUsers",description = "分页获取该用户的子用户")
     public ApiResp<RPage<User>> listSubUsers(@RequestParam("userId")String userId,
-                                             @RequestParam(value = "keyword", required = false)String keyword,
+                                             @RequestParam("keyword")String keyword,
                                              @RequestParam("pageNum")Integer pageNum,
                                              @RequestParam("size")Integer size) throws Exception{
         RPage<User> userRPage = manageUserService.getSubUsers(userId, keyword, pageNum, size);

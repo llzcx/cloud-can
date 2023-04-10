@@ -1,8 +1,10 @@
 package ccw.serviceinnovation.oss.controller;
 
+import ccw.serviceinnovation.common.constant.AuthorityConstant;
 import ccw.serviceinnovation.common.entity.OssObject;
 import ccw.serviceinnovation.common.request.ApiResp;
 import ccw.serviceinnovation.common.request.ResultCode;
+import ccw.serviceinnovation.oss.manager.authority.OssApi;
 import ccw.serviceinnovation.oss.pojo.vo.ManageObjectDetailedVo;
 import ccw.serviceinnovation.oss.pojo.vo.ManageObjectListVo;
 import ccw.serviceinnovation.oss.pojo.vo.ObjectVo;
@@ -35,10 +37,11 @@ public class ManageObjectController {
      * @param keyword 用户id，桶id，桶名
      * @param pageNum 当前页数
      * @param size 每页大小
-     * @return 根据关键字搜索到的object列表
+     * @return
      */
     @GetMapping("/listObjects")
-    public ApiResp<RPage<ManageObjectListVo>> listObject(@RequestParam(value = "keyword", required = false)String keyword,
+    @OssApi(target = AuthorityConstant.API_MANAGE,type = AuthorityConstant.API_READ, name = "listObject",description = "获取Object列表")
+    public ApiResp<RPage<ManageObjectListVo>> listObject(@RequestParam("keyword")String keyword,
                                                          @RequestParam("pageNum")Integer pageNum,
                                                          @RequestParam("size")Integer size) throws Exception{
         RPage<ManageObjectListVo> ossObjectRPage = manageObjectService.getObjectList(keyword,pageNum,size);
@@ -48,9 +51,10 @@ public class ManageObjectController {
     /**
      * 删除Object及其相关信息
      * @param objectIdList 删除对象的id
-     * @return 删除结果
+     * @return
      */
     @DeleteMapping("/deleteObject")
+    @OssApi(target = AuthorityConstant.API_MANAGE,type = AuthorityConstant.API_WRITER, name = "deleteObject",description = "删除Object及其相关信息")
     public ApiResp<Boolean> deleteObject(@RequestBody List<Long> objectIdList) throws Exception{
         Boolean flag = manageObjectService.deleteObject(objectIdList);
         return ApiResp.ifResponse(flag,flag, ResultCode.COMMON_FAIL);
@@ -59,9 +63,10 @@ public class ManageObjectController {
     /**
      * 获取这个对象的详细信息
      * @param id 对象id
-     * @return 该对象的详细信息
+     * @return
      */
     @GetMapping("/getObject")
+    @OssApi(target = AuthorityConstant.API_MANAGE,type = AuthorityConstant.API_READ, name = "getObject",description = "获取这个对象的详细信息")
     public ApiResp<ManageObjectDetailedVo> getObject(@RequestParam("id")Long id){
         ManageObjectDetailedVo objectVo = manageObjectService.getObject(id);
         return ApiResp.success(objectVo);
@@ -76,6 +81,7 @@ public class ManageObjectController {
      * @return
      */
     @GetMapping("/getSubObjects")
+    @OssApi(target = AuthorityConstant.API_MANAGE,type = AuthorityConstant.API_READ, name = "listSubObject",description = "获取文件夹中的对象")
     public ApiResp<RPage<ManageObjectListVo>> listSubObject(@RequestParam("keyword")String keyword,
                                                             @RequestParam("parent")String parent,
                                                             @RequestParam("pageNum")Integer pageNum,

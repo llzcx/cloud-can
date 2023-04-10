@@ -1,8 +1,10 @@
 package ccw.serviceinnovation.oss.controller;
 
+import ccw.serviceinnovation.common.constant.AuthorityConstant;
 import ccw.serviceinnovation.common.entity.ObjectTag;
 import ccw.serviceinnovation.common.request.ApiResp;
 import ccw.serviceinnovation.common.request.ResultCode;
+import ccw.serviceinnovation.oss.manager.authority.OssApi;
 import ccw.serviceinnovation.oss.pojo.dto.DeleteObjectTagDto;
 import ccw.serviceinnovation.oss.pojo.dto.PutObjectTagDto;
 import ccw.serviceinnovation.oss.service.IObjectTagService;
@@ -33,6 +35,7 @@ public class ObjectTagController {
      * @return 该对象的标签
      */
     @GetMapping("/getObjectTag")
+    @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_READ, name = "getObjectTag",description = "获取对象标签")
     public ApiResp<List<ObjectTag>> getObjectTag(@RequestParam("bucketName") String bucketName, @RequestParam("objectName") String objectName){
         List<ObjectTag> objectTagList = objectTagService.getObjectTag(bucketName,objectName);
         return ApiResp.success(objectTagList);
@@ -45,6 +48,7 @@ public class ObjectTagController {
      * @return 添加对象后的该对象的标签
      */
     @PutMapping("/putObjectTag")
+    @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_WRITER, name = "putObjectTag",description = "添加对象标签")
     public ApiResp<List<ObjectTag>> putObjectTag(@RequestBody PutObjectTagDto objectTagDto){
         List<ObjectTag> newObjectTags = objectTagService.putObjectTag(objectTagDto.getBucketName(),objectTagDto.getObjectName(),objectTagDto.getObjectTags());
         return ApiResp.success(newObjectTags);
@@ -56,6 +60,7 @@ public class ObjectTagController {
      * @return 删除后该对象的对象标签
      */
     @DeleteMapping("/deleteObjectTag")
+    @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_WRITER, name = "deleteObjectTag",description = "删除对象标签")
     public ApiResp<List<ObjectTag>> deleteObjectTag(@RequestBody DeleteObjectTagDto objectTagDto){
         List<ObjectTag> newObjectTags = objectTagService.deleteObjectTag(objectTagDto.getBucketName(),objectTagDto.getObjectName(),objectTagDto.getObjectTags());
         return ApiResp.success(newObjectTags);

@@ -47,8 +47,8 @@ public class OssObjectController {
 
     /**
      * 从桶中获取一个对象的元数据
-     * param objectId 对象ID
-     * @return 返回添加的桶对象
+     * @pa
+     * @return 对象的元数据
      */
     @GetMapping("/getObjectInfo")
     @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_READ,name = "getObjectInfo",description = "从桶中获取一个对象的元数据")
@@ -60,7 +60,7 @@ public class OssObjectController {
     /**
      * 从桶中获取一个对象的状态
      * param objectId 对象ID
-     * @return 返回添加的桶对象
+     * @return 对象的状态
      */
     @GetMapping("/getState")
     @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_READ,name = "getState",description = "从桶中获取一个对象的状态")
@@ -87,10 +87,13 @@ public class OssObjectController {
 
     /**
      * 在桶中添加一个对象[小文件]
-     * @param objectName
-     * @param etag
-     * @param file
-     * @return
+     * @param bucketName 桶名
+     * @param objectName 对象名[可以包含/,将自动创建文件夹]
+     * @param etag 文件hash
+     * @param parentObjectId 声明处于哪个文件夹下
+     * @param objectAcl 对象权限控制
+     * @param file 文件数据
+     * @return 返回是否上传成功
      * @throws Exception
      */
     @PutMapping("/putSmallObject")
@@ -115,7 +118,7 @@ public class OssObjectController {
      * @throws Exception
      */
     @PostMapping("/createChunkToken")
-    @OssApi(target = AuthorityConstant.API_BUCKET,type = AuthorityConstant.API_WRITER,name = "createChunkToken",description = "创建一个文件分块上传事件[大文件]")
+    @OssApi(target = AuthorityConstant.API_BUCKET,type = AuthorityConstant.API_WRITER,name = "createChunkToken",description = "创建一个文件分块上传事件")
     public ApiResp<BlockTokenBo> createChunkToken(@RequestParam("bucketName") String bucketName,
                                               String objectName,
                                               String etag,
@@ -187,7 +190,7 @@ public class OssObjectController {
      * @throws Exception
      */
     @PostMapping("/freeze")
-    @OssApi(target = AuthorityConstant.API_BUCKET,type = AuthorityConstant.API_LIST,name = "listObjects",description = "获取对象列表")
+    @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_WRITER,name = "freeze",description = "获取对象列表")
     public ApiResp<Boolean> freeze(@RequestParam("bucketName") String bucketName,@RequestParam("objectName") String objectName) throws Exception{
         return ApiResp.success(objectService.freeze(bucketName, objectName));
     }
@@ -201,7 +204,7 @@ public class OssObjectController {
      * @throws Exception
      */
     @PostMapping("/unfreeze")
-    @OssApi(target = AuthorityConstant.API_BUCKET,type = AuthorityConstant.API_LIST,name = "listObjects",description = "获取对象列表")
+    @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_WRITER,name = "unfreeze",description = "解冻一个文件")
     public ApiResp<Boolean> unfreeze(@RequestParam("bucketName") String bucketName,@RequestParam("objectName") String objectName) throws Exception{
         return ApiResp.success(objectService.unfreeze(bucketName, objectName));
     }
@@ -216,7 +219,7 @@ public class OssObjectController {
      * @throws Exception
      */
     @PostMapping("/backup")
-    @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_WRITER,name = "backup",description = "备份一个对象")
+    @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_BACK_UP,name = "backup",description = "备份一个对象")
     public ApiResp<Boolean> backup(@RequestParam("bucketName") String bucketName,@RequestParam("objectName") String objectName,
                                    @RequestParam("targetBucketName") String targetBucketName,
                                    @RequestParam(value = "newObjectName",required = false)String newObjectName) throws Exception{
@@ -232,7 +235,7 @@ public class OssObjectController {
      * @throws Exception
      */
     @PostMapping("/backupRecovery")
-    @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_WRITER,name = "backupRecovery",description = "复原一个对象")
+    @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_BACKUP_RECOVERY,name = "backupRecovery",description = "复原一个对象")
     public ApiResp<Boolean> backupRecovery(@RequestParam("bucketName") String bucketName,@RequestParam("objectName") String objectName) throws Exception{
         return ApiResp.success(objectService.backupRecovery(bucketName, objectName));
     }
@@ -269,7 +272,6 @@ public class OssObjectController {
         return ApiResp.ifResponse(flag,flag,ResultCode.COMMON_FAIL);
     }
     public static String getRequestBody(HttpServletRequest request) throws IOException {
-
         BufferedReader reader = request.getReader();
         StringBuilder stringBuilder = new StringBuilder();
         String line = null;
@@ -277,7 +279,6 @@ public class OssObjectController {
         while ((line = reader.readLine()) != null) {
             stringBuilder.append(line);
         }
-
         return stringBuilder.toString();
     }
     /**

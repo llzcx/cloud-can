@@ -42,12 +42,12 @@ public class AuthorizeVo implements Serializable {
     String[] paths;
 
     /**
-     * 子用户Id列表 该用户的子用户id列表
+     * 子用户username列表 该用户的子用户id列表
      */
     String[] sonUser;
 
     /**
-     * 其他用户的id列表[其他用户可以是子用户,也可以是主用户]
+     * 其他用户的username列表[其他用户可以是子用户,也可以是主用户]
      */
     String[] otherUser;
 

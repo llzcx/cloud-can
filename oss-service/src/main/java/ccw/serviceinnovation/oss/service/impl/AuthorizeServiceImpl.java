@@ -6,21 +6,18 @@ import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.exception.OssException;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.oss.common.util.MPUtil;
-import ccw.serviceinnovation.oss.mapper.AuthorizeMapper;
-import ccw.serviceinnovation.oss.mapper.AuthorizePathMapper;
-import ccw.serviceinnovation.oss.mapper.AuthorizeUserMapper;
-import ccw.serviceinnovation.oss.mapper.BucketMapper;
+import ccw.serviceinnovation.oss.mapper.*;
 import ccw.serviceinnovation.oss.pojo.dto.PutAuthorizeDto;
 import ccw.serviceinnovation.oss.pojo.vo.AuthorizeVo;
+import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import ccw.serviceinnovation.oss.service.IAuthorizeService;
 import com.alibaba.fastjson.JSONObject;
-import nonapi.io.github.classgraph.fileslice.ArraySlice;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,6 +28,7 @@ import java.util.List;
  */
 @Service
 @Transactional(rollbackFor={Exception.class,RuntimeException.class})
+@Slf4j
 public class AuthorizeServiceImpl implements IAuthorizeService {
 
     @Autowired
@@ -45,10 +43,16 @@ public class AuthorizeServiceImpl implements IAuthorizeService {
     @Autowired
     BucketMapper bucketMapper;
 
+    @Autowired
+    UserMapper userMapper;
+
     @Override
-    public List<AuthorizeVo> listAuthorizes(String bucketName, Integer pageNum, Integer pageSize) {
+    public RPage<AuthorizeVo> listAuthorizes(String bucketName, Integer pageNum, Integer pageSize) {
         Bucket bucket = bucketMapper.selectBucketByName(bucketName);
+        RPage<AuthorizeVo> rPage = new RPage<>();
+        rPage.setTotalCountAndTotalPage(authorizeMapper.selectAuthorizeListCount(bucketName));
         List<AuthorizeVo> list = authorizeMapper.selectAuthorizeList(bucketName, pageSize * (pageNum - 1), pageSize);
+        rPage.setRows(list);
         for (AuthorizeVo item : list) {
             List<AuthorizePath> paths = authorizePathMapper.selectList(MPUtil.queryWrapperEq("authorize_id", item.getId()));
             String[] PathArr = new String[paths.size()];
@@ -60,20 +64,20 @@ public class AuthorizeServiceImpl implements IAuthorizeService {
                 PathArr[i] = pathName;
             }
             item.setPaths(PathArr);
-            List<AuthorizeUser> authorizeUsers = authorizeUserMapper.selectAuthorizeMainUserList(bucket.getUserId(),item.getId());
+            List<String> authorizeUsers = authorizeUserMapper.selectAuthorizeOtherUserList(bucket.getUserId(),item.getId());
             String[] mainArr = new String[authorizeUsers.size()];
             for (int i = 0; i < authorizeUsers.size(); i++) {
-                mainArr[i] = authorizeUsers.get(i).getUserId().toString();
+                mainArr[i] = authorizeUsers.get(i);
             }
             item.setSonUser(mainArr);
-            List<AuthorizeUser> sonUsers = authorizeUserMapper.selectAuthorizeRAMUserList(bucket.getUserId(),item.getId());
+            List<String> sonUsers = authorizeUserMapper.selectAuthorizeRAMUserList(bucket.getUserId(),item.getId());
             String[] sonArr = new String[sonUsers.size()];
             for (int i = 0; i < sonUsers.size(); i++) {
-                sonArr[i] = sonUsers.get(i).getUserId().toString();
+                sonArr[i] = sonUsers.get(i);
             }
             item.setSonUser(sonArr);
         }
-        return list;
+        return rPage;
     }
 
     /**
@@ -83,9 +87,12 @@ public class AuthorizeServiceImpl implements IAuthorizeService {
      * @return
      */
     public Boolean insertUsers(String[] arr,Long authorizeId,Long bucketId){
-        for (String id : arr) {
+        for (String name : arr) {
             AuthorizeUser authorizeUser = new AuthorizeUser();
-            Long userId = Long.valueOf(id);
+            Long userId = userMapper.selectUserIdByName(name);
+            if(userId==null){
+                throw new OssException(ResultCode.USER_IS_NULL);
+            }
             authorizeUser.setUserId(userId);
             authorizeUser.setAuthorizeId(authorizeId);
             authorizeUser.setBucketId(bucketId);
@@ -137,6 +144,7 @@ public class AuthorizeServiceImpl implements IAuthorizeService {
             authorize.setBucketId(bucketId);
             BeanUtils.copyProperties(putAuthorizeDto, authorize);
             authorizeMapper.insert(authorize);
+            log.info("返回的:{}",authorize.getId());
             return insertUsers(arr3, authorize.getId(),bucketId) && insertPath(putAuthorizeDto.getPaths(), authorize.getId(),bucketId);
         }else{
             //update a authorize
