@@ -52,7 +52,7 @@ public class AuthorizeController {
      */
     @GetMapping("/listAuthorizes")
     @ResponseBody
-    @OssApi(target = AuthorityConstant.API_BUCKET,type = AuthorityConstant.API_READ, name = "putAuthorize",description = "获取权限策略列表")
+    @OssApi(target = AuthorityConstant.API_BUCKET,type = AuthorityConstant.API_LIST, name = "putAuthorize",description = "获取权限策略列表")
     public ApiResp<RPage<AuthorizeVo>> listAuthorizes(@RequestParam("bucketName")String bucketName,
                                                       @RequestParam("pageNum")Integer pageNum,
                                                       @RequestParam("pageSize")Integer pageSize) throws IOException {

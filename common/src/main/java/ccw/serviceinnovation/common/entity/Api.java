@@ -34,4 +34,14 @@ public class Api implements Serializable {
      * 接口描述
      */
     private String description;
+
+    /**
+     * 接口类型
+     */
+    private String type;
+
+    /**
+     * 接口的目标
+     */
+    private String target;
 }

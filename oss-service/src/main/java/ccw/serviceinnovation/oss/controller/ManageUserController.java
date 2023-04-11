@@ -45,7 +45,7 @@ public class ManageUserController {
      * @return
      */
     @GetMapping("/listUsers")
-    @OssApi(target = AuthorityConstant.API_MANAGE,type = AuthorityConstant.API_READ, name = "listUsers",description = "获取用户列表")
+    @OssApi(target = AuthorityConstant.API_MANAGE,type = AuthorityConstant.API_LIST, name = "listUsers",description = "获取用户列表")
     public ApiResp<RPage<User>> listUsers(@RequestParam("keyword")String keyword,
                                           @RequestParam("pageNum")Integer pageNum,
                                           @RequestParam("size")Integer size) throws Exception{
@@ -63,7 +63,7 @@ public class ManageUserController {
      * @throws Exception
      */
     @GetMapping("/listSubUsers")
-    @OssApi(target = AuthorityConstant.API_MANAGE,type = AuthorityConstant.API_READ, name = "listSubUsers",description = "分页获取该用户的子用户")
+    @OssApi(target = AuthorityConstant.API_MANAGE,type = AuthorityConstant.API_LIST, name = "listSubUsers",description = "分页获取该用户的子用户")
     public ApiResp<RPage<User>> listSubUsers(@RequestParam("userId")String userId,
                                              @RequestParam("keyword")String keyword,
                                              @RequestParam("pageNum")Integer pageNum,

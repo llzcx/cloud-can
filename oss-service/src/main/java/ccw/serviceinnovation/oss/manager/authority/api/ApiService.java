@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
@@ -62,7 +63,8 @@ public class ApiService extends ServiceImpl<ApiMapper, Api> {
                     className = className.replace("\\", ".");
                     try {
                         Class<?> clazz = classLoader.loadClass(className);
-                        if (clazz.getAnnotation(Controller.class)!=null || clazz.getAnnotation(RestController.class)!=null) {
+                        RequestMapping annotation1 = clazz.getAnnotation(RequestMapping.class);
+                        if (clazz.getAnnotation(Controller.class)!=null ||annotation1 !=null) {
                             log.info("{} is a controller",clazz);
                             //如果是一个接口,获取方法列表
                             Method[] methods = clazz.getMethods();
@@ -70,7 +72,7 @@ public class ApiService extends ServiceImpl<ApiMapper, Api> {
                                 log.info(method.getName());
                                 OssApi annotation = method.getAnnotation(OssApi.class);
                                 if(annotation!=null){
-                                    apiMapper.init(annotation.name(), "1");
+                                    apiMapper.init(annotation1.value()[0]+"/"+annotation.name(), annotation.description(),annotation.type(),annotation.target());
                                 }
                             }
                         }else{

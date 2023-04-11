@@ -11,5 +11,8 @@ import java.util.List;
  */
 @Data
 public class BatchDeletionObjectDto  implements Serializable {
+    /**
+     * 对象名列表 json数据
+     */
     private String objectNameListJson;
 }

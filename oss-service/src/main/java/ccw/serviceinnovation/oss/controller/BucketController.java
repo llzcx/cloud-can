@@ -48,7 +48,7 @@ public class BucketController {
     /**
      * 获取桶信息
      * @param bucketName 桶名字
-     * @return 返回结果集
+     * @return 返回桶的信息
      */
     @GetMapping("/getBucketInfo")
     @OssApi(target = API_BUCKET,type = AuthorityConstant.API_READ, name = "getBucketInfo",description = "获取桶信息")
@@ -64,11 +64,11 @@ public class BucketController {
      * @param pageNum 当前页数
      * @param size 大小
      * @param key 桶名字关键词
-     * @return 分页| bucket列表
+     * @return 分页| bucket列表数据
      * @throws Exception
      */
     @GetMapping("/listBuckets")
-    @OssApi(target = AuthorityConstant.API_USER,type = AuthorityConstant.API_READ, name = "listBuckets",description = "获取桶列表")
+    @OssApi(target = AuthorityConstant.API_USER,type = AuthorityConstant.API_LIST, name = "listBuckets",description = "获取桶列表")
     public ApiResp<RPage<Bucket>> listBuckets(Integer pageNum, Integer size, String key) throws Exception{
         log.info("{},{},{}",pageNum,size,key);
         Long mainUserId = userService.getMainUserId(JwtUtil.getID(request));
@@ -171,6 +171,17 @@ public class BucketController {
     public ApiResp<List<BucketFileTypeVo>> getUserBucketFileType(){
         List<BucketFileTypeVo> bucketFileTypes =  bucketService.getUserBucketFileType(JwtUtil.getID(request));
         return ApiResp.success(bucketFileTypes);
+    }
+
+    /**
+     * 桶重命名
+     * @param bucketName
+     * @return 返回视图对象
+     */
+    @PutMapping("/reName")
+    @OssApi(target = API_BUCKET,type = AuthorityConstant.API_WRITER, name = "reName",description = "桶重命名")
+    public ApiResp<Boolean> reName(String bucketName,String newBucketName){
+        return ApiResp.success(bucketService.reName(bucketName,newBucketName));
     }
 }
 

@@ -34,7 +34,7 @@ public class ManageBucketController {
      * @return
      */
     @GetMapping("/listBuckets")
-    @OssApi(target = AuthorityConstant.API_MANAGE,type = AuthorityConstant.API_READ, name = "listsFragment",description = "获取一个桶内所有碎片")
+    @OssApi(target = AuthorityConstant.API_MANAGE,type = AuthorityConstant.API_LIST, name = "listsFragment",description = "获取一个桶内所有碎片")
     public ApiResp<RPage<BucketVo>> listBuckets(@RequestParam("keyword") String keyword,
                                                 @RequestParam("pageNum")Integer pageNum,
                                                 @RequestParam("size")Integer size){

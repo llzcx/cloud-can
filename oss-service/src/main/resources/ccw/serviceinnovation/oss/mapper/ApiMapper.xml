@@ -3,7 +3,7 @@
 <mapper namespace="ccw.serviceinnovation.oss.mapper.ApiMapper">
 
     <insert id="init">
-        INSERT INTO oss.api(name,description) VALUE(#{name},#{description}) ON DUPLICATE KEY UPDATE name=#{name},description=#{description}
+        INSERT INTO oss.api(name,description,type,target) VALUE(#{name},#{description},#{type},#{target}) ON DUPLICATE KEY UPDATE name=#{name},description=#{description},type=#{type}
 
     </insert>
 

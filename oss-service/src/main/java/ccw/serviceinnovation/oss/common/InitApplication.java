@@ -1,5 +1,6 @@
 package ccw.serviceinnovation.oss.common;
 
+import ccw.serviceinnovation.oss.manager.authority.api.ApiService;
 import ccw.serviceinnovation.oss.manager.consistenthashing.ColdConsistHashing;
 import ccw.serviceinnovation.common.nacos.Host;
 import ccw.serviceinnovation.common.nacos.TrackerService;
@@ -42,11 +43,15 @@ public class InitApplication {
     @Autowired
     ColdConsistHashing coldConsistHashing;
 
+    @Autowired
+    ApiService apiService;
+
 
     /**
      * 在容器初始化之后执行
      */
     public void afterSpring() throws Exception {
+        apiService.initApi();
         DataGrpcHelper.initGRpc();
         Map<String, List<Host>> mp = TrackerService.getAllJraftList(OssApplicationConstant.NACOS_SERVER_ADDR);
         System.out.println("group 一致性hash初始化:");

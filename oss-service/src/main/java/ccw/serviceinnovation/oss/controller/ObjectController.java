@@ -21,40 +21,45 @@ import org.springframework.web.bind.annotation.RestController;
 public class ObjectController {
     /**
      * 下载文件
-     * @param bucketName
-     * @param objectName
+     * @param bucketName 桶名
+     * @param objectName 对象名
+     * @param accessKey 秘钥
      * @return
      * @throws Exception
      */
     @PostMapping("/download/{bucketName}/{objectName}")
     @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_READ,name = "download",description = "从桶中获取一个对象的真实数据")
-    public ApiResp<OssObject> download(@PathVariable String bucketName, @PathVariable String objectName) throws Exception{
+    public ApiResp<OssObject> download(@PathVariable String bucketName, @PathVariable String objectName,String accessKey) throws Exception{
         throw new OssException(ResultCode.REQUEST_ADDRESS_ERROR);
     }
 
     /**
      * 预览图片
-     * @param bucketName
-     * @param objectName
+     * @param bucketName 桶名
+     * @param objectName 对象名
+     * @param accessKey 秘钥
      * @return
      * @throws Exception
      */
     @PostMapping("/preview-image/{bucketName}/{objectName}")
     @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_READ,name = "previewImage",description = "预览图片")
-    public ApiResp<OssObject> previewImage(@PathVariable String bucketName, @PathVariable String objectName) throws Exception{
+    public ApiResp<OssObject> previewImage(@PathVariable String bucketName, @PathVariable String objectName,String accessKey) throws Exception{
         throw new OssException(ResultCode.REQUEST_ADDRESS_ERROR);
     }
 
     /**
      * 预览视频
-     * @param bucketName
-     * @param objectName
+     * @param bucketName 桶名
+     * @param objectName 对象名
+     * @param accessKey 秘钥
      * @return
      * @throws Exception
      */
     @PostMapping("/preview-video/{bucketName}/{objectName}")
     @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_READ,name = "previewVideo",description = "预览视频")
-    public ApiResp<OssObject> previewVideo(@PathVariable String bucketName, @PathVariable String objectName) throws Exception{
+    public ApiResp<OssObject> previewVideo(@PathVariable String bucketName, @PathVariable String objectName,String accessKey) throws Exception{
         throw new OssException(ResultCode.REQUEST_ADDRESS_ERROR);
     }
+
+
 }

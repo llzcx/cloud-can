@@ -58,4 +58,12 @@ public interface BucketMapper extends BaseMapper<Bucket> {
      * @return
      */
     List<FileTypeBo> getFileType(String bucketName);
+
+    /**
+     * 更新桶的名字
+     * @param bucketName
+     * @param newBucketName
+     * @return
+     */
+    Integer updateBucketName(@Param("bucketName") String bucketName,@Param("newBucketName") String newBucketName);
 }

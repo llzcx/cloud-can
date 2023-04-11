@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="ccw.serviceinnovation.oss.mapper.BucketMapper">
+    <update id="updateBucketName">
+        update bucket set name=#{newBucketName} where name = #{bucketName}
+    </update>
 
 
     <select id="selectBucketIdByName" resultType="java.lang.Long">

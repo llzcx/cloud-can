@@ -189,5 +189,11 @@ public class BucketServiceImpl extends ServiceImpl<BucketMapper, Bucket> impleme
         return null;
     }
 
+    @Override
+    public Boolean reName(String bucketName,String newBucketName) {
+        bucketMapper.updateBucketName(bucketName,newBucketName);
+        return true;
+    }
+
 
 }

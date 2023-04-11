@@ -1,11 +1,13 @@
 package ccw.serviceinnovation.oss.controller;
 
 
+import ccw.serviceinnovation.common.constant.AuthorityConstant;
 import ccw.serviceinnovation.common.entity.Api;
 import ccw.serviceinnovation.common.entity.User;
 import ccw.serviceinnovation.common.request.ApiResp;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.oss.common.util.JwtUtil;
+import ccw.serviceinnovation.oss.manager.authority.OssApi;
 import ccw.serviceinnovation.oss.pojo.dto.CreateRamUserDto;
 import ccw.serviceinnovation.oss.pojo.dto.LoginDto;
 import ccw.serviceinnovation.oss.pojo.dto.RegisterDto;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+
+import static ccw.serviceinnovation.common.constant.AuthorityConstant.API_OPEN;
 
 /**
  * 用户接口
@@ -42,6 +46,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/login")
+    @OssApi(target = AuthorityConstant.API_OPEN,type = AuthorityConstant.API_WRITER, name = "login",description = "登录接口")
     public ApiResp<String> login(@RequestBody LoginDto loginDto) {
         LoginVo login = userService.login(loginDto.getUsername(), loginDto.getPassword());
         return ApiResp.ifResponse(login!=null,login,ResultCode.LOGIN_ERROR);
@@ -52,6 +57,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/register")
+    @OssApi(target = AuthorityConstant.API_OPEN,type = AuthorityConstant.API_WRITER, name = "register",description = "注册接口")
     public ApiResp<Long> register(@RequestBody RegisterDto registerDto) {
         User user = userService.register(registerDto.getUsername(),registerDto.getPassword(),registerDto.getPhone());
         return ApiResp.success(user.getId());
@@ -63,6 +69,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/createRam")
+    @OssApi(target = AuthorityConstant.API_USER,type = AuthorityConstant.API_WRITER, name = "createRam",description = "创建一个RAM用户")
     public ApiResp createRamUser(@RequestBody CreateRamUserDto createRamUserDto) {
         User user = userService.createRamUser(createRamUserDto.getUsername(),createRamUserDto.getPassword(), JwtUtil.getID(httpServletRequest));
 
@@ -75,6 +82,7 @@ public class UserController {
      * @return
      */
     @GetMapping("/getSubUsers")
+    @OssApi(target = AuthorityConstant.API_USER,type = AuthorityConstant.API_LIST, name = "getSubUsers",description = "获取子用户列表")
     public ApiResp<RPage<UserVo>> getSubUsers(@RequestParam(value = "keyword",required = false)String keyword,
                                       @RequestParam("pageNum")Integer pageNum,
                                       @RequestParam("size")Integer size){
@@ -88,6 +96,7 @@ public class UserController {
      * @return
      */
     @DeleteMapping("/deleteSubUser")
+    @OssApi(target = AuthorityConstant.API_USER,type = AuthorityConstant.API_WRITER, name = "deleteSubUser",description = "删除子用户")
     public ApiResp<List<UserVo>> deleteSubUser(@RequestParam("userId")Long userId){
         List<UserVo> userVos = userService.deleteSubUser(userId, JwtUtil.getID(request));
         return ApiResp.success(userVos);

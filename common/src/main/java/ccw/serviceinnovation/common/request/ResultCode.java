@@ -42,7 +42,7 @@ public enum ResultCode {
     DATA_NOT_FOUND(2009,"数据丢失"),
     UNDEFINED(2010,"不确定的后台常量"),
     SYSTEM_ERROR_DATA_NULL(2011,"系统错误-对象存储数据丢失"),
-    RPC_JRAFT(2008,"RPC-JRAFT服务器异常"),
+    RPC_JRAFT(2008,"数据服务器异常"),
     AUTHORITY_TYPE_EXCEPTION(2010,"接口Type异常"),
     UN_KNOW_API(2011,"未知API类型,请联系管理员"),
 

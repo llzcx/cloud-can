@@ -16,6 +16,6 @@ public interface ApiMapper  extends BaseMapper<Api> {
      * @param description
      * @return
      */
-    void init(@Param("name") String name,@Param("description") String description);
+    void init(@Param("name") String name,@Param("description") String description,@Param("type") String type,@Param("target")String target);
 
 }

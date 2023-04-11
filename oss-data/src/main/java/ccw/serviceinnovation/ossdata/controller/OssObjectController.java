@@ -65,10 +65,10 @@ public class OssObjectController {
 
     /**
      * 上传分片文件
-     * @param file
-     * @param chunk
-     * @param blockToken
-     * @return
+     * @param file 文件数据
+     * @param chunk 第几块
+     * @param blockToken 上传事件的id
+     * @return 该分块是否上传成功
      * @throws Exception
      */
     @PostMapping("/append_file")

@@ -46,9 +46,11 @@ public class OssObjectController {
     IObjectService objectService;
 
     /**
-     * 从桶中获取一个对象的元数据
-     * @pa
-     * @return 对象的元数据
+     * 对象的元数据
+     * @param objectName 对象名
+     * @param bucketName 桶名
+     * @return 对象元数据信息
+     * @throws Exception
      */
     @GetMapping("/getObjectInfo")
     @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_READ,name = "getObjectInfo",description = "从桶中获取一个对象的元数据")
@@ -59,8 +61,10 @@ public class OssObjectController {
 
     /**
      * 从桶中获取一个对象的状态
-     * param objectId 对象ID
-     * @return 对象的状态
+     * @param objectName 对象名
+     * @param bucketName 桶名
+     * @return
+     * @throws Exception
      */
     @GetMapping("/getState")
     @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_READ,name = "getState",description = "从桶中获取一个对象的状态")
@@ -75,7 +79,7 @@ public class OssObjectController {
      * @param bucketName 桶名称
      * @param objectName 文件夹名称
      * @param parentObjectId 父级对象ID
-     * @return
+     * @return 返回是否添加成功
      * @throws Exception
      */
     @PutMapping("/putFolder")
@@ -134,7 +138,7 @@ public class OssObjectController {
      * 合并文件分块
      * @param blockToken 文件事件的id
      * @param bucketName 桶名字
-     * @return
+     * @return 返回是否合并成功
      * @throws Exception
      */
     @PostMapping("/merge")
@@ -169,7 +173,7 @@ public class OssObjectController {
      * @param size 每页大小
      * @param parentObjectId 父级文件夹id
      * @param isImages 是否筛选出图片
-     * @return
+     * @return 对象列表数据
      * @throws Exception
      */
     @GetMapping("/listObjects")
@@ -186,11 +190,11 @@ public class OssObjectController {
      * 归档一个文件
      * @param bucketName 桶名
      * @param objectName 对象名
-     * @return
+     * @return 是否归档成功
      * @throws Exception
      */
     @PostMapping("/freeze")
-    @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_WRITER,name = "freeze",description = "获取对象列表")
+    @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_WRITER,name = "freeze",description = "归档一个文件")
     public ApiResp<Boolean> freeze(@RequestParam("bucketName") String bucketName,@RequestParam("objectName") String objectName) throws Exception{
         return ApiResp.success(objectService.freeze(bucketName, objectName));
     }
@@ -200,7 +204,7 @@ public class OssObjectController {
      * 解冻一个文件
      * @param bucketName 桶名
      * @param objectName 待解冻的对象名
-     * @return
+     * @return 是否解冻成功
      * @throws Exception
      */
     @PostMapping("/unfreeze")
@@ -215,7 +219,7 @@ public class OssObjectController {
      * @param objectName  源对象的对象名
      * @param targetBucketName 目标桶
      * @param newObjectName 在目标桶中的新名字
-     * @return
+     * @return 是否备份成功
      * @throws Exception
      */
     @PostMapping("/backup")
@@ -231,7 +235,7 @@ public class OssObjectController {
      * 复原一个对象
      * @param bucketName 备份对象-桶名
      * @param objectName 备份对象-对象名
-     * @return
+     * @return 是否复原成功
      * @throws Exception
      */
     @PostMapping("/backupRecovery")
@@ -245,7 +249,7 @@ public class OssObjectController {
      * @param bucketName 桶名
      * @param objectName 对象名
      * @param newtName 新名字
-     * @return
+     * @return 是否重命名成功
      * @throws Exception
      */
     @PutMapping("/updateObjectName")
@@ -261,7 +265,7 @@ public class OssObjectController {
      * @param bucketName 桶名
      * @param objectName 对象名
      * @param objectAcl objectAcl编码
-     * @return
+     * @return 是否更新成功
      * @throws Exception
      */
     @PutMapping("/updateObjectAcl")
@@ -281,9 +285,11 @@ public class OssObjectController {
         }
         return stringBuilder.toString();
     }
+
     /**
      * 批量删除
      * @param bucketName 桶名
+     * @param batchDeletionObjectDto 对象名字列表
      * @return
      * @throws Exception
      */

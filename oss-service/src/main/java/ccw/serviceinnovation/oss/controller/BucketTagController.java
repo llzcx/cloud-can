@@ -34,7 +34,7 @@ public class BucketTagController {
      * @return
      */
     @GetMapping("/getBucketTag")
-    @OssApi(target = API_BUCKET,type = AuthorityConstant.API_READ, name = "getBucketTag",description = "获取Bucket标签列表")
+    @OssApi(target = API_BUCKET,type = AuthorityConstant.API_LIST, name = "getBucketTag",description = "获取Bucket标签列表")
     public ApiResp<List<BucketTag>> getBucketTag(@RequestParam("bucketName") String bucketName){
         List<BucketTag> bucketTags = bucketTagService.getBucketTag(bucketName);
         return ApiResp.success(bucketTags);

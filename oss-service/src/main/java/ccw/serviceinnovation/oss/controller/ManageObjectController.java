@@ -40,7 +40,7 @@ public class ManageObjectController {
      * @return
      */
     @GetMapping("/listObjects")
-    @OssApi(target = AuthorityConstant.API_MANAGE,type = AuthorityConstant.API_READ, name = "listObject",description = "获取Object列表")
+    @OssApi(target = AuthorityConstant.API_MANAGE,type = AuthorityConstant.API_LIST, name = "listObject",description = "获取Object列表")
     public ApiResp<RPage<ManageObjectListVo>> listObject(@RequestParam("keyword")String keyword,
                                                          @RequestParam("pageNum")Integer pageNum,
                                                          @RequestParam("size")Integer size) throws Exception{
@@ -81,7 +81,7 @@ public class ManageObjectController {
      * @return
      */
     @GetMapping("/getSubObjects")
-    @OssApi(target = AuthorityConstant.API_MANAGE,type = AuthorityConstant.API_READ, name = "listSubObject",description = "获取文件夹中的对象")
+    @OssApi(target = AuthorityConstant.API_MANAGE,type = AuthorityConstant.API_LIST, name = "listSubObject",description = "获取文件夹中的对象")
     public ApiResp<RPage<ManageObjectListVo>> listSubObject(@RequestParam("keyword")String keyword,
                                                             @RequestParam("parent")String parent,
                                                             @RequestParam("pageNum")Integer pageNum,

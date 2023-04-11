@@ -35,7 +35,7 @@ public class ObjectTagController {
      * @return
      */
     @GetMapping("/getObjectTag")
-    @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_READ, name = "getObjectTag",description = "获取对象标签")
+    @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_LIST, name = "getObjectTag",description = "获取对象标签")
     public ApiResp<List<ObjectTag>> getObjectTag(@RequestParam("bucketName") String bucketName, @RequestParam("objectName") String objectName){
         List<ObjectTag> objectTagList = objectTagService.getObjectTag(bucketName,objectName);
         return ApiResp.success(objectTagList);

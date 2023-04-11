@@ -91,4 +91,12 @@ public interface IBucketService extends IService<Bucket> {
      * @return
      */
     List<BucketFileTypeVo> getUserBucketFileType(Long userId);
+
+    /**
+     * 桶重命名
+     * @param bucketName
+     * @param newBucketName
+     * @return
+     */
+    Boolean reName(String bucketName,String newBucketName);
 }

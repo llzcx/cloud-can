@@ -11,9 +11,24 @@ import java.io.Serializable;
  */
 @Data
 public class ApiResp<T> implements Serializable {
+    /**
+     * 请求是否成功
+     */
     private Boolean success;
+
+    /**
+     * 响应码
+     */
     private Integer code;
+
+    /**
+     * 响应信息
+     */
     private String msg;
+
+    /**
+     * 响应的数据
+     */
     private T data;
 
     public ApiResp() {

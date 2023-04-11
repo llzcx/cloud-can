@@ -27,10 +27,10 @@ public class FragmentController {
     /**
      * 获取一个桶内所有碎片
      * @param bucketName 桶名字
-     * @return
+     * @return 返回碎片信息
      */
     @GetMapping("/list")
-    @OssApi(target = AuthorityConstant.API_BUCKET,type = AuthorityConstant.API_READ, name = "listsFragment",description = "获取一个桶内所有碎片")
+    @OssApi(target = AuthorityConstant.API_BUCKET,type = AuthorityConstant.API_LIST, name = "listsFragment",description = "获取一个桶内所有碎片")
     public ApiResp<List<FragmentVo>> listsFragment(String bucketName){
         return ApiResp.success(fragmentService.listFragments(bucketName));
     }
@@ -39,7 +39,7 @@ public class FragmentController {
      * 删除一个上传事件的碎片信息
      * @param bucketName 桶名字
      * @param blockToken 上传事件唯一ID
-     * @return
+     * @return 是否删除成功
      */
     @DeleteMapping("")
     @OssApi(target = AuthorityConstant.API_BUCKET,type = AuthorityConstant.API_WRITER, name = "deleteFragment",description = "删除一个上传事件的碎片信息")
