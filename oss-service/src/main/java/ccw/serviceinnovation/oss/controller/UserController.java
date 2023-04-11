@@ -60,12 +60,11 @@ public class UserController {
     @OssApi(target = AuthorityConstant.API_OPEN,type = AuthorityConstant.API_WRITER, name = "register",description = "注册接口")
     public ApiResp<Long> register(@RequestBody RegisterDto registerDto) {
         User user = userService.register(registerDto.getUsername(),registerDto.getPassword(),registerDto.getPhone());
-        return ApiResp.success(user.getId());
+        return ApiResp.ifResponse(user!=null,user,ResultCode.CREATE_USER_EXIST);
     }
 
     /**
      * 创建一个RAM用户
-     *
      * @return
      */
     @PostMapping("/createRam")
@@ -79,6 +78,9 @@ public class UserController {
 
     /**
      * 获取子用户列表
+     * @param keyword 搜索关键词
+     * @param pageNum 当前页数
+     * @param size 每页展示条数
      * @return
      */
     @GetMapping("/getSubUsers")

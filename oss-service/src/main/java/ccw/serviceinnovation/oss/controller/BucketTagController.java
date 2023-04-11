@@ -31,7 +31,7 @@ public class BucketTagController {
     /**
      * 获取Bucket标签列表
      * @param bucketName 桶名
-     * @return
+     * @return 该bucket的所有标签
      */
     @GetMapping("/getBucketTag")
     @OssApi(target = API_BUCKET,type = AuthorityConstant.API_LIST, name = "getBucketTag",description = "获取Bucket标签列表")
@@ -44,7 +44,7 @@ public class BucketTagController {
      * 添加Bucket标签
      * 可同时添加多个标签
      * @param bucketTags 添加的标签的信息
-     * @return
+     * @return 添加后该bucket的标签
      */
     @PutMapping("/putBucketTag")
     @OssApi(target = API_BUCKET,type = AuthorityConstant.API_WRITER, name = "putBucketTag",description = "添加Bucket标签")
@@ -56,7 +56,7 @@ public class BucketTagController {
     /**
      * 删除bucket标签
      * @param bucketTags 标签的id
-     * @return
+     * @return 删除后该bucket的标签
      */
     @DeleteMapping("/deleteBucketTag")
     @OssApi(target = API_BUCKET,type = AuthorityConstant.API_WRITER, name = "deleteBucketTag",description = "删除bucket标签")

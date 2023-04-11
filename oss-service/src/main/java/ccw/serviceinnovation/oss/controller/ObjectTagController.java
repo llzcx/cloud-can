@@ -32,7 +32,7 @@ public class ObjectTagController {
     /**
      * 获取对象标签
      * @param objectName 对象名
-     * @return
+     * @return 该对象的标签
      */
     @GetMapping("/getObjectTag")
     @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_LIST, name = "getObjectTag",description = "获取对象标签")
@@ -45,7 +45,7 @@ public class ObjectTagController {
      * 添加对象标签
      * 可同时添加多个标签
      * @param objectTagDto 对象标签
-     * @return
+     * @return 添加对象后的该对象的标签
      */
     @PutMapping("/putObjectTag")
     @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_WRITER, name = "putObjectTag",description = "添加对象标签")
@@ -57,7 +57,7 @@ public class ObjectTagController {
     /**
      * 删除对象标签
      * @param objectTagDto 对象标签
-     * @return
+     * @return 删除后该对象的对象标签
      */
     @DeleteMapping("/deleteObjectTag")
     @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_WRITER, name = "deleteObjectTag",description = "删除对象标签")

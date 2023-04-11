@@ -27,6 +27,7 @@ public class AccessKeyController {
     /**
      * 生成AccessKey
      * @return 返回AccessKey => AccessKeyInfo
+     * @return 创建新的AccessKey后该对象AccessKey的基本信息
      */
     @PostMapping("/createAccessKey")
     @OssApi(target = API_OBJECT,type = AuthorityConstant.API_WRITER, name = "createAccessKey",description = "生成AccessKey")
@@ -38,7 +39,7 @@ public class AccessKeyController {
     /**
      * 获取该对象的 全部AccessKey
      * @param objectId 对象的id
-     * @return 返回AccessKey => AccessKeyInfo
+     * @return 该对象仍然存活的AccessKey列表
      */
     @GetMapping("/getAccessKeys")
     @OssApi(target = API_OBJECT,type = AuthorityConstant.API_LIST, name = "getAccessKeys",description = "获取该对象的 全部AccessKey")
@@ -49,7 +50,7 @@ public class AccessKeyController {
 
     /**
      * 删除对象的 AccessKey
-     * @return 返回AccessKey => AccessKeyInfo
+     * @return 删除后的AccessKey列表
      */
     @DeleteMapping("/deleteAccessKey")
     @OssApi(target = API_OBJECT,type = AuthorityConstant.API_WRITER, name = "deleteAccessKey",description = "删除对象的 AccessKey")

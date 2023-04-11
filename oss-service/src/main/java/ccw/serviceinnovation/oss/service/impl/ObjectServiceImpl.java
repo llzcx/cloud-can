@@ -239,6 +239,12 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
         }
         //删除元数据
         ossObjectMapper.deleteById(ossObject.getId());
+        //删除对象标签
+        List<ObjectTagObject> objectTagObjects = objectTagObjectMapper.selectList(MPUtil.queryWrapperEq("object_id", ossObject.getId()));
+        objectTagObjectMapper.delete(MPUtil.queryWrapperEq("object_id",ossObject.getId()));
+        for (ObjectTagObject objectTagObject : objectTagObjects) {
+            objectTagMapper.delete(MPUtil.queryWrapperEq("id",objectTagObject.getTagId()));
+        }
         if(!ossObject.getIsFolder()){
             String group = norDuplicateRemovalService.getGroup(ossObject.getEtag());
             if(ossObject.getStorageLevel().equals(StorageTypeEnum.ARCHIVAL.getCode())){
@@ -624,7 +630,7 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
             deleteObject(bucketName, ossObject.getName());
             //删除对象标签
             objectTagObjectMapper.deleteTagByObjectId(ossObject.getId());
-            objectTagMapper.delete(MPUtil.queryWrapperEq("bucket_id",bucketId));
+            objectTagObjectMapper.delete(MPUtil.queryWrapperEq("object_id",ossObject.getId()));
         }
         return true;
     }

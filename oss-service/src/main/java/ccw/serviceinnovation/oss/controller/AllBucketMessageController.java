@@ -27,7 +27,7 @@ public class AllBucketMessageController {
 
     /**
      * 获取用户所有bucket中的展示数据
-     * @return 可展示的数据
+     * @return bucket中的展示数据
      */
     @GetMapping("/getMessage")
     @OssApi(target = API_BUCKET,type = AuthorityConstant.API_READ, name = "getMessage",description = "获取用户所有bucket中的展示数据")

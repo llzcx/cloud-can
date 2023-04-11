@@ -42,6 +42,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Override
     public User register(String username, String password, String phone) {
+
+        User one = userMapper.selectOne(MPUtil.queryWrapperEq("username", username));
+
+        if (one!=null){
+            return null;
+        }
+
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);
@@ -50,6 +57,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         user.setUpdateTime(time);
         user.setPhone(phone);
         user.setParent(null);
+        user.setAdmin(false);
         userMapper.insert(user);
         return user;
     }
@@ -67,6 +75,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         user.setCreateTime(time);
         user.setUpdateTime(time);
         user.setParent(userId);
+        user.setAdmin(false);
         userMapper.insert(user);
         return user;
     }
