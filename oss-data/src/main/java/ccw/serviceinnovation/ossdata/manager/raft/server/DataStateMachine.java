@@ -122,16 +122,14 @@ public class DataStateMachine extends StateMachineAdapter {
                             returnData = locationVo1;
                         }else{
                             returnData = locationVo1;
-                            LOG.info("文件不存在,要求重定向");
                         }
-                        LOG.info("Get path={} at logIndex={}", JSONObject.toJSONString(locationVo1), iter.getIndex());
                         break;
                     case SAVE:
                         long start = System.currentTimeMillis();
                         try {
                             LocationVo locationVo = dataOperation.getLocationVo();
                             //从网络地址中保存文件
-                            LOG.info("正在从:{}同步",locationVo.getPath());
+//                            LOG.info("正在从:{}同步",locationVo.getPath());
                             if(FileUtil.saveFile(locationVo.getPath(),filePath)){
                                 //查干湖
                                 LOG.info("同步完成!");
@@ -177,7 +175,7 @@ public class DataStateMachine extends StateMachineAdapter {
                     default:
                         break;
                 }
-                LOG.info("状态机最终状态:"+JSONObject.toJSON(printfState(dataMap)));
+//                LOG.info("状态机最终状态:"+JSONObject.toJSON(printfState(dataMap)));
                 if (closure != null) {
                     closure.success(returnData);
                     closure.run(Status.OK());

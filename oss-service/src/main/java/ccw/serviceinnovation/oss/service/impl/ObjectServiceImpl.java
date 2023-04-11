@@ -309,41 +309,11 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
         }
     }
 
-
-
-    @Override
-    public Boolean addSmallObject(String bucketName, String objectName, String etag, MultipartFile file, Long parentObjectId,  Integer objectAcl) throws Exception {
-        if(file.getSize() > 5*(1 << 20)){
-            //上传
-            throw new OssException(ResultCode.FILE_IS_BIG);
-        }
-        Bucket bucket =bucketMapper.selectBucketByName(bucketName);
-        byte[] bytes = file.getBytes();
-        //利用一致性hash去寻找存储group
-        String blockToken = UUID.randomUUID().toString().replace('-', '_');
-        LocationVo storageObjectNode = ConsistentHashing.getStorageObjectNode(etag);
-        log.info("LocationVo:{}:{}",storageObjectNode.getIp(),storageObjectNode.getPort());
-        //保存到该节点
-        Integer providePort = TrackerService.getOssDataProvidePort(storageObjectNode.getIp(),storageObjectNode.getPort());
-        UserSpecifiedAddressUtil.setAddress(new Address(storageObjectNode.getIp(),providePort , true));
-        storageTempObjectService.saveBlock(blockToken, file.getSize(), bytes,
-                file.getSize(), 1, 0,bucket.getSecret());
-        //先决事件
-        //校验客户端etag
-        UserSpecifiedAddressUtil.setAddress(new Address(storageObjectNode.getIp(), providePort, true));
-        FilePrehandleBo filePrehandleBo = storageTempObjectService.preHandle(etag, blockToken,false,bucket.getSecret());
-        if (filePrehandleBo == null) {
-            throw new OssException(ResultCode.FILE_CHECK_ERROR);
-        }
-        //校验成功
-        if (filePrehandleBo.getNewEtag() != null) {
-            etag = filePrehandleBo.getNewEtag();
-        }
+    public Boolean saveObject(Bucket bucket,String objectName,Long parentObjectId,String etag,Integer ext,Long size,Integer objectAcl){
         //-----------持久化元数据-------------
         //插入文件夹
         Long parent = saveFolder(bucket.getId(), objectName, parentObjectId);
         OssObject ossObject = new OssObject();
-        String group = norDuplicateRemovalService.getGroup(etag);
         ossObject.setName(objectName);
         ossObject.setSecret(bucket.getSecret());
         ossObject.setParent(parent);
@@ -353,9 +323,9 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
         ossObject.setCreateTime(time);
         ossObject.setBucketId(bucket.getId());
         ossObject.setEtag(etag);
-        ossObject.setExt(filePrehandleBo.getFileType());
+        ossObject.setExt(ext);
         ossObject.setIsFolder(false);
-        ossObject.setSize(file.getSize());
+        ossObject.setSize(size);
         ossObject.setIsBackup(false);
         if(objectAcl!=null){
             ossObject.setObjectAcl(ACLEnum.getEnum(objectAcl).getCode());
@@ -372,6 +342,45 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
             //不存在则插入
             ossObjectMapper.insert(ossObject);
         }
+        return true;
+    }
+
+
+
+
+    @Override
+    public Boolean addSmallObject(String bucketName, String objectName, String etag, MultipartFile file, Long parentObjectId,  Integer objectAcl) throws Exception {
+        Bucket bucket = bucketMapper.selectBucketByName(bucketName);
+        if(file.getSize() > 5*(1 << 20)){
+            //上传
+            throw new OssException(ResultCode.FILE_IS_BIG);
+        }
+        if(norDuplicateRemovalService.getGroup(etag)!=null){
+            saveObject(bucket,objectName,parentObjectId,etag,null,file.getSize(),ACLEnum.PRIVATE.getCode());
+            return true;
+        }
+        byte[] bytes = file.getBytes();
+        //利用一致性hash去寻找存储group
+        String blockToken = UUID.randomUUID().toString().replace('-', '_');
+        LocationVo storageObjectNode = ConsistentHashing.getStorageObjectNode(etag);
+        //保存到该节点
+        Integer providePort = TrackerService.getOssDataProvidePort(storageObjectNode.getIp(),storageObjectNode.getPort());
+        UserSpecifiedAddressUtil.setAddress(new Address(storageObjectNode.getIp(),providePort , true));
+        storageTempObjectService.saveBlock(blockToken, file.getSize(), bytes,
+                file.getSize(), 1, 0,bucket.getSecret());
+        //校验客户端etag
+        UserSpecifiedAddressUtil.setAddress(new Address(storageObjectNode.getIp(), providePort, true));
+        FilePrehandleBo filePrehandleBo = storageTempObjectService.preHandle(etag, blockToken,false,bucket.getSecret());
+        if (filePrehandleBo == null) {
+            throw new OssException(ResultCode.FILE_CHECK_ERROR);
+        }
+        //校验成功
+        if (filePrehandleBo.getNewEtag() != null) {
+            etag = filePrehandleBo.getNewEtag();
+        }
+        //-----------持久化元数据-------------
+        saveObject(bucket,objectName,parentObjectId,etag,filePrehandleBo.getFileType(),file.getSize(),ACLEnum.PRIVATE.getCode());
+        String group = norDuplicateRemovalService.getGroup(etag);
         //检查是否已经存储
         if (group != null) {
             //已经存储了 则+1
@@ -386,9 +395,7 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
             locationVo.setPath(url);
             locationVo.setToken(blockToken);
             locationVo.setGroup(storageObjectNode.getGroup());
-            if (RaftRpcRequest.save(leader.getCliClientService(), leader.getPeerId(), etag, locationVo)) {
-                System.out.println("所有节点完成同步!");
-            } else {
+            if (!RaftRpcRequest.save(leader.getCliClientService(), leader.getPeerId(), etag, locationVo)) {
                 throw new OssException(ResultCode.CANT_SYNC);
             }
             //引用次数+1

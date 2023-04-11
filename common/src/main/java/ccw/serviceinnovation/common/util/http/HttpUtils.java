@@ -25,7 +25,7 @@ public class HttpUtils {
     }
 
     public static String requestTo(String url,String method) throws Exception {
-        System.out.println("url:"+url);
+//        System.out.println("url:"+url);
         URL localURL = new URL(url);
         URLConnection connection = localURL.openConnection();
         HttpURLConnection httpURLConnection = (HttpURLConnection) connection;

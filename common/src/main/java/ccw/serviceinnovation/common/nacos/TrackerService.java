@@ -60,7 +60,7 @@ public class TrackerService {
                 list.add(host);
                 newHosts.put(group,list);
             }
-            System.out.println("final {group => serveList}:\n"+JSONObject.toJSONString(newHosts));
+//            System.out.println("final {group => serveList}:\n"+JSONObject.toJSONString(newHosts));
             return  newHosts;
         } catch (Exception exception) {
             exception.printStackTrace();

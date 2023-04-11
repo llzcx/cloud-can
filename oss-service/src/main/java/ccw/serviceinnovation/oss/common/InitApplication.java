@@ -51,7 +51,7 @@ public class InitApplication {
      * 在容器初始化之后执行
      */
     public void afterSpring() throws Exception {
-        apiService.initApi();
+//        apiService.initApi();
         DataGrpcHelper.initGRpc();
         Map<String, List<Host>> mp = TrackerService.getAllJraftList(OssApplicationConstant.NACOS_SERVER_ADDR);
         System.out.println("group 一致性hash初始化:");
