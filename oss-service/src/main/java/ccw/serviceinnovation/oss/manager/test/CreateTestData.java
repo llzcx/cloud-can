@@ -47,8 +47,9 @@ public class CreateTestData {
     }
 
     public static void main(String[] args) {
-        String path = "D:\\OSS\\testdata";
-        handle(path,256 * 1024,10000);
+//        String path = "D:\\OSS\\testdata";
+//        handle(path,256 * 1024,10000);
 //        delete(path,10000);
+        System.out.println(1);
     }
 }
