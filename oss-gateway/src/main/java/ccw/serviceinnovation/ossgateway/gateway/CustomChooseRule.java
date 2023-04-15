@@ -75,12 +75,10 @@ public class CustomChooseRule implements ICustomRule {
         String path = exchange.getRequest().getPath().toString();
         URI uri = exchange.getRequest().getURI();
         String[] pathParams = HttpUtils.getPathParams(uri);
-        Map<String, String> stringStringMap = exchange.getRequest().getQueryParams().toSingleValueMap();
-        System.out.println("stringStringMap:" + stringStringMap);
+//        Map<String, String> stringStringMap = exchange.getRequest().getQueryParams().toSingleValueMap();
         String instancesId = originalUrl.getHost();
-        System.out.println("instancesId:"+instancesId);
-        Flux<DataBuffer> dataBufferFlux = exchange.getRequest().getBody();
-        System.out.println("path:" + path);
+//        Flux<DataBuffer> dataBufferFlux = exchange.getRequest().getBody();
+        log.info("path:{}",path);
         //获取body中的数据
         //String body = FilterRequestResponseUtil.resolveBodyFromRequest(dataBufferFlux);
 
@@ -98,8 +96,7 @@ public class CustomChooseRule implements ICustomRule {
                 //获取group和etag
                 String group = pathParams[2];
                 String etag = pathParams[3];
-                System.out.println("group:"+group);
-                System.out.println("etag:"+etag);
+                log.info("group:{},etag:{}",group,etag);
                 //根据etag去OssData找
                 ServiceInstance serviceInstance = getServiceInstance(instances,group, etag);
                 if(serviceInstance!=null){
@@ -107,7 +104,6 @@ public class CustomChooseRule implements ICustomRule {
                 }else{
                     throw new OssException(ResultCode.OBJECT_IS_DEFECT);
                 }
-
             } else if (path.contains("/test/demo")) {
                 String lastPathParams = HttpUtils.getLastPathParams(path);
                 System.out.println("lastPathParams:" + lastPathParams);

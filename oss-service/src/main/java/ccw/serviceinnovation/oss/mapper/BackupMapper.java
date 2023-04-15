@@ -17,7 +17,7 @@ public interface BackupMapper extends BaseMapper<Backup> {
      * @param objectName
      * @return
      */
-    Backup selectBackup(@Param("bucketName") String bucketName, @Param("objectName")String objectName);
+    List<Backup> selectBackup(@Param("bucketName") String bucketName, @Param("objectName")String objectName);
 
     /**
      * 通过目标对象还原源对象

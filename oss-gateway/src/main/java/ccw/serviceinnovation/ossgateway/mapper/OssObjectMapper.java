@@ -1,5 +1,6 @@
 package ccw.serviceinnovation.ossgateway.mapper;
 
+import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.entity.OssObject;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
@@ -26,5 +27,7 @@ public interface OssObjectMapper extends BaseMapper<OssObject> {
      * @return
      */
     Integer selectObjectStorageLevel(@Param("bucketName")String bucketName,@Param("objectName")String objectName);
+
+    Integer selectBucketByName(@Param("bucketName")String bucketName);
 
 }

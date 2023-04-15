@@ -1,6 +1,7 @@
 package ccw.serviceinnovation.oss;
 
 import ccw.serviceinnovation.oss.common.InitApplication;
+import ccw.serviceinnovation.oss.constant.OssApplicationConstant;
 import ccw.serviceinnovation.oss.manager.mq.ColdConsumer;
 import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.mybatis.spring.annotation.MapperScan;
@@ -9,6 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import service.raft.client.RaftRpcRequest;
 
 /**
  * 启动类
@@ -32,5 +34,6 @@ public class OssApplication {
         coldConsumer.initMqFreeze();
         coldConsumer.initDeleteTmp();
         coldConsumer.initColdDeleteTmp();
+        RaftRpcRequest.init(OssApplicationConstant.NACOS_SERVER_ADDR);
     }
 }

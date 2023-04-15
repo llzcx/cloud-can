@@ -1,15 +1,15 @@
 package ccw.serviceinnovation.common.util.sm4;
 
 
+import ccw.serviceinnovation.common.constant.FileConstant;
 import org.apache.commons.net.util.Base64;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static ccw.serviceinnovation.common.constant.FileConstant.READ_WRITER_SIZE;
 
 /**
  * @author 陈翔
@@ -224,7 +224,7 @@ public class SM4Utils {
         int size = 0;
         while (in.available() > 0) {
             size += in.available();
-            b = in.available() > 1024 ? new byte[1024] : new byte[in.available()];
+            b = in.available() > READ_WRITER_SIZE ? new byte[READ_WRITER_SIZE] : new byte[in.available()];
             in.read(b);
         }
         in.close();
@@ -237,7 +237,7 @@ public class SM4Utils {
         size = 0;
         while (in.available() > 0) {
             size += in.available();
-            b = in.available() > 1024 ? new byte[1024] : new byte[in.available()];
+            b = in.available() > READ_WRITER_SIZE ? new byte[READ_WRITER_SIZE] : new byte[in.available()];
             in.read(b);
             byte[] bytes =  sm4.encryptData_ECB(b);
             fos.write(bytes);
@@ -247,12 +247,13 @@ public class SM4Utils {
         fos.flush();
         fos.close();
 
-        in   = new FileInputStream("D:\\OSS\\test\\1");
-        fos   = new FileOutputStream("D:\\OSS\\test\\2");
+        in   = new FileInputStream("D:\\OSS\\01\\position\\NOR&ce2ba3fb73a4312d91f4dcb65c07f4b8");
+        fos   = new FileOutputStream("D:\\OSS\\test\\5");
         size = 0;
+        long after = sm4.getAfterSecretLength(READ_WRITER_SIZE);
         while (in.available() > 0) {
             size += in.available();
-            b = in.available() > 1040 ? new byte[1040] : new byte[in.available()];
+            b = in.available() > after ? new byte[Math.toIntExact(after)] : new byte[in.available()];
             in.read(b);
             byte[] bytes =  sm4.decryptData_ECB(b);
             fos.write(bytes);
@@ -263,5 +264,38 @@ public class SM4Utils {
         fos.close();
         System.out.println("加密后:"+size);
         System.out.println("差值:"+(size-old)%1024);
+    }
+
+    public void encryption(String path) throws Exception {
+        File file = new File(path);
+        String name = file.getName();
+        SM4Utils sm4 = new SM4Utils();
+        FileInputStream in =new FileInputStream(file);
+        byte[] b;
+        int size = 0;
+        while (in.available() > 0) {
+            size += in.available();
+            b = in.available() > READ_WRITER_SIZE ? new byte[READ_WRITER_SIZE] : new byte[in.available()];
+            in.read(b);
+        }
+        in.close();
+        in =new FileInputStream(path);
+        File tmp = new File(file.getParentFile()+"\\"+ "SECRET&" + name);
+        FileOutputStream fos   = new FileOutputStream(tmp);
+        size = 0;
+        byte[] bytes;
+        while (in.available() > 0) {
+            size += in.available();
+            b = in.available() > READ_WRITER_SIZE ? new byte[READ_WRITER_SIZE] : new byte[in.available()];
+            in.read(b);
+            bytes =  sm4.encryptData_ECB(b);
+            fos.write(bytes);
+            System.out.println(bytes.length);
+        }
+        in.close();
+        fos.flush();
+        fos.close();
+        file.delete();
+        tmp.renameTo(file);
     }
 }

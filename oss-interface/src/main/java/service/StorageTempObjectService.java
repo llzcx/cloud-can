@@ -10,21 +10,12 @@ import java.io.IOException;
  */
 public interface StorageTempObjectService {
     /**
-     * 块缓存文件转正
-     * @param token
-     * @param objectKey 对象键
-     * @return
-     * @exception Exception
-     */
-    Boolean blockBecomeFullMember(String token,String objectKey) throws Exception;
-
-    /**
      * 删除缓存块文件
      * @param objectKey
      * @return
      * @exception Exception
      */
-    public Boolean deleteBlockObject(String objectKey) throws Exception;
+    Boolean deleteBlockObject(String objectKey) throws Exception;
 
     /**
      * 写入一块缓存文件
@@ -55,6 +46,4 @@ public interface StorageTempObjectService {
      * @return
      */
     String getPort();
-
-
 }

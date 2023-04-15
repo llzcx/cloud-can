@@ -19,6 +19,10 @@ public class NorDuplicateRemovalService {
 
     private String COUNT_PREFIX = OSS + DUPLICATE_REMOVAL + NOR_COUNT;
     private String GROUP_PREFIX = OSS + DUPLICATE_REMOVAL + NOR_GROUP;
+
+    public static void main(String[] args) {
+        System.out.println(OSS + DUPLICATE_REMOVAL + NOR_GROUP);
+    }
     public long getCount(String etag) {
         return Long.parseLong(redisUtil.hget(COUNT_PREFIX, etag));
     }
@@ -35,7 +39,7 @@ public class NorDuplicateRemovalService {
     }
 
     public long del(String etag) {
-        log.info("cold del:{}",etag);
+        log.info("nor del:{}",etag);
         long hincr = redisUtil.hincr(COUNT_PREFIX, etag, -1);
         if(hincr<=0){
             redisUtil.hdel(GROUP_PREFIX, etag);

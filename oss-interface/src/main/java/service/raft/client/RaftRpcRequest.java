@@ -18,6 +18,7 @@ import service.raft.request.GetRequest;
 import service.raft.request.SaveRequest;
 import service.raft.rpc.RpcResponse;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -27,33 +28,42 @@ import java.util.concurrent.TimeoutException;
  */
 public class RaftRpcRequest {
 
+    public static HashMap<String, CliClientServiceImpl> mp = new HashMap<>();
+
+    public static void init(String naocosPath) {
+        Map<String, List<Host>> allJraftList = TrackerService.getAllJraftList(naocosPath);
+        for (Map.Entry<String, List<Host>> stringListEntry : allJraftList.entrySet()) {
+            String group = stringListEntry.getKey();
+            List<Host> nodeList = stringListEntry.getValue();
+            StringBuilder addrList = new StringBuilder();
+            for (int i = 0; i < nodeList.size(); i++) {
+                addrList.append(nodeList.get(i).getIp()).append(":").append(nodeList.get(i).getPort());
+                if (i != nodeList.size() - 1) {
+                    addrList.append(",");
+                }
+            }
+            final Configuration conf = new Configuration();
+            if (!conf.parse(addrList.toString())) {
+                throw new IllegalArgumentException("Fail to parse conf:" + addrList);
+            }
+            RouteTable.getInstance().updateConfiguration(group, conf);
+            final CliClientServiceImpl cliClientService = new CliClientServiceImpl();
+            cliClientService.init(new CliOptions());
+            mp.put(group, cliClientService);
+        }
+    }
+
 
     @Data
-    public static class RaftRpcRequestBo{
+    public static class RaftRpcRequestBo {
         private CliClientServiceImpl cliClientService;
         private PeerId peerId;
     }
 
-    public static RaftRpcRequestBo getLeader(String naocosPath,String groupId){
+    public static RaftRpcRequestBo getLeader(String naocosPath, String groupId) {
         //获取所有节点 groupName ==> node list
         RaftRpcRequestBo raftRpcRequestBo = new RaftRpcRequestBo();
-        Map<String, List<Host>> allJraftList = TrackerService.getAllJraftList(naocosPath);
-        StringBuilder addr_list = new StringBuilder();
-        List<Host> list = allJraftList.get(groupId);
-        for (int i = 0; i < list.size(); i++) {
-            addr_list.append(Addr.ip+":").append(list.get(i).getPort());
-            if(i!=list.size()-1){
-                addr_list.append(",");
-            }
-        }
-        System.out.println("addr_list:"+addr_list);
-        final Configuration conf = new Configuration();
-        if (!conf.parse(addr_list.toString())) {
-            throw new IllegalArgumentException("Fail to parse conf:" + addr_list);
-        }
-        RouteTable.getInstance().updateConfiguration(groupId, conf);
-        final CliClientServiceImpl cliClientService = new CliClientServiceImpl();
-        cliClientService.init(new CliOptions());
+        final CliClientServiceImpl cliClientService = mp.get(groupId);
         try {
             if (!RouteTable.getInstance().refreshLeader(cliClientService, groupId, 1000).isOk()) {
                 throw new IllegalStateException("Refresh leader failed");
@@ -71,40 +81,37 @@ public class RaftRpcRequest {
 
 
     /**
-     *
      * @param cliClientService
      * @param leader
      * @param etag
-     * @param locationVo
-     *     String fileUrl = "https://"+locationVo.getIp()+":"+locationVo.getPort()+
-     *                                 "/object/download_temp/"+dataOperation.getEtag();
+     * @param locationVo       String fileUrl = "https://"+locationVo.getIp()+":"+locationVo.getPort()+
+     *                         "/object/download_temp/"+dataOperation.getEtag();
      * @return
      * @throws RemotingException
      * @throws InterruptedException
      */
     public static boolean save(final CliClientServiceImpl cliClientService, final PeerId leader, String etag, LocationVo locationVo) throws RemotingException, InterruptedException {
         Endpoint endpoint = leader.getEndpoint();
-        SaveRequest saveRequest = new SaveRequest(etag,locationVo);
-        RpcResponse rpcResponse = (RpcResponse)cliClientService.getRpcClient().invokeSync(endpoint, saveRequest, 5000000);
-        System.out.println("result:"+rpcResponse);
+        SaveRequest saveRequest = new SaveRequest(etag, locationVo);
+        RpcResponse rpcResponse = (RpcResponse) cliClientService.getRpcClient().invokeSync(endpoint, saveRequest, 5000000);
         return rpcResponse.getSuccess();
     }
 
     public static LocationVo get(final CliClientServiceImpl cliClientService, final PeerId leader, String etag) throws RemotingException, InterruptedException {
         Endpoint endpoint = leader.getEndpoint();
-        GetRequest getRequest = new GetRequest(true,etag);
-        RpcResponse rpcResponse = (RpcResponse)cliClientService.getRpcClient().invokeSync(endpoint, getRequest, 5000000);
-        System.out.println("getData:"+rpcResponse.getData());
-        LocationVo data = (LocationVo)rpcResponse.getData();
-        System.out.println("result:"+rpcResponse);
+        GetRequest getRequest = new GetRequest(true, etag);
+        RpcResponse rpcResponse = (RpcResponse) cliClientService.getRpcClient().invokeSync(endpoint, getRequest, 5000000);
+
+        LocationVo data = (LocationVo) rpcResponse.getData();
+
         return data;
     }
 
     public static boolean del(final CliClientServiceImpl cliClientService, final PeerId leader, String etag) throws RemotingException, InterruptedException {
         Endpoint endpoint = leader.getEndpoint();
         DelRequest delRequest = new DelRequest(etag);
-        RpcResponse rpcResponse = (RpcResponse)cliClientService.getRpcClient().invokeSync(endpoint, delRequest, 5000000);
-        System.out.println("result:"+rpcResponse);
+        RpcResponse rpcResponse = (RpcResponse) cliClientService.getRpcClient().invokeSync(endpoint, delRequest, 5000000);
+
         return rpcResponse.getSuccess();
     }
 

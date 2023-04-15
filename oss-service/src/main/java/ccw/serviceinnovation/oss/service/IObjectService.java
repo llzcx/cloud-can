@@ -5,10 +5,7 @@ import ccw.serviceinnovation.common.entity.User;
 import ccw.serviceinnovation.oss.pojo.bo.BlockTokenBo;
 import ccw.serviceinnovation.oss.pojo.bo.GetObjectBo;
 import ccw.serviceinnovation.oss.pojo.dto.BatchDeletionObjectDto;
-import ccw.serviceinnovation.oss.pojo.vo.ObjectStateVo;
-import ccw.serviceinnovation.oss.pojo.vo.ObjectVo;
-import ccw.serviceinnovation.oss.pojo.vo.OssObjectVo;
-import ccw.serviceinnovation.oss.pojo.vo.RPage;
+import ccw.serviceinnovation.oss.pojo.vo.*;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -177,4 +174,11 @@ public interface IObjectService extends IService<OssObject> {
     Boolean batchDeletion(String bucketName, BatchDeletionObjectDto batchDeletionObjectDto) throws Exception;
 
 
+    /**
+     * 获取一个对象的备份对象列表
+     * @param bucketName
+     * @param objectName
+     * @return
+     */
+    List<BackupObjectVo> listBackupObjects(String bucketName, String objectName);
 }

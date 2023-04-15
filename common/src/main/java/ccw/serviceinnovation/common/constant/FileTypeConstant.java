@@ -25,9 +25,23 @@ public interface FileTypeConstant {
     public static int IMG = 4;
 
     /**
+     * word
+     */
+    public static int DOCX = 5;
+
+    /**
+     * pdf
+     */
+    public static int PDF = 6;
+
+
+
+    /**
      * 其他
      */
     public static int OTHER = -1;
+
+
 
     /**
      * 获取类型

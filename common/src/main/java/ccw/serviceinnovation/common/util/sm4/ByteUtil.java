@@ -620,4 +620,13 @@ public class ByteUtil {
         return bt;
     }
 
+    public static void main(String[] args) {
+        try {
+            new SM4Utils().encryption("D:\\OSS\\num\\testpreview.jpg");
+
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+    }
+
 }

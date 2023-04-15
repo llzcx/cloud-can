@@ -113,7 +113,8 @@ public class ConsistentHashing {
      */
     public static LocationVo getStorageObjectNode(String etag) {
         long hash = FNVHash(etag);
-        SortedMap<Long, String> tailMap = virtualNodes.tailMap(hash); // 所有大于 hash 的节点
+        // 所有大于 hash 的节点
+        SortedMap<Long, String> tailMap = virtualNodes.tailMap(hash);
         Long key = tailMap.isEmpty() ? virtualNodes.firstKey() : tailMap.firstKey();
         String addr = virtualNodes.get(key);
         RaftRpcRequest.RaftRpcRequestBo leader = RaftRpcRequest.getLeader(OssApplicationConstant.NACOS_SERVER_ADDR,addr);

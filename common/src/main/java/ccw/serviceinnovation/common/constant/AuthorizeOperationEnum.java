@@ -10,7 +10,7 @@ import static ccw.serviceinnovation.common.constant.AuthorityConstant.*;
 public enum AuthorizeOperationEnum {
 
     /**
-     * 只读只读（包含ListObject操作）
+     * 只读（不包含ListObject操作）
      */
     ONLY_READ(1,"只读（不包含ListObject操作）", new String[]{API_READ,API_LIST}),
 

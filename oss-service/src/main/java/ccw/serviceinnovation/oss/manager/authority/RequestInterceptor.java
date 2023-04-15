@@ -173,6 +173,7 @@ public class RequestInterceptor implements HandlerInterceptor {
             }
             return check;
             /*-------------------验证objectAcl-------------------*/
+
         }else if(ossApi.target().equals(API_USER)){
             return true;
         }else if(ossApi.target().equals(API_OPEN)){

@@ -10,5 +10,9 @@
     <select id="selectObjectStorageLevel" resultType="java.lang.Integer">
         select storage_level from oss_object where bucket_id = (select id from bucket where name = #{bucketName}) and name = #{objectName}
     </select>
+    <select id="selectBucketByName" resultType="java.lang.Integer">
+        select secret from bucket where name=#{bucketName}
+    </select>
+
 
 </mapper>

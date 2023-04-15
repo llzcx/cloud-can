@@ -72,7 +72,7 @@ public class OssObjectController {
      * @throws Exception
      */
     @PostMapping("/append_file")
-    public Boolean addObjectChunk(MultipartFile file, Integer chunk, String blockToken,String bucketName) throws Exception {
+    public Boolean appendChunk(MultipartFile file, Integer chunk, String blockToken, String bucketName) throws Exception {
         log.info("当前:{},为第:{}块分片",blockToken,chunk);
         ChunkBo chunkBo = chunkRedisService.getChunkBo(bucketName,blockToken);
         long size = chunkBo.getSize();

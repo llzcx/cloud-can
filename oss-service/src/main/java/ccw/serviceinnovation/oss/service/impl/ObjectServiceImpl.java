@@ -23,10 +23,7 @@ import ccw.serviceinnovation.oss.pojo.bo.BlockTokenBo;
 import ccw.serviceinnovation.oss.pojo.bo.ChunkBo;
 import ccw.serviceinnovation.oss.pojo.bo.MqDelTmpBo;
 import ccw.serviceinnovation.oss.pojo.dto.BatchDeletionObjectDto;
-import ccw.serviceinnovation.oss.pojo.vo.ObjectStateVo;
-import ccw.serviceinnovation.oss.pojo.vo.ObjectVo;
-import ccw.serviceinnovation.oss.pojo.vo.OssObjectVo;
-import ccw.serviceinnovation.oss.pojo.vo.RPage;
+import ccw.serviceinnovation.oss.pojo.vo.*;
 import ccw.serviceinnovation.oss.service.IObjectService;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONArray;
@@ -230,6 +227,23 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
         return true;
     }
 
+    @Override
+    public List<BackupObjectVo> listBackupObjects(String bucketName, String objectName) {
+        List<Backup> backups = backupMapper.selectBackup(bucketName, objectName);
+        List<BackupObjectVo> list = new ArrayList<>();
+        for (Backup backup : backups) {
+            Long targetObjectId = backup.getTargetObjectId();
+            OssObject ossObject = ossObjectMapper.selectById(targetObjectId);
+            BackupObjectVo backupObjectVo = new BackupObjectVo();
+            backupObjectVo.setId(ossObject.getId());
+            backupObjectVo.setObjectName(ossObject.getName());
+            backupObjectVo.setCreateTime(backup.getCreateTime());
+            backupObjectVo.setBucketName(bucketMapper.selectById(ossObject.getBucketId()).getName());
+            list.add(backupObjectVo);
+        }
+        return list;
+    }
+
 
     @Override
     public Boolean deleteObject(String bucketName, String objectName) throws Exception {
@@ -349,15 +363,21 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
 
 
     @Override
-    public Boolean addSmallObject(String bucketName, String objectName, String etag, MultipartFile file, Long parentObjectId,  Integer objectAcl) throws Exception {
+    public Boolean addSmallObject(String bucketName, String objectName, String etag, MultipartFile file,
+                                  Long parentObjectId,  Integer objectAcl) throws Exception {
+
         Bucket bucket = bucketMapper.selectBucketByName(bucketName);
         if(file.getSize() > 5*(1 << 20)){
             //上传
             throw new OssException(ResultCode.FILE_IS_BIG);
         }
-        if(norDuplicateRemovalService.getGroup(etag)!=null){
+        String group1 = norDuplicateRemovalService.getGroup(etag);
+        if(group1!=null){
+            log.info("{} exist!",etag);
             saveObject(bucket,objectName,parentObjectId,etag,null,file.getSize(),ACLEnum.PRIVATE.getCode());
             return true;
+        }else{
+            log.info("{} not exist!",etag);
         }
         byte[] bytes = file.getBytes();
         //利用一致性hash去寻找存储group
@@ -506,7 +526,7 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
         Message msg = new Message(MessageQueueConstant.TOPIC_DELETE_TMP,
                 json.getBytes(StandardCharsets.UTF_8));
         InitApplication.producer.send(msg);
-        log.info("提交del任务:{}",json);
+//        log.info("提交del任务:{}",json);
     }
 
 
@@ -571,7 +591,7 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
                     locationVo.setPath(url);
                     locationVo.setToken(blockToken);
                     if (RaftRpcRequest.save(leader.getCliClientService(), leader.getPeerId(), etag, locationVo)) {
-                        System.out.println("所有节点完成同步!");
+                        System.out.println("完成同步!");
                         //删除缓存数据
                         submitDelTask(new MqDelTmpBo(blockToken,ip,ossDataProvidePort));
                     }else{

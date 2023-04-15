@@ -129,9 +129,7 @@ public class DataStateMachine extends StateMachineAdapter {
                         try {
                             LocationVo locationVo = dataOperation.getLocationVo();
                             //从网络地址中保存文件
-//                            LOG.info("正在从:{}同步",locationVo.getPath());
                             if(FileUtil.saveFile(locationVo.getPath(),filePath)){
-                                //查干湖
                                 LOG.info("同步完成!");
                                 dataMap.put(etag,filePath);
                                 returnData = "save ok from" +locationVo.getPath();

@@ -280,7 +280,7 @@ public class ColdConsumer {
         consumer1.setInstanceName(DELETE_CONSUMER);
         //订阅某个主题，然后使用tag过滤消息，不过滤可以用*代表
         consumer1.subscribe(MessageQueueConstant.TOPIC_DELETE_TMP, "*");
-        consumer1.setConsumeMessageBatchMaxSize(2);
+        consumer1.setConsumeMessageBatchMaxSize(1);
         //设置拉取时间间隔
         consumer1.setPullInterval(5000);
         //设置消费次数

@@ -10,10 +10,7 @@ import ccw.serviceinnovation.oss.manager.authority.OssApi;
 import ccw.serviceinnovation.oss.pojo.bo.BlockTokenBo;
 import ccw.serviceinnovation.oss.pojo.bo.GetObjectBo;
 import ccw.serviceinnovation.oss.pojo.dto.BatchDeletionObjectDto;
-import ccw.serviceinnovation.oss.pojo.vo.ObjectStateVo;
-import ccw.serviceinnovation.oss.pojo.vo.ObjectVo;
-import ccw.serviceinnovation.oss.pojo.vo.OssObjectVo;
-import ccw.serviceinnovation.oss.pojo.vo.RPage;
+import ccw.serviceinnovation.oss.pojo.vo.*;
 import ccw.serviceinnovation.oss.service.IObjectService;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -26,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.List;
 
 import static ccw.serviceinnovation.common.constant.AuthorityConstant.API_BUCKET;
 import static ccw.serviceinnovation.common.constant.AuthorityConstant.API_OBJECT;
@@ -299,6 +297,21 @@ public class OssObjectController {
             , @RequestBody BatchDeletionObjectDto batchDeletionObjectDto,HttpServletRequest request) throws Exception {
         Boolean flag = objectService.batchDeletion(bucketName,batchDeletionObjectDto);
         return ApiResp.ifResponse(flag,flag,ResultCode.COMMON_FAIL);
+    }
+
+
+    /**
+     * 获取一个对象的所有备份数据
+     * @param bucketName 桶名
+     * @param objectName 对象名
+     * @return
+     * @throws Exception
+     */
+    @GetMapping("/listBackupObjects")
+    @OssApi(target = API_OBJECT,type = AuthorityConstant.API_READ, name = "listBackupObjects",description = "批量删除")
+    public ApiResp<List<BackupObjectVo>> listBackupObjects(@RequestParam(value = "bucketName") String bucketName
+            , @RequestParam(value = "objectName") String objectName ) throws Exception {
+        return ApiResp.success(objectService.listBackupObjects(bucketName, objectName));
     }
 }
 

@@ -11,6 +11,7 @@ import ccw.serviceinnovation.ossgateway.manager.redis.ObjectStateRedisService;
 import ccw.serviceinnovation.ossgateway.mapper.OssObjectMapper;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -48,6 +49,7 @@ public class CacheBodyGlobalFilter implements Ordered, GlobalFilter {
 
     @Autowired
     private OssObjectMapper ossObjectMapper;
+
 
     @Autowired
     NorDuplicateRemovalService norDuplicateRemovalService;
@@ -105,7 +107,7 @@ public class CacheBodyGlobalFilter implements Ordered, GlobalFilter {
             String bucketName = pathParams[2];
             String objectName = getObjectName(pathParams);
             addOriginalRequestUrl(exchange, uri);
-            System.out.println(bucketName+"/"+objectName);
+            log.info("s3:{}",bucketName+"/"+objectName);
             OssObject ossObject = ossObjectMapper.selectObjectIdByName(bucketName,objectName);
             log.info(JSONObject.toJSONString(ossObject));
             String etag = ossObject.getEtag();
@@ -120,7 +122,7 @@ public class CacheBodyGlobalFilter implements Ordered, GlobalFilter {
                 if(ossObject.getSecret()!=null){
                     newPath += "&secret="+ossObject.getSecret();
                 }
-                System.out.println("newPath:" + newPath);
+                log.info("newPath:{}",newPath);
                 //将请求格式改变重新路由 /object/download/{etag}?name={objectName}
                 ServerHttpRequest newRequest = exchange.getRequest().mutate()
                         .path(newPath)

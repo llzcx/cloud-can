@@ -26,6 +26,7 @@ import static ccw.serviceinnovation.common.constant.FileConstant.READ_WRITER_SIZ
  */
 @Component
 public class ControllerUtils {
+    public static SM4Utils sm4Utils = new SM4Utils();
     /**
      * 设置响应头的文件名
      *
@@ -89,14 +90,14 @@ public class ControllerUtils {
             }
         }else if(Objects.equals(secret, SecretEnum.SM4.getCode())){
             //需要加密SM4
-            SM4Utils sm4Utils = new SM4Utils();
-            //每次写入的大小改变
+            //每次读入大小改变
             int byteSize = (int) sm4Utils.getAfterSecretLength(READ_WRITER_SIZE);
             byte[] b = new byte[byteSize];
-            while (-1 != (len = in.read(b))) {
-                //SM4解密
-                byte[] newBytes = sm4Utils.encryptData_ECB(b);
-                os.write(newBytes,0,len);
+            while (in.available() > 0) {
+                b = in.available() > byteSize ? b : new byte[in.available()];
+                in.read(b);
+                byte[] bytes =  sm4Utils.decryptData_ECB(b);
+                os.write(bytes);
             }
         }
         in.close();
@@ -114,10 +115,7 @@ public class ControllerUtils {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
             }
-
-        } catch (ServletException e) {
-
-
+        } catch (ServletException ignored) {
         } catch (IOException e) {
             e.printStackTrace();
         }
