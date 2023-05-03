@@ -1,12 +1,24 @@
-# 对象存储系统
+# 对象存储系统cloud-can
 
-#### 介绍
-服创后端仓库
+#### 前言
+该项目为前后端分离项目的前端部分，前端地址：传送门 。
 
-#### 软件架构
-软件架构说明
+#### 项目介绍
+cloud-can是一个SaaS模式的对象存储项目，包括了客户端和后台管理端,基于java实现。主要包括用户管理、存储桶(bucket)管理,资源权限管理(BucketPolicy和ACL),对象管理(元数据模块和文件模块)等功能。
 
-![Uploading 系统架构图.jpg…]()
+#### 技术选型
+|   技术   |   说明   |   官网   |
+| ---- | ---- | ---- |
+|   nacos   |   服务注册与发现   |   https://github.com/alibaba/nacos   |
+|   gateway   |   网关路由   |   https://github.com/spring-cloud/spring-cloud-gateway   |
+|   Dubbo   |   RPC   |   https://github.com/apache/dubbo   |
+|   SOFAJRaft  |   RAFT算法实现   |   https://github.com/sofastack/sofa-jraft   |
+|   RocketMQ  |   消息中间件   |   https://github.com/apache/rocketmq   |
+|   redis  |   缓存   |   https://github.com/redis/redis   |
+|   mysql  |   数据库   |   https://github.com/mysql   |
+
+#### 技术架构图
+<img width="437" alt="image" src="https://user-images.githubusercontent.com/111289933/235817656-0a106a58-84c2-4b62-a6b6-e97bee1d18d9.png">
 
 #### 安装教程
 
@@ -104,13 +116,6 @@ oss-cold-data5700:
 --position=D:\OSS\cold_01
 
 
-
-#### 参与贡献
-
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
 
 
 #### 特技
