@@ -23,7 +23,11 @@ cloud-can是一个SaaS模式的分布式对象存储系统(object storage system
 
 对象数据的上传与下载：可以通过简单上传和分片上传将文件上传到存储空间，以及下载存储空间的文件。
 
+存储桶和对象标签：通过Bucket和object的标签功能，进行分类管理。
 
+支持对象数据的校验、去重和断电续传等功能。
+
+数据备份与复原：用户可以设置不同的访问权限和级别进行备份，保障了数据的访问安全。
 
 #### 技术选型
 |   技术   |   说明   |   官网   |
@@ -43,15 +47,33 @@ cloud-can是一个SaaS模式的分布式对象存储系统(object storage system
 cloud-can -- 源码目录
 ├── common -- 公共模块
 ├── oss-clod-data -- 归档服务
-├── oss-data -- 通用组件封装
+├── oss-data -- 存储对象数据服务
 ├── oss-interface -- RPC接口
-├── oss-gateway -- 对象路由
-├── store -- vuex的状态管理
-├── styles -- 全局css样式
-├── utils -- 工具类
+├── oss-gateway -- 对象下载路由服务
+├── oss-service -- 处理核心业务服务
 
 
-#### 使用说明
+#### 部署
+
+需要前置环境:
+apache-maven-3.6.3
+jdk1.8
+msyql8
+rocketmq-all-5.0.0-bin-release
+nacos2.0.4
+redis-x64-3.0.504
+SOFAJRaft1.3.13
+
+例:
+nacos: 192.168.50.236:8848
+mysql: addr=101.35.43.156:3306 username=root password=xxx
+redis: 192.168.50.236:6379
+rocketmq: 192.168.50.236:9876
+oss-gateway5555: 192.168.50.236:5555
+oss-data8021: 192.168.50.236:8021
+oss-data8022: 192.168.50.236:8022
+oss-data8023: 192.168.50.236:8023
+oss-cold-data5700: 192.168.50.236:5700
 
 oss-gateway5555:
 --server.address=0.0.0.0
@@ -63,7 +85,7 @@ oss-gateway5555:
 --redis.port=6379
 --mysql.addr=101.35.43.156:3306
 --mysql.username=root
---mysql.password=123abc456
+--mysql.password=xxx
 
 oss-data8021:
 --server.address=0.0.0.0
@@ -123,7 +145,7 @@ oss-service8080:
 --redis.port=6379
 --mysql.addr=101.35.43.156:3306
 --mysql.username=root
---mysql.password=123abc456
+--mysql.password=xxx
 --dubbo.protocol.host=192.168.50.236
 --dubbo.protocol.port=8085
 --rocketmq.addr=192.168.50.236:9876
@@ -138,7 +160,7 @@ oss-cold-data5700:
 --redis.port=6379
 --mysql.addr=101.35.43.156:3306
 --mysql.username=root
---mysql.password=123abc456
+--mysql.password=xxx
 --rocketmq.addr=192.168.50.236:9876
 --cold_storage_name=cold-storage1
 --position=D:\OSS\cold_01
