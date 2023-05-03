@@ -1,9 +1,9 @@
 # 对象存储系统cloud-can
 
-#### 前言
+### 前言
 该项目为前后端分离项目的后端部分，前端地址：传送门 。
 
-#### 项目介绍
+### 项目介绍
 cloud-can是一个SaaS模式的分布式对象存储系统(object storage system)，包括了客户端和后台管理端,基于java实现。
 客户端主要包括以下内容:
 
@@ -29,7 +29,7 @@ cloud-can是一个SaaS模式的分布式对象存储系统(object storage system
 
 数据备份与复原：用户可以设置不同的访问权限和级别进行备份，保障了数据的访问安全。
 
-#### 技术选型
+### 技术选型
 |   技术   |   说明   |   官网   |
 | ---- | ---- | ---- |
 |   nacos   |   服务注册与发现   |   https://github.com/alibaba/nacos   |
@@ -59,32 +59,33 @@ cloud-can -- 源码目录
 ├── oss-service -- 处理核心业务服务
 
 
-#### 部署
+#### 项目特色
+##### 高效,安全的对象管理
 
 
-需要前置环境:
-apache-maven-3.6.3
 
-jdk1.8
 
-msyql8
+### 部署
 
-rocketmq-all-5.0.0-bin-release
+|   前置环境   |
+| ---- |
+|   apache-maven-3.6.3   |
+|   jdk1.8   |
+|   msyql8   |
+|   rocketmq-all-5.0.0-bin-release   |
+|   nacos2.0.4   |
+|   redis-x64-3.0.504   |
+|   SOFAJRaft1.3.13   |
 
-nacos2.0.4
 
-redis-x64-3.0.504
-
-SOFAJRaft1.3.13
-
-说明:
+#### 说明:
 oss-data的cluster为raft算法中每个节点配置,每个节点都存储了相同的数据。
 
 group为该raft集群的名字,配置多个raft集群可以进行横向扩容
 
 
 
-举例:
+#### 举例:
 
 操作系统: windows10
 
@@ -108,7 +109,9 @@ oss-data8023: 192.168.50.236:8023
 
 oss-cold-data5700: 192.168.50.236:5700
 
-#oss-gateway:
+
+
+#### oss-gateway:
 
 oss-gateway5555:
 
@@ -132,7 +135,9 @@ oss-gateway5555:
 
 --mysql.password=xxx
 
-#oss-data:
+
+
+#### oss-data:
 
 oss-data8021:
 --server.address=0.0.0.0
@@ -165,6 +170,7 @@ oss-data8021:
 
 
 oss-data8022:
+
 --server.address=0.0.0.0
 
 --server.port=8022
@@ -193,6 +199,7 @@ oss-data8022:
 --redis.port=6379
 
 oss-data8023:
+
 --server.address=0.0.0.0
 
 --server.port=8023
@@ -221,7 +228,9 @@ oss-data8023:
 
 --redis.port=6379
 
-#oss-service:
+
+
+#### oss-service:
 
 oss-service8080:
 
@@ -251,7 +260,10 @@ oss-service8080:
 
 --rocketmq.addr=192.168.50.236:9876
 
-#oss-cold-data:
+
+
+
+#### oss-cold-data:
 
 oss-cold-data5700:
 
