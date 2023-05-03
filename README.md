@@ -85,7 +85,9 @@ group为该raft集群的名字,配置多个raft集群可以进行横向扩容
 
 
 举例:
+
 操作系统: windows10
+
 nacos: 192.168.50.236:8848
 
 mysql: addr=101.35.43.156:3306 username=root password=xxx
@@ -96,6 +98,8 @@ rocketmq: 192.168.50.236:9876
 
 oss-gateway5555: 192.168.50.236:5555
 
+一共配置了一个raft集群：192.168.50.236:8021,192.168.50.236:8022,192.168.50.236:8023
+
 oss-data8021: 192.168.50.236:8021
 
 oss-data8022: 192.168.50.236:8022
@@ -104,6 +108,7 @@ oss-data8023: 192.168.50.236:8023
 
 oss-cold-data5700: 192.168.50.236:5700
 
+#oss-gateway:
 
 oss-gateway5555:
 
@@ -127,6 +132,7 @@ oss-gateway5555:
 
 --mysql.password=xxx
 
+#oss-data:
 
 oss-data8021:
 --server.address=0.0.0.0
@@ -215,6 +221,8 @@ oss-data8023:
 
 --redis.port=6379
 
+#oss-service:
+
 oss-service8080:
 
 --server.address=0.0.0.0
@@ -242,6 +250,8 @@ oss-service8080:
 --dubbo.protocol.port=8085
 
 --rocketmq.addr=192.168.50.236:9876
+
+#oss-cold-data:
 
 oss-cold-data5700:
 
