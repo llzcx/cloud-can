@@ -45,134 +45,229 @@ cloud-can是一个SaaS模式的分布式对象存储系统(object storage system
 
 #### 项目模块布局
 cloud-can -- 源码目录
-├── common -- 公共模块
+
+├── common -- 公共模块,存放实体类工具类等
+
 ├── oss-clod-data -- 归档服务
+
 ├── oss-data -- 存储对象数据服务
+
 ├── oss-interface -- RPC接口
+
 ├── oss-gateway -- 对象下载路由服务
+
 ├── oss-service -- 处理核心业务服务
 
 
 #### 部署
 
+
 需要前置环境:
 apache-maven-3.6.3
+
 jdk1.8
+
 msyql8
+
 rocketmq-all-5.0.0-bin-release
+
 nacos2.0.4
+
 redis-x64-3.0.504
+
 SOFAJRaft1.3.13
 
-例:
+说明:
+oss-data的cluster为raft算法中每个节点配置,每个节点都存储了相同的数据。
+
+group为该raft集群的名字,配置多个raft集群可以进行横向扩容
+
+
+
+举例:
+操作系统: windows10
 nacos: 192.168.50.236:8848
+
 mysql: addr=101.35.43.156:3306 username=root password=xxx
+
 redis: 192.168.50.236:6379
+
 rocketmq: 192.168.50.236:9876
+
 oss-gateway5555: 192.168.50.236:5555
+
 oss-data8021: 192.168.50.236:8021
+
 oss-data8022: 192.168.50.236:8022
+
 oss-data8023: 192.168.50.236:8023
+
 oss-cold-data5700: 192.168.50.236:5700
 
+
 oss-gateway5555:
+
 --server.address=0.0.0.0
+
 --server.port=5555
+
 --nacos.addr=192.168.50.236:8848
+
 --naocs.username=nacos
+
 --nacos.password=nacos
+
 --redis.ip=192.168.50.236
+
 --redis.port=6379
+
 --mysql.addr=101.35.43.156:3306
+
 --mysql.username=root
+
 --mysql.password=xxx
+
 
 oss-data8021:
 --server.address=0.0.0.0
+
 --server.port=8021
+
 --group=group1
+
 --cluster=192.168.50.236:8031,192.168.50.236:8032,192.168.50.236:8033
+
 --jraft-data-path=D:\oss\01\jraft_data_path
+
 --position=D:\oss\01\position
+
 --rpc-addr=192.168.50.236:8031
+
 --dubbo.protocol.port=20881
+
 --dubbo.protocol.host=192.168.50.236
+
 --nacos.addr=192.168.50.236:8848
+
 --naocs.username=nacos
+
 --nacos.password=nacos
+
 --redis.ip=192.168.50.236
+
 --redis.port=6379
+
 
 oss-data8022:
 --server.address=0.0.0.0
+
 --server.port=8022
+
 --group=group1
+
 --cluster=192.168.50.236:8031,192.168.50.236:8032,192.168.50.236:8033
+
 --jraft-data-path=D:\oss\02\jraft_data_path
+
 --position=D:\oss\02\position
+
 --rpc-addr=192.168.50.236:8032
+
 --dubbo.protocol.host=192.168.50.236
+
 --dubbo.protocol.port=20882
+
 --nacos.addr=192.168.50.236:8848
 --naocs.username=nacos
+
 --nacos.password=nacos
+
 --redis.ip=192.168.50.236
+
 --redis.port=6379
 
 oss-data8023:
 --server.address=0.0.0.0
+
 --server.port=8023
+
 --group=group1
+
 --cluster=192.168.50.236:8031,192.168.50.236:8032,192.168.50.236:8033
+
 --jraft-data-path=D:\oss\03\jraft_data_path
+
 --position=D:\oss\03\position
+
 --rpc-addr=192.168.50.236:8033
+
 --dubbo.protocol.host=192.168.50.236
+
 --dubbo.protocol.port=20883
+
 --nacos.addr=192.168.50.236:8848
+
 --naocs.username=nacos
+
 --nacos.password=nacos
+
 --redis.ip=192.168.50.236
+
 --redis.port=6379
 
 oss-service8080:
+
 --server.address=0.0.0.0
+
 --server.port=8080
+
 --nacos.addr=192.168.50.236:8848
+
 --naocs.username=nacos
+
 --nacos.password=nacos
+
 --redis.ip=192.168.50.236
+
 --redis.port=6379
+
 --mysql.addr=101.35.43.156:3306
+
 --mysql.username=root
+
 --mysql.password=xxx
+
 --dubbo.protocol.host=192.168.50.236
+
 --dubbo.protocol.port=8085
+
 --rocketmq.addr=192.168.50.236:9876
 
 oss-cold-data5700:
+
 --server.address=0.0.0.0
+
 --server.port=5700
+
 --nacos.addr=192.168.50.236:8848
+
 --naocs.username=nacos
+
 --nacos.password=nacos
+
 --redis.ip=192.168.50.236
+
 --redis.port=6379
+
 --mysql.addr=101.35.43.156:3306
+
 --mysql.username=root
+
 --mysql.password=xxx
+
 --rocketmq.addr=192.168.50.236:9876
+
 --cold_storage_name=cold-storage1
+
 --position=D:\OSS\cold_01
 
-
-
-
-#### 特技
-
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
