@@ -7,6 +7,7 @@ import ccw.serviceinnovation.common.entity.User;
 import ccw.serviceinnovation.common.request.ApiResp;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.oss.common.util.JwtUtil;
+import ccw.serviceinnovation.oss.common.util.MPUtil;
 import ccw.serviceinnovation.oss.manager.authority.OssApi;
 import ccw.serviceinnovation.oss.pojo.dto.CreateRamUserDto;
 import ccw.serviceinnovation.oss.pojo.dto.LoginDto;
@@ -76,6 +77,20 @@ public class UserController {
         return ApiResp.ifResponse(user!=null,user,ResultCode.CREATE_USER_EXIST);
     }
 
+    /**
+     * 更新密码
+     * @param username
+     * @param password
+     * @return
+     */
+    @PutMapping("/update")
+    @OssApi(target = AuthorityConstant.API_USER,type = AuthorityConstant.API_WRITER, name = "update",description = "更新密码")
+    public ApiResp update(String username,String password) {
+        User user = new User();
+        user.setPassword(password);
+        userService.update(user, MPUtil.queryWrapperEq("username",username));
+        return ApiResp.success(true);
+    }
     /**
      * 获取子用户列表
      * @param keyword 搜索关键词

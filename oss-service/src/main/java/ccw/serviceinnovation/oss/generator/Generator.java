@@ -18,12 +18,14 @@ public class Generator {
 
     public static void main(String[] args) {
         //设置数据源
+        String ip = "127.0.0.1:3306";
+        String dataBaseName = "test";
         AutoGenerator autoGenerator = new AutoGenerator();
         DataSourceConfig dataSourceConfig = new DataSourceConfig();
         dataSourceConfig.setDriverName("com.mysql.jdbc.Driver");
-        dataSourceConfig.setUrl("jdbc:mysql://101.35.43.156:3306/oss?useSSL=false&amp&serverTimezone=UTC");
+        dataSourceConfig.setUrl("jdbc:mysql://"+ip+"/"+dataBaseName+"?useSSL=false&amp&serverTimezone=UTC");
         dataSourceConfig.setUsername("root");
-        dataSourceConfig.setPassword("123abc456");
+        dataSourceConfig.setPassword("chenxiang");
         autoGenerator.setDataSource(dataSourceConfig);
 
         //设置全局配置
@@ -38,8 +40,8 @@ public class Generator {
         autoGenerator.setGlobalConfig(globalConfig);
         //设置包名相关配置
         PackageConfig packageConfig = new PackageConfig();
-        packageConfig.setParent("ccw.serviceinnovation.oss");
-        packageConfig.setEntity("pojo");
+        packageConfig.setParent("com.social.demo");
+        packageConfig.setEntity("entity");
         packageConfig.setMapper("mapper");
         autoGenerator.setPackageInfo(packageConfig);
         StrategyConfig strategyConfig = new StrategyConfig();

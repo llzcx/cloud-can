@@ -42,10 +42,10 @@ spring:
     password:
     lettuce:
       pool:
-        minIdle: 5
-        maxIdle: 200
+        minIdle: 200
+        maxIdle: 500
         maxWait: 10000
-        maxActive: 8
+        maxActive: 500
   application:
     name: oss-data-server
 

@@ -5,7 +5,6 @@ import ccw.serviceinnovation.common.exception.OssException;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.common.util.hash.QETag;
 import ccw.serviceinnovation.common.util.http.FileUtil;
-import ccw.serviceinnovation.common.util.http.HttpUtils;
 import ccw.serviceinnovation.ossdata.bo.ChunkBo;
 import ccw.serviceinnovation.ossdata.constant.OssDataConstant;
 import ccw.serviceinnovation.ossdata.manager.redis.ChunkRedisService;

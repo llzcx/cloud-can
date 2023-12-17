@@ -155,7 +155,7 @@ public class OssObjectController {
      */
     @DeleteMapping("/deleteObject")
     @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_WRITER,name = "deleteObject",description = "从桶中删除一个对象")
-    public ApiResp<Boolean> deleteObject(@RequestParam("bucketName") String bucketName, @RequestParam("ObjectName") String objectName) throws Exception{
+    public ApiResp<Boolean> deleteObject(@RequestParam("bucketName") String bucketName, @RequestParam("objectName") String objectName) throws Exception{
         return ApiResp.ifResponse(
                 objectService.deleteObject(bucketName,objectName),
                 null,
@@ -269,7 +269,7 @@ public class OssObjectController {
     @PutMapping("/updateObjectAcl")
     @OssApi(target = API_OBJECT,type = AuthorityConstant.API_WRITER, name = "updateObjectAcl",description = "更新objectAcl")
     public ApiResp<Boolean> updateObjectAcl(@RequestParam(value = "bucketName") String bucketName
-            ,@RequestParam(value = "objectName") String objectName,@RequestParam(value = "newtName") Integer objectAcl) throws Exception {
+            ,@RequestParam(value = "objectName") String objectName,@RequestParam(value = "objectAcl") Integer objectAcl) throws Exception {
         Boolean flag = objectService.updateObjectAcl(bucketName,objectName,objectAcl);
         return ApiResp.ifResponse(flag,flag,ResultCode.COMMON_FAIL);
     }

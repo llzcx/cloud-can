@@ -5,12 +5,17 @@ import ccw.serviceinnovation.common.request.ApiResp;
 import ccw.serviceinnovation.oss.manager.authority.OssApi;
 import ccw.serviceinnovation.oss.pojo.vo.FragmentVo;
 import ccw.serviceinnovation.oss.service.IFragmentService;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.http.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
 import java.util.List;
 
 /**
@@ -32,6 +37,7 @@ public class FragmentController {
     @GetMapping("/list")
     @OssApi(target = AuthorityConstant.API_BUCKET,type = AuthorityConstant.API_LIST, name = "listsFragment",description = "获取一个桶内所有碎片")
     public ApiResp<List<FragmentVo>> listsFragment(String bucketName){
+
         return ApiResp.success(fragmentService.listFragments(bucketName));
     }
 

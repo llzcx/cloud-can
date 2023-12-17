@@ -52,16 +52,6 @@
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <groupId>com.alibaba.nacos</groupId>-->
-<!--                    <artifactId>nacos-client</artifactId>-->
-<!--                </exclusion>-->
-<!--                <exclusion>-->
-<!--                    <groupId>com.alibaba.spring</groupId>-->
-<!--                    <artifactId>spirng-context-support</artifactId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
         </dependency>
         <!--配置中心-->
         <dependency>
@@ -103,38 +93,6 @@
             <artifactId>oss-interface</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
-<!--        &lt;!&ndash;RPC组件dubbo&ndash;&gt;-->
-
-<!--        <dependency>-->
-<!--            <groupId>org.apache.dubbo</groupId>-->
-<!--            <artifactId>dubbo-spring-boot-starter</artifactId>-->
-<!--            <version>3.0.6</version>-->
-<!--        </dependency>-->
-<!--        &lt;!&ndash;        从上面可以看出，是com/alibaba/spring/spring-context-support/1.0.8/spring-context-support-1.0.8.jar  这个包版本有问&ndash;&gt;-->
-<!--        &lt;!&ndash;        解决： 升级spring-context-support版本到1.0.11，即添加以下依赖再次启动，成功了&ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>com.alibaba.spring</groupId>-->
-<!--            <artifactId>spring-context-support</artifactId>-->
-<!--            <version>1.0.11</version>-->
-<!--        </dependency>-->
-
-<!--        <dependency>-->
-<!--            <groupId>com.alibaba.nacos</groupId>-->
-<!--            <artifactId>nacos-client</artifactId>-->
-<!--            <version>2.0.4</version>-->
-<!--        </dependency>-->
-<!--        &lt;!&ndash;httpCLient&ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.httpcomponents</groupId>-->
-<!--            <artifactId>httpclient</artifactId>-->
-<!--        </dependency>-->
-
-<!--        &lt;!&ndash;        远程指定服务调用&ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.dubbo.extensions</groupId>-->
-<!--            <artifactId>dubbo-cluster-specify-address-dubbo3</artifactId>-->
-<!--            <version>1.0.0</version>-->
-<!--        </dependency>-->
         <!--redis-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

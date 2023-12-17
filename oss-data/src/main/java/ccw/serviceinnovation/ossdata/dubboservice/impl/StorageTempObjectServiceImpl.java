@@ -14,9 +14,7 @@ import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.stereotype.Service;
 import service.StorageTempObjectService;
 import service.bo.FilePrehandleBo;
-
 import java.io.*;
-
 import static ccw.serviceinnovation.ossdata.constant.FilePrefixConstant.FILE_NOR;
 import static ccw.serviceinnovation.ossdata.constant.FilePrefixConstant.FILE_TMP_BLOCK;
 import static ccw.serviceinnovation.ossdata.constant.OssDataConstant.POSITION;
@@ -35,7 +33,7 @@ public class StorageTempObjectServiceImpl implements StorageTempObjectService {
     SM4Utils sm4Utils = new SM4Utils();
 
     public static void main(String[] args) {
-        File file = new File("C:\\Users\\陈翔\\Pictures\\imagetopdf.pdf");
+        File file = new File("D:\\OSS\\conf.txt");
         //根据文件头获取文件类型
         String type = FileTypeUtil.getType(file);
         System.out.println(type);

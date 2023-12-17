@@ -7,7 +7,6 @@ import lombok.Data;
  */
 @Data
 public class NorStorage {
-
     private String group;
 
     private String etag;

@@ -109,13 +109,53 @@ public class CreateTestData {
         return sb.toString();
     }
 
+    public static void generateUserData(String filePath, int numUsers) {
+        try {
+            FileWriter fileWriter = new FileWriter(filePath);
+            Random random = new Random();
+            for (int i = 0; i < numUsers; i++) {
+                String username = "";
+                String password = "";
+                for (int j = 0; j < 5; j++) {
+                    username += (char) (random.nextInt(26) + 97);
+                    password += random.nextInt(10);
+                }
+                String userData = username + "," + password + "\n";
+                fileWriter.write(userData);
+            }
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void generateBucket(String filePath, int numUsers) {
+        try {
+            FileWriter fileWriter = new FileWriter(filePath);
+            Random random = new Random();
+            for (int i = 0; i < numUsers; i++) {
+                String username = "";
+                String password = "";
+                for (int j = 0; j < 5; j++) {
+                    username += (char) (random.nextInt(26) + 97);
+                }
+                String userData = username + "," + 1 + "\n";
+                fileWriter.write(userData);
+            }
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) {
         String path = "D:\\OSS\\testdata";
         String csvPath = "D:\\OSS\\csv.txt";
 //        handle(path,256 * 1024,10000);
 //        delete(path,10000);
 //        System.out.println(1);
-        createCSV(path,csvPath);
+//        createCSV(path,csvPath);
+        generateBucket("D:\\OSS\\testbucket.txt",1000);
     }
 
 }

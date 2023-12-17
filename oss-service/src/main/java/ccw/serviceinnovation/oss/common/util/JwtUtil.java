@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @Author: LEAVES
@@ -112,6 +113,7 @@ public class JwtUtil {
         //秘钥是密码则省略
         Algorithm algorithm = Algorithm.HMAC256(TOKEN_SECRET);
         //生成签名
+        AtomicInteger
         String sign = JWT.create()
                 .withHeader(header)
                 .withExpiresAt(date)

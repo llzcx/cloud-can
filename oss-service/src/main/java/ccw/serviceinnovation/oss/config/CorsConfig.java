@@ -17,13 +17,10 @@ public class CorsConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")//设置允许跨域的路径
-//                .allowedOrigins("http://127.0.0.1:8081",
-//                        "http://localhost:8081"
-//                )//设置允许跨域请求的域名
+        registry.addMapping("/**")
                 .allowedOrigins("*")
-                .allowCredentials(true)//是否允许证书 不再默认开启
-                .allowedMethods("*")//设置允许的方法
-                .maxAge(3600);//跨域允许时间
+                .allowCredentials(true)
+                .allowedMethods("*")
+                .maxAge(3600);
     }
 }

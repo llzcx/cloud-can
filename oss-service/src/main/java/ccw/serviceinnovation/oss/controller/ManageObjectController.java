@@ -11,6 +11,7 @@ import ccw.serviceinnovation.oss.pojo.vo.ObjectVo;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import ccw.serviceinnovation.oss.service.IManageObjectService;
 import ccw.serviceinnovation.oss.service.IObjectService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +32,7 @@ public class ManageObjectController {
     IObjectService objectService;
 
     /**
-     * 获取Object列表
+     *
      * 1-根据用户Id筛选
      * 2-根据bucketId，bucketName筛选
      * @param keyword 用户id，桶id，桶名

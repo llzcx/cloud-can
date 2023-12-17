@@ -207,7 +207,6 @@
             <artifactId>dubbo-cluster-specify-address-dubbo3</artifactId>
             <version>1.0.0</version>
         </dependency>
-
         <!-- rocketmq -->
         <dependency>
             <groupId>org.apache.rocketmq</groupId>
@@ -221,6 +220,7 @@
             <artifactId>rocketmq-common</artifactId>
             <version>4.7.0</version>
         </dependency>
+
 
     </dependencies>
 

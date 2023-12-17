@@ -292,7 +292,7 @@ public class ColdConsumer {
             @Override
             public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> messages, ConsumeConcurrentlyContext context) {
                 for (MessageExt message : messages) {
-                    log.info("del tmp 开始消费");
+//                    log.info("del tmp 开始消费");
                     MqDelTmpBo mqDelTmpBo = JSONObject.parseObject(new String(message.getBody()),MqDelTmpBo.class);
                     String blockToken = mqDelTmpBo.getBlockToken();
                     String ip = mqDelTmpBo.getIp();
