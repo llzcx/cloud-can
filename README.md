@@ -40,14 +40,17 @@ cloud-can是一个分布式对象存储系统(object storage system)，数据存
 
 
 <div align="center">
-  <img src="https://img.shields.io/badge/-Java-f6da1c?style=flat&logo=JAVA-1.8&logoColor=white">
-  <img src="https://img.shields.io/badge/-Spring-00b4ce?style=flat&logo=spring&logoColor=white">
+  <img src="https://img.shields.io/badge/-Java-ffc0cb?style=flat&logo=JAVA-1.8&logoColor=white">
+  <img src="https://img.shields.io/badge/-Spring-6cb52d?style=flat&logo=spring&logoColor=white">
   <img src="https://img.shields.io/badge/-Mysqls-3C873A?style=flat&logo=mysql&logoColor=white">
-  <img src="https://img.shields.io/badge/-Redis-33333D?style=flat&logo=redis&logoColor=white">
-  <img src="https://img.shields.io/badge/-RocketMQ-bf608e?style=flat&logo=rocketmq&logoColor=white">
-  <img src="https://img.shields.io/badge/-Jraft-b37feb?style=flat&logo=Jraft&logoColor=white">
-  <img src="https://img.shields.io/badge/-nacos-b37feb?style=flat&logo=nacos&logoColor=white">
+  <img src="https://img.shields.io/badge/-Redis-db3920?style=flat&logo=redis&logoColor=white">
+  <img src="https://img.shields.io/badge/-RocketMQ-cc6812?style=flat&logo=rocketmq&logoColor=white">
+  <img src="https://img.shields.io/badge/-Jraft-35404c?style=flat&logo=Jraft&logoColor=white">
+  <img src="https://img.shields.io/badge/-nacos-1be0f7?style=flat&logo=nacos&logoColor=white">
 </div>
+
+
+
 |   技术   |   说明   |   官网   |
 | ---- | ---- | ---- |
 |   nacos   |   服务注册与发现   |   https://github.com/alibaba/nacos   |
