@@ -55,7 +55,7 @@ myoss:
   package: ccw.serviceinnovation.oss
   controller: ccw.serviceinnovation.oss.controller
   apiBatPath: D:\API文档\api\upload.bat
-  postman_token: PMAK-63d8f9ef8e04bf3923326ae4-3f74d135145deba97df9e4b5702717d81f
+  postman_token: 2
 
 dubbo:
   consumer:
