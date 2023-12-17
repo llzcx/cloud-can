@@ -15,15 +15,15 @@ cloud-can是一个分布式对象存储系统(object storage system)，数据存
 
 用户: 包括用户和子用户,实现了上级对下级资源分配和管理。
 
+对象服务：支持对象数据的秒传、校验、去重、小文件上传、大文件分片上传、断点续传。
+
 存储桶(bucket): 存储对象的桶,存储桶内支持文件夹。
 
 存储桶策略(BucketPolicy): 可以使用该策略向存储桶及其中对象授予访问权限,bucketPolicy权限设置可以精确到一个具体的文件夹。
 
-访问控制列表(ACL): 用于管理存储桶和对象的访问权限,包含了多种访问访问策略,如私有,公共读写,子用户读等。
+访问控制列表(ACL): 用于管理存储桶和对象对于其他用户和子用户的读/写/列表读权限,同时用户可以为资源设置多种策略,如私有,公共读写,子用户读等。
 
-归档: 用户可以将不需要访问的对象数据压缩存储,降低存储的成本。
-
-对象数据压缩：视频或者图片可进行压缩后存储，占用更少的存储空间存储更多的数据。   
+对象数据压缩归档：不常用数据可以归档压缩存储，减少存储成本。
 
 数据加密：实现了SM4加密，对收到的对象数据进行加密，再将得到的加密的数据持久化保存。
 
@@ -33,7 +33,7 @@ cloud-can是一个分布式对象存储系统(object storage system)，数据存
 
 存储桶和对象标签：通过Bucket和object的标签功能，进行分类管理。
 
-支持对象数据的秒传、校验、去重和断电续传等功能。
+
 
 
 ### 技术选型
@@ -54,11 +54,11 @@ cloud-can是一个分布式对象存储系统(object storage system)，数据存
 |   技术   |   说明   |   官网   |
 | ---- | ---- | ---- |
 |   nacos   |   服务注册与发现   |   https://github.com/alibaba/nacos   |
-|   gateway   |   网关路由   |   https://github.com/spring-cloud/spring-cloud-gateway   |
+|   gateway   |   解析domain   |   https://github.com/spring-cloud/spring-cloud-gateway   |
 |   SOFAJRaft  |   RAFT算法实现   |   https://github.com/sofastack/sofa-jraft   |
-|   RocketMQ  |   消息中间件   |   https://github.com/apache/rocketmq   |
-|   redis  |   缓存   |   https://github.com/redis/redis   |
-|   mysql  |   数据库   |   https://github.com/mysql   |
+|   RocketMQ  |   消息队列   |   https://github.com/apache/rocketmq   |
+|   redis  |   内存数据库   |   https://github.com/redis/redis   |
+|   mysql  |   元数据存储   |   https://github.com/mysql   |
 
 
 #### 项目模块
