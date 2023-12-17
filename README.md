@@ -9,7 +9,7 @@
 ### 项目介绍
 
 
-cloud-can是一个分布式对象存储系统(object storage system)，数据存储采用了本地文件系统，对象的元数据存储采用了mysql和redis。
+cloud-can是一个分布式对象存储系统(object storage system)，二进制数据存储采用了本地文件系统，对象的元数据存储采用了mysql和redis。
 
 
 
