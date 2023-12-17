@@ -55,7 +55,6 @@ cloud-can是一个分布式对象存储系统(object storage system)，数据存
 | ---- | ---- | ---- |
 |   nacos   |   服务注册与发现   |   https://github.com/alibaba/nacos   |
 |   gateway   |   网关路由   |   https://github.com/spring-cloud/spring-cloud-gateway   |
-|   Dubbo   |   RPC   |   https://github.com/apache/dubbo   |
 |   SOFAJRaft  |   RAFT算法实现   |   https://github.com/sofastack/sofa-jraft   |
 |   RocketMQ  |   消息中间件   |   https://github.com/apache/rocketmq   |
 |   redis  |   缓存   |   https://github.com/redis/redis   |
