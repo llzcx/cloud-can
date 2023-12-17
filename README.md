@@ -1,49 +1,69 @@
 # 对象存储系统cloud-can
 
 ### 前言
-该项目为前后端分离项目的后端部分，前端地址：传送门 。
+
+
+该项目荣获第十四届服创大赛中部赛区三等奖。
+
 
 ### 项目介绍
-cloud-can是一个SaaS模式的分布式对象存储系统(object storage system)，包括了客户端和后台管理端,基于java实现。
-客户端主要包括以下内容:
 
-用户模块: 包括用户和子用户,实现了上级对下级资源分配和管理
 
-存储桶(bucket): 存储对象的桶,存储桶内支持文件夹
+cloud-can是一个分布式对象存储系统(object storage system)，二进制数据存储采用了本地文件系统，对象的元数据存储采用了mysql和redis。
 
-存储桶策略(BucketPolicy): 可以使用该策略向存储桶及其中对象授予访问权限,bucketPolicy权限设置可以精确到一个具体的文件夹
 
-访问控制列表(ACL): 用于管理存储桶和对象的访问权限,包含了多种访问访问策略,如私有,公共读写,子用户读等
 
-归档: 用户可以将不需要访问的对象数据压缩存储,降低存储的成本
+用户: 包括用户和子用户,实现了上级对下级资源分配和管理。
 
-对象数据压缩：视频或者图片可进行压缩后存储，占用更少的存储空间存储更多的数据。   
+对象服务：支持对象数据的秒传、校验、去重、小文件上传、大文件分片上传、断点续传。
+
+存储桶(bucket): 存储对象的桶,存储桶内支持文件夹。
+
+存储桶策略(BucketPolicy): 可以使用该策略向存储桶及其中对象授予访问权限,bucketPolicy权限设置可以精确到一个具体的文件夹。
+
+访问控制列表(ACL): 用于管理存储桶和对象对于其他用户和子用户的读/写/列表读权限,同时用户可以为资源设置多种策略,如私有,公共读写,子用户读等。
+
+对象数据压缩归档：不常用数据可以归档压缩存储，减少存储成本。
 
 数据加密：实现了SM4加密，对收到的对象数据进行加密，再将得到的加密的数据持久化保存。
 
 对象数据的上传与下载：可以通过简单上传和分片上传将文件上传到存储空间，以及下载存储空间的文件。
 
+对象的校验与去重：使用SHA1算法进行全链路校验和去重。
+
 存储桶和对象标签：通过Bucket和object的标签功能，进行分类管理。
 
-支持对象数据的秒传、校验、去重和断电续传等功能。
 
-数据备份与复原：用户可以设置不同的访问权限和级别进行备份，保障了数据的访问安全。
+
 
 ### 技术选型
+
+
+<div align="left">
+  <img src="https://img.shields.io/badge/-Java-ffc0cb?style=flat&logo=JAVA-1.8&logoColor=white">
+  <img src="https://img.shields.io/badge/-Spring-6cb52d?style=flat&logo=spring&logoColor=white">
+  <img src="https://img.shields.io/badge/-Mysqls-3C873A?style=flat&logo=mysql&logoColor=white">
+  <img src="https://img.shields.io/badge/-Redis-db3920?style=flat&logo=redis&logoColor=white">
+  <img src="https://img.shields.io/badge/-RocketMQ-cc6812?style=flat&logo=rocketmq&logoColor=white">
+  <img src="https://img.shields.io/badge/-Jraft-35404c?style=flat&logo=Jraft&logoColor=white">
+  <img src="https://img.shields.io/badge/-nacos-1be0f7?style=flat&logo=nacos&logoColor=white">
+</div>
+
+
+
 |   技术   |   说明   |   官网   |
 | ---- | ---- | ---- |
 |   nacos   |   服务注册与发现   |   https://github.com/alibaba/nacos   |
-|   gateway   |   网关路由   |   https://github.com/spring-cloud/spring-cloud-gateway   |
-|   Dubbo   |   RPC   |   https://github.com/apache/dubbo   |
+|   gateway   |   解析domain   |   https://github.com/spring-cloud/spring-cloud-gateway   |
 |   SOFAJRaft  |   RAFT算法实现   |   https://github.com/sofastack/sofa-jraft   |
-|   RocketMQ  |   消息中间件   |   https://github.com/apache/rocketmq   |
-|   redis  |   缓存   |   https://github.com/redis/redis   |
-|   mysql  |   数据库   |   https://github.com/mysql   |
+|   RocketMQ  |   消息队列   |   https://github.com/apache/rocketmq   |
+|   redis  |   内存数据库   |   https://github.com/redis/redis   |
+|   mysql  |   元数据存储   |   https://github.com/mysql   |
 
-#### 技术架构图
-<img width="437" alt="image" src="https://user-images.githubusercontent.com/111289933/235817656-0a106a58-84c2-4b62-a6b6-e97bee1d18d9.png">
 
-#### 项目模块布局
+#### 项目模块
+
+
 cloud-can -- 源码目录
 
 ├── common -- 公共模块,存放实体类工具类等
@@ -61,45 +81,34 @@ cloud-can -- 源码目录
 
 ### 项目特色
 
+
 #### 高效,安全的对象管理
 
 用户需求 ：保证用户(个人/企业)的对象存储的安全性。
 
-实现方式 ：参考Amazon S3的ACL和存储桶策略,利用mysql+请求拦截器+反射实现BucketPolicy,对于子用户和其他用户上层桶的BucketAcl和下层对象的objectAcl,同时支持存储桶内文件夹,以及对象的AccessKey。
+实现方式 ：参考Amazon S3的ACL和存储桶策略,利用mysql+请求拦截器+反射实现BucketPolicy,对于子用户和其他用户上层桶的BucketAcl和下层对象的objectAcl,同时支持存储桶内文件夹,以及对象的AccessKey。（output.md提供了接口级别关系）
 
-实现效果： 用户/企业可以灵活对权限进行设置,限制资源的访问。
+实现效果： 用户/企业可以灵活对子用户以及其他账号的权限进行设置,限制资源的访问。
 
 #### 安全,放心的对象存储
 
-痛点问题 ：在计算机和移动设备等信息系统中，可能存在各种安全威胁和非法访问等。如果敏感数据没有进行加密存储，则有可能被未经授权的人员或程序获取和窃取，进而导致数据泄露。
+痛点问题 ：对象在传输的途中可能发送改变同时在计算机和移动设备等信息系统中，可能存在各种安全威胁和非法访问等。如果敏感数据没有进行加密存储，则有可能被未经授权的人员或程序获取和窃取，进而导致数据泄露。
 
-用户需求 ：用户需要对敏感信息进行加密。
+实现方式 ：使用SHA1完成全链路校验保障数据上传和下载时的一致性，为用户提供国密算法-SM4进行数据加密,系统在加密以后再将数据进行存储。
 
-实现方式 ：为用户提供国密算法-SM4进行数据加密,系统在加密以后再将数据进行存储。
-
-#### 支持横向扩容
+#### 支持横向扩容，提升系统总容量
 
 痛点问题：单机存储应用无法满足对象存储海量数据的需求。
 
-实现方式：采用分布式架构存储对象:  Nacos集群 + 数据服务集群部署。
+实现方式：可以同时部署多个卷，可以根据不同的负载均衡算法将对象分配到不同的卷中。
 
-实现效果：可扩容,数据服务可热部署,经过压测,增加节点以后可以大幅度提升系统的吞吐量。
-
-#### 支持异地热备
+#### 支持异地部署，提供高可用性对象服务
 
 痛点问题 ：当存储对象的节点发生网络分区和宕机时数据服务不可用
 
 实现方式 ：基于sofa-jraft构建多主备的分布式存储应用,主库和备库之间通过网络传输日志信息保持分布式一致性，当主库发生故障时，可以快速切换到备库继续提供服务，从而实现了高可用。
 
-实现效果 ：保持对象服务的高可用性,主节点下线时,备库依然可以在线提供服务,保证了云罐数据服务的“在线性”
-
-#### 存储负载均衡
-
-痛点问题 ：数据集群内数据分布不均衡;普通Hash算法不能适应热部署场景;节点性能配置可能不均衡
-
-实现方式 ：提供一致性hash算法和加权轮询算法。
-
-实现效果 ：当节点配置均匀时用户可以采用一致性hash算法,当节点硬件配置、网络带宽、处理能力等不均衡时则采用加权轮询算法.在虚拟节点数为1M的情况下几乎平均分配。
+实现效果 ：保持对象服务的高可用性,主节点下线时,备库依然可以在线提供服务,保证了clou-can数据服务的“在线性”
 
 #### 异步归档
 
@@ -107,15 +116,9 @@ cloud-can -- 源码目录
 
 实现方式 ：rocketmq的集群消费方式+一次拉取少量的归档消息进行异步归档,并提供给用户查询对象状态。
 
-实现效果 ：削弱高并发场景下归档占用的服务资源,减轻磁盘IO和网络IO压力,从而提升对象存储核心业务的吞吐量。
+#### Restful API的对象访问，实现了对象的去重、秒传、小文件快传、大文件分片上传
 
-#### 对象秒传
-
-痛点问题 ：上传对象时对象去重,对象秒传等查询对象hash的需求频繁,常规磁盘存储无法满足需求
-
-实现方式 ：redis是单线程,纯内存,将hash值的存储信息存储在redis,直接查询redis。
-
-实现效果 ：经测试在1000个线程并发访问秒传接口时redis的ops是mysql的近2倍。
+实现方式 ：对象访问基本与亚马逊S3协议一致，采用扁平式存储桶设计但又设计了文件夹功能便于用户进行对象管理。
 
 
 
@@ -123,6 +126,7 @@ cloud-can -- 源码目录
 
 
 ### 部署
+
 
 |   前置环境   |
 | ---- |
@@ -135,218 +139,62 @@ cloud-can -- 源码目录
 |   SOFAJRaft1.3.13   |
 
 
+
 #### 说明:
-oss-data的cluster为raft算法中每个节点配置,每个节点都存储了相同的数据。
 
-group为该raft集群的名字,配置多个raft集群可以进行横向扩容
 
+兼容WIndows和Linux
 
 
-#### 举例:
 
-操作系统: windows10
+#### 存储服务：oss-data 说明
 
-nacos: 192.168.50.236:8848
 
-mysql: addr=101.35.43.156:3306 username=root password=xxx
+group参数为卷名，这里的卷可以类比WIndows的D盘E盘，可以为每个卷部署多个oss-data，同一个卷内所有节点数据通过raft协议保持一致性。（建议节点数为奇数）
 
-redis: 192.168.50.236:6379
+cluster为卷内所有oss-data成员，所有成员通过网络进行数据同步。
 
-rocketmq: 192.168.50.236:9876
+oss-data为单个存储节点，多个oss-data可以组成一个卷。
 
-oss-gateway5555: 192.168.50.236:5555
+jraft-data-path和position为本地存储目录，建议放在一个父目录下。
 
-一共配置了一个raft集群：192.168.50.236:8021,192.168.50.236:8022,192.168.50.236:8023
+rpc-addr为rpc网络信息需要占用端口号与卷内其他节点进行通信，建议端口号为server.port + 10。
 
-oss-data8021: 192.168.50.236:8021
+![image](https://github.com/llzcx/cloud-can/assets/111289933/166faaf9-a124-4a1c-a41e-3718f3b7e574)
 
-oss-data8022: 192.168.50.236:8022
 
-oss-data8023: 192.168.50.236:8023
+![image](https://github.com/llzcx/cloud-can/assets/111289933/5686130a-64ef-4fbc-a503-37a9c193901e)
 
-oss-cold-data5700: 192.168.50.236:5700
 
+![image](https://github.com/llzcx/cloud-can/assets/111289933/a704ba6a-3c33-4553-9656-0902636f721a)
 
 
-#### oss-gateway:
 
-oss-gateway5555:
+#### 用户服务：oss-service 说明
 
---server.address=0.0.0.0
 
---server.port=5555
+主要向外提供用户和权限服务，可以单节点部署访问，也可以部署集群+nginx来访问。
 
---nacos.addr=192.168.50.236:8848
+![image](https://github.com/llzcx/cloud-can/assets/111289933/142d419a-830c-4d1a-b891-085a4a782dfa)
 
---naocs.username=nacos
 
---nacos.password=nacos
 
---redis.ip=192.168.50.236
+#### 解析服务：oss-gateway 说明
 
---redis.port=6379
 
---mysql.addr=101.35.43.156:3306
+解析用户的Rustful API请求，拦截和修改参数，从而适配卷协议需要的参数转发到真正的数据服务。
 
---mysql.username=root
+![image](https://github.com/llzcx/cloud-can/assets/111289933/c601e826-e4cb-4435-976b-edbc607b6168)
 
---mysql.password=xxx
 
 
+#### 归档服务：oss-cold 说明
 
-#### oss-data:
 
-oss-data8021:
---server.address=0.0.0.0
+用于将不常访问的数据压缩存储，减少存储成本。
 
---server.port=8021
+![image](https://github.com/llzcx/cloud-can/assets/111289933/7b7eb04f-ea41-4b9d-912e-28a05438ce23)
 
---group=group1
 
---cluster=192.168.50.236:8031,192.168.50.236:8032,192.168.50.236:8033
 
---jraft-data-path=D:\oss\01\jraft_data_path
-
---position=D:\oss\01\position
-
---rpc-addr=192.168.50.236:8031
-
---dubbo.protocol.port=20881
-
---dubbo.protocol.host=192.168.50.236
-
---nacos.addr=192.168.50.236:8848
-
---naocs.username=nacos
-
---nacos.password=nacos
-
---redis.ip=192.168.50.236
-
---redis.port=6379
-
-
-oss-data8022:
-
---server.address=0.0.0.0
-
---server.port=8022
-
---group=group1
-
---cluster=192.168.50.236:8031,192.168.50.236:8032,192.168.50.236:8033
-
---jraft-data-path=D:\oss\02\jraft_data_path
-
---position=D:\oss\02\position
-
---rpc-addr=192.168.50.236:8032
-
---dubbo.protocol.host=192.168.50.236
-
---dubbo.protocol.port=20882
-
---nacos.addr=192.168.50.236:8848
---naocs.username=nacos
-
---nacos.password=nacos
-
---redis.ip=192.168.50.236
-
---redis.port=6379
-
-oss-data8023:
-
---server.address=0.0.0.0
-
---server.port=8023
-
---group=group1
-
---cluster=192.168.50.236:8031,192.168.50.236:8032,192.168.50.236:8033
-
---jraft-data-path=D:\oss\03\jraft_data_path
-
---position=D:\oss\03\position
-
---rpc-addr=192.168.50.236:8033
-
---dubbo.protocol.host=192.168.50.236
-
---dubbo.protocol.port=20883
-
---nacos.addr=192.168.50.236:8848
-
---naocs.username=nacos
-
---nacos.password=nacos
-
---redis.ip=192.168.50.236
-
---redis.port=6379
-
-
-
-#### oss-service:
-
-oss-service8080:
-
---server.address=0.0.0.0
-
---server.port=8080
-
---nacos.addr=192.168.50.236:8848
-
---naocs.username=nacos
-
---nacos.password=nacos
-
---redis.ip=192.168.50.236
-
---redis.port=6379
-
---mysql.addr=101.35.43.156:3306
-
---mysql.username=root
-
---mysql.password=xxx
-
---dubbo.protocol.host=192.168.50.236
-
---dubbo.protocol.port=8085
-
---rocketmq.addr=192.168.50.236:9876
-
-
-
-
-#### oss-cold-data:
-
-oss-cold-data5700:
-
---server.address=0.0.0.0
-
---server.port=5700
-
---nacos.addr=192.168.50.236:8848
-
---naocs.username=nacos
-
---nacos.password=nacos
-
---redis.ip=192.168.50.236
-
---redis.port=6379
-
---mysql.addr=101.35.43.156:3306
-
---mysql.username=root
-
---mysql.password=xxx
-
---rocketmq.addr=192.168.50.236:9876
-
---cold_storage_name=cold-storage1
-
---position=D:\OSS\cold_01
 
