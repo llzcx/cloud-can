@@ -39,7 +39,7 @@ cloud-can是一个分布式对象存储系统(object storage system)，数据存
 ### 技术选型
 
 
-<div align="center">
+<div align="left">
   <img src="https://img.shields.io/badge/-Java-ffc0cb?style=flat&logo=JAVA-1.8&logoColor=white">
   <img src="https://img.shields.io/badge/-Spring-6cb52d?style=flat&logo=spring&logoColor=white">
   <img src="https://img.shields.io/badge/-Mysqls-3C873A?style=flat&logo=mysql&logoColor=white">
