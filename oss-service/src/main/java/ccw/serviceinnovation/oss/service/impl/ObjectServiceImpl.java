@@ -79,9 +79,6 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
 
 
     @Autowired
-    ColdStorageMapper coldStorageMapper;
-
-    @Autowired
     ObjectStateRedisService objectStateRedisService;
 
     @Autowired

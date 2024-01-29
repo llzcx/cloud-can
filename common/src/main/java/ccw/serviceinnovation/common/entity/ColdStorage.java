@@ -7,6 +7,7 @@ import lombok.Data;
  */
 @Data
 public class ColdStorage {
+    private Long id;
     private String etag;
     private String coldStorageName;
     private Long count;

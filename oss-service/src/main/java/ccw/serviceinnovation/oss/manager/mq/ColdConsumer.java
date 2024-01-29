@@ -19,7 +19,6 @@ import ccw.serviceinnovation.oss.manager.redis.ColdDuplicateRemovalService;
 import ccw.serviceinnovation.oss.manager.redis.NorDuplicateRemovalService;
 import ccw.serviceinnovation.oss.manager.redis.ObjectStateRedisService;
 import ccw.serviceinnovation.oss.mapper.BucketMapper;
-import ccw.serviceinnovation.oss.mapper.ColdStorageMapper;
 import ccw.serviceinnovation.oss.mapper.OssObjectMapper;
 import ccw.serviceinnovation.oss.pojo.bo.MqColdDelTmpBo;
 import ccw.serviceinnovation.oss.pojo.bo.MqDelTmpBo;
@@ -70,9 +69,6 @@ public class ColdConsumer {
 
     @Autowired
     BucketMapper bucketMapper;
-
-    @Autowired
-    ColdStorageMapper coldStorageMapper;
 
     @Autowired
     NorDuplicateRemovalService norDuplicateRemovalService;
