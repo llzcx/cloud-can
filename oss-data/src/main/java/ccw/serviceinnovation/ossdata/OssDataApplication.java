@@ -17,10 +17,8 @@ public class OssDataApplication {
     public static void main(String[] args) throws Exception{
         ConfigurableApplicationContext cac = SpringApplication.run(OssDataApplication.class, args);
         Init bean = cac.getBean(Init.class);
-//        bean.fileInit();
         bean.initFileKey();
         bean.initJraft();
         bean.registerNacos();
-
     }
 }
