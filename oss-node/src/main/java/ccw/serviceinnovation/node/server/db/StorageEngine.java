@@ -69,14 +69,18 @@ public class StorageEngine {
         //开启http访问服务
         executor.submit(HttpServer::start);
 
-        //启动Jraft服务
-        executor.submit(DataServer::start);
-
 
         //连接到Nacos
         register = new NacosConfig();
-        register.connect();
+        executor.submit(() -> {
+            try {
+                register.connect();
+            } catch (NacosException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
-
+        //启动Jraft服务
+        DataServer.start();
     }
 }

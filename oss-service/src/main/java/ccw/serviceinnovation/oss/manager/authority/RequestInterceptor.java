@@ -110,27 +110,27 @@ public class RequestInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-       if(true){
-           return true;
-       }
         response.setContentType("application/json; charset=utf-8");
         /*-------------------是否为可放行资源-------------------*/
         if(checkCanPassByStatic(request,handler)){
             return true;
         }
         HandlerMethod handlerMethod = (HandlerMethod) handler;Method method = handlerMethod.getMethod();OssApi ossApi = method.getAnnotation(OssApi.class);LocalVariableTableParameterNameDiscoverer u = new LocalVariableTableParameterNameDiscoverer();
-        log.info("methodName:{}",method.getName());
         //获取接口的方法名列表
         String[] params = u.getParameterNames(method);
         String readAndWriteType = ossApi.type();
         String target = ossApi.target();
         String accessKey = request.getParameter(ACCESS_KEY);
+        AuthInfo authInfo = new AuthInfo();
+        AuthContext.set(authInfo);
         /*-------------------验证令牌-------------------*/
         User user = identityAuthentication.verify(request);
+        authInfo.setUser(user);
         //目标接口含有ossApi注解,并且接口含有参数
         if(target.equals(API_BUCKET)){
             /*-------------------验证bucketAcl-------------------*/
             Bucket bucket = bucketAclService.getBucketFromParam(request, params);
+            authInfo.setBucket(bucket);
             log.info("bucket is {}",bucket.getName());
             return ControllerUtils.writeIfReturn(response, ResultCode.BUCKET_ACL_BLOCK,
                     bucketAclService.checkBucketAcl(user, readAndWriteType, bucket));
@@ -157,6 +157,7 @@ public class RequestInterceptor implements HandlerInterceptor {
                 bucketAclService.checkBucketAcl(user, API_WRITER, bucketMapper.selectById(sourceBucketId));
             }
             OssObject ossObject = objectAclService.getObjectFromParam(request, params);
+            authInfo.setOssObject(ossObject);
             if(readAndWriteType.equals(API_READ) &&  accessKey!=null){
                 if(objectAccessKeyService.handle(ossObject,accessKey)){
                     return true;
@@ -197,6 +198,6 @@ public class RequestInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-
+        AuthContext.remove();
     }
 }

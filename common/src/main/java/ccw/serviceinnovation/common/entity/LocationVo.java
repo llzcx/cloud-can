@@ -10,7 +10,6 @@ public class LocationVo implements Serializable {
     private Integer port;
     private String path;
     private String group;
-    private String coldStorageName;
     private String token;
 
     public LocationVo(String ip, Integer port) {

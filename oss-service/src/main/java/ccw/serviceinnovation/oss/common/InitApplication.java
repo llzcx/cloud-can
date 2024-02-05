@@ -1,7 +1,6 @@
 package ccw.serviceinnovation.oss.common;
 
 import ccw.serviceinnovation.oss.manager.authority.api.ApiService;
-import ccw.serviceinnovation.oss.manager.consistenthashing.ColdConsistHashing;
 import ccw.serviceinnovation.common.nacos.Host;
 import ccw.serviceinnovation.common.nacos.TrackerService;
 import ccw.serviceinnovation.oss.constant.OssApplicationConstant;

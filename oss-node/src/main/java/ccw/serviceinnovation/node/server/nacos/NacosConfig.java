@@ -21,8 +21,9 @@ public class NacosConfig {
         instance.setIp(ip);
         instance.setInstanceId(RegisterConstant.GROUP_NAME + RegisterConstant.PORT);
         instance.setPort(port);
-        instance.addMetadata("group", RegisterConstant.GROUP_NAME);
-        namingService.registerInstance("raft-rpc", instance);
+        instance.setClusterName(RegisterConstant.GROUP_NAME);
+        namingService.registerInstance("oss","raft" ,instance);
+        System.out.println("nacos connect success.");
     }
 
 }

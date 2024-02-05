@@ -22,5 +22,7 @@ public class EtagIndexHashMapImpl extends ConcurrentHashMap<String, ObjectMeta> 
     @Override
     public void load() {
 
+
+        System.out.println("index load success.");
     }
 }

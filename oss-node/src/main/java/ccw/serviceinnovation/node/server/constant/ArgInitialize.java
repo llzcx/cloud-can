@@ -59,5 +59,7 @@ public class ArgInitialize {
         //http
         RegisterConstant.HTTP_PORT = IpUtils.findAvailablePort();
         log.info("HTTP server port is "+RegisterConstant.HTTP_PORT);
+
+        System.out.println("param init success.");
     }
 }

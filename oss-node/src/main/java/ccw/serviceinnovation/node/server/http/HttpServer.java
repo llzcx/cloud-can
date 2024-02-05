@@ -27,9 +27,9 @@ public class HttpServer {
 
             // 绑定监听关闭状态
             cf.channel().closeFuture().sync();
+            System.out.println("http start success.");
         } catch (InterruptedException e) {
             e.printStackTrace();
-            throw new RuntimeException(e);
         } finally {
             // 关闭资源
             if (workerGroup != null) {

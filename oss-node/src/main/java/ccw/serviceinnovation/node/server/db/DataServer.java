@@ -142,7 +142,6 @@ public class DataServer {
         try {
             dataServer = new DataServer(dataPath, groupId, serverId, nodeOptions);
         } catch (IOException e) {
-            System.exit(1);
             throw new RuntimeException(e);
         }
         System.out.println("Started counter server at port:" + dataServer.getNode().getNodeId().getPeerId().getPort());

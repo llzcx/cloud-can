@@ -20,6 +20,9 @@
         <module>oss-service</module>
         <module>oss-gateway</module>
         <module>oss-node</module>
+        <module>oss-loadbalance</module>
+        <module>oss-hash</module>
+        <module>oss-nodeclient</module>
     </modules>
 
     <groupId>ccw.serviceinnovation</groupId>
