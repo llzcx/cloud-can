@@ -2,7 +2,6 @@ package ccw.serviceinnovation.oss.service.impl;
 import ccw.serviceinnovation.common.constant.ACLEnum;
 
 
-import ccw.serviceinnovation.common.constant.StorageTypeEnum;
 import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.entity.OssObject;
 import ccw.serviceinnovation.oss.common.util.MPUtil;

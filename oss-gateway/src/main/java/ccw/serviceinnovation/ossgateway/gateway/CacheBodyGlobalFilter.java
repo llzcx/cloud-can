@@ -1,6 +1,5 @@
 package ccw.serviceinnovation.ossgateway.gateway;
 
-import ccw.serviceinnovation.common.constant.ObjectStateConstant;
 import ccw.serviceinnovation.common.entity.OssObject;
 import ccw.serviceinnovation.common.exception.OssException;
 import ccw.serviceinnovation.common.request.ResultCode;
@@ -11,7 +10,6 @@ import ccw.serviceinnovation.ossgateway.manager.redis.ObjectStateRedisService;
 import ccw.serviceinnovation.ossgateway.mapper.OssObjectMapper;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -31,9 +29,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR;

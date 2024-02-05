@@ -2,8 +2,6 @@ package ccw.serviceinnovation.oss;
 
 import ccw.serviceinnovation.oss.common.InitApplication;
 import ccw.serviceinnovation.oss.constant.OssApplicationConstant;
-import ccw.serviceinnovation.oss.manager.mq.ColdConsumer;
-import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,7 +18,6 @@ import service.raft.client.RaftRpcRequest;
 @MapperScan(basePackages = "ccw.serviceinnovation.oss.mapper")
 @EnableTransactionManagement
 @EnableDiscoveryClient
-@EnableDubbo
 public class OssApplication {
     public static ConfigurableApplicationContext run;
     public static void main(String[] args) throws Exception{
@@ -28,12 +25,6 @@ public class OssApplication {
         run = SpringApplication.run(OssApplication.class, args);
         InitApplication initApplication =  run.getBean(InitApplication.class);
         initApplication.afterSpring();
-        ColdConsumer coldConsumer = run.getBean(ColdConsumer.class);
-        //对2种消费者进行初始化
-        coldConsumer.initMqUnfreeze();
-        coldConsumer.initMqFreeze();
-        coldConsumer.initDeleteTmp();
-        coldConsumer.initColdDeleteTmp();
         RaftRpcRequest.init(OssApplicationConstant.NACOS_SERVER_ADDR);
     }
 }

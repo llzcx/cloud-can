@@ -1,8 +1,5 @@
 package ccw.serviceinnovation.oss.manager.redis;
 
-import ccw.serviceinnovation.common.constant.ObjectStateConstant;
-import ccw.serviceinnovation.common.constant.StorageTypeEnum;
-import ccw.serviceinnovation.common.entity.OssObject;
 import ccw.serviceinnovation.common.exception.OssException;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.oss.common.util.RedisUtil;

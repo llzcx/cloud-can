@@ -87,6 +87,7 @@ public enum ResultCode {
     CANT_BACKUP_BY_STORAGE(3041,"非标准存储不支持备份"),
     UPDATE_AUTHORIZE_EXCEPTION(3041,"权限更新异常"),
     USER_IS_NULL(3042,"用户不存在"),
+    NO_IMPL(3042,"暂无实现"),
 
     ;
     private Integer code;

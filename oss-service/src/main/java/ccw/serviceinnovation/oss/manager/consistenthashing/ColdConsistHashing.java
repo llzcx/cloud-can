@@ -78,9 +78,10 @@ public class ColdConsistHashing {
      * @return 返回节点存储位置 不存在则返回null
      */
     public static LocationVo getObjectNode(String etag, String groupId) throws Exception {
-        RaftRpcRequest.RaftRpcRequestBo leader = RaftRpcRequest.getLeader(NACOS_SERVER_ADDR,groupId);
-        LocationVo locationVo = RaftRpcRequest.get(leader.getCliClientService(), leader.getPeerId(), etag);
-        return locationVo;
+//        RaftRpcRequest.RaftRpcRequestBo leader = RaftRpcRequest.getLeader(NACOS_SERVER_ADDR,groupId);
+//        LocationVo locationVo = RaftRpcRequest.get(leader.getCliClientService(), leader.getPeerId(), etag);
+//        return locationVo;
+        return null;
     }
 
     /**

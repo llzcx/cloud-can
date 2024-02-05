@@ -3,9 +3,7 @@ package ccw.serviceinnovation.oss.service.impl;
 
 import ccw.serviceinnovation.common.constant.ACLEnum;
 import ccw.serviceinnovation.common.constant.SecretEnum;
-import ccw.serviceinnovation.common.constant.StorageTypeEnum;
 import ccw.serviceinnovation.common.entity.Bucket;
-import ccw.serviceinnovation.common.entity.BucketTagBucket;
 import ccw.serviceinnovation.common.entity.User;
 import ccw.serviceinnovation.common.exception.OssException;
 import ccw.serviceinnovation.common.request.ResultCode;
