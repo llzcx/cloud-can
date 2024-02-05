@@ -49,12 +49,6 @@ public class Bucket implements Serializable {
 
 
     /**
-     * 存储等级
-     */
-    private Integer storageLevel;
-
-
-    /**
      * 桶读写权限ACL
      */
     private Integer bucketAcl;

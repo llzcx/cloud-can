@@ -88,11 +88,6 @@ public class BucketServiceImpl extends ServiceImpl<BucketMapper, Bucket> impleme
             bucket.setBucketAcl(ACLEnum.PRIVATE.getCode());
         }
         Integer storageType = addBucketDto.getStorageType();
-        if(storageType!=null){
-            bucket.setStorageLevel(StorageTypeEnum.getEnum(storageType).getCode());
-        }else{
-            bucket.setStorageLevel(StorageTypeEnum.STANDARD.getCode());
-        }
         bucketMapper.insert(bucket);
         return bucket;
     }
@@ -133,22 +128,6 @@ public class BucketServiceImpl extends ServiceImpl<BucketMapper, Bucket> impleme
         return bucketMapper.selectOne(MPUtil.queryWrapperEq("name", bucketName));
     }
 
-    @Override
-    public Boolean updateStorageLevel(String bucketName, Integer storageLevel) {
-        Bucket bucket = bucketMapper.selectBucketByName(bucketName);
-        if(bucket==null){
-            throw new OssException(ResultCode.BUCKET_IS_DEFECT);
-        }else{
-            StorageTypeEnum anEnum = StorageTypeEnum.getEnum(storageLevel);
-            if(anEnum==null){
-                throw new OssException(ResultCode.UNDEFINED);
-            }else{
-                bucket.setStorageLevel(anEnum.getCode());
-                bucketMapper.updateById(bucket);
-                return true;
-            }
-        }
-    }
 
     @Override
     public Boolean updateBucketAcl(String bucketName, Integer bucketAcl) {

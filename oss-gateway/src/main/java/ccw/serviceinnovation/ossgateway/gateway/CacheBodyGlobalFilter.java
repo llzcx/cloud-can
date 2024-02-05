@@ -6,7 +6,6 @@ import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.common.util.http.HttpUtils;
 
 import ccw.serviceinnovation.ossgateway.manager.redis.NorDuplicateRemovalService;
-import ccw.serviceinnovation.ossgateway.manager.redis.ObjectStateRedisService;
 import ccw.serviceinnovation.ossgateway.mapper.OssObjectMapper;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
@@ -49,10 +48,6 @@ public class CacheBodyGlobalFilter implements Ordered, GlobalFilter {
 
     @Autowired
     NorDuplicateRemovalService norDuplicateRemovalService;
-
-
-    @Autowired
-    ObjectStateRedisService objectStateRedisService;
 
     public String getObjectName(String[] pathParams){
         StringBuilder sb = new StringBuilder();
@@ -108,27 +103,20 @@ public class CacheBodyGlobalFilter implements Ordered, GlobalFilter {
             log.info(JSONObject.toJSONString(ossObject));
             String etag = ossObject.getEtag();
             String group = norDuplicateRemovalService.getGroup(etag);
-            Integer state = objectStateRedisService.getState(bucketName, objectName);
-            if(ObjectStateConstant.FREEZING.equals(state)){
-                throw new OssException(ResultCode.OBJECT_STATE_EXCEPTION);
-            }else if(ObjectStateConstant.UNFREEZING.equals(state)){
-                throw new OssException(ResultCode.OBJECT_STATE_EXCEPTION);
-            }else{
-                String newPath = "/object/"+pathParams[1]+"/"+ group + "/" + etag + "?name=" + objectName;
-                if(ossObject.getSecret()!=null){
-                    newPath += "&secret="+ossObject.getSecret();
-                }
-                log.info("newPath:{}",newPath);
-                //将请求格式改变重新路由 /object/download/{etag}?name={objectName}
-                ServerHttpRequest newRequest = exchange.getRequest().mutate()
-                        .path(newPath)
-
-                        .build();
-                exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, newRequest.getURI());
-                return chain.filter(exchange.mutate()
-//                        .response(handle(exchange))
-                        .request(newRequest).build());
+            String newPath = "/object/"+pathParams[1]+"/"+ group + "/" + etag + "?name=" + objectName;
+            if(ossObject.getSecret()!=null){
+                newPath += "&secret="+ossObject.getSecret();
             }
+            log.info("newPath:{}",newPath);
+            //将请求格式改变重新路由 /object/download/{etag}?name={objectName}
+            ServerHttpRequest newRequest = exchange.getRequest().mutate()
+                    .path(newPath)
+
+                    .build();
+            exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, newRequest.getURI());
+            return chain.filter(exchange.mutate()
+//                        .response(handle(exchange))
+                    .request(newRequest).build());
 
         } else {
             System.out.println("no contain");

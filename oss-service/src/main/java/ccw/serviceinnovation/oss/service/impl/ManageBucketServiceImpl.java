@@ -99,11 +99,7 @@ public class ManageBucketServiceImpl extends ServiceImpl<ManageBucketMapper, Buc
             List<OssObject> ossObjects = objectService.list(MPUtil.queryWrapperEq("bucket_id",bucket.getId()));
 
             for (OssObject ossObject : ossObjects) {
-                if (ossObject.getStorageLevel() == 1){
-                    standardSum += ossObject.getSize();
-                }else if (ossObject.getStorageLevel() == 3){
-                    pigeonholeSum += ossObject.getSize();
-                }
+                standardSum += ossObject.getSize();
                 sum += ossObject.getSize();
             }
 
@@ -111,7 +107,6 @@ public class ManageBucketServiceImpl extends ServiceImpl<ManageBucketMapper, Buc
             BeanUtil.copyProperties(bucket,bucketVo);
 
             bucketVo.setCapacity(sum);
-            bucketVo.setStorageLevelString(StorageTypeEnum.getEnum(bucket.getStorageLevel()).getMessage());
             bucketVo.setBucketAcl(ACLEnum.getEnum(bucket.getBucketAcl()).getMessage());
             bucketVo.setStandardCapacity(standardSum);
             bucketVo.setPigeonholeCapacity(pigeonholeSum);

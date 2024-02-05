@@ -3,20 +3,13 @@ package ccw.serviceinnovation.oss.service.impl;
 import ccw.serviceinnovation.common.constant.*;
 import ccw.serviceinnovation.common.entity.*;
 import ccw.serviceinnovation.common.exception.OssException;
-import ccw.serviceinnovation.common.nacos.Host;
 import ccw.serviceinnovation.common.nacos.TrackerService;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.common.util.hash.QETag;
-import ccw.serviceinnovation.common.util.http.HttpUtils;
 import ccw.serviceinnovation.common.util.object.ObjectUtil;
-import ccw.serviceinnovation.oss.common.InitApplication;
 import ccw.serviceinnovation.oss.common.util.MPUtil;
-import ccw.serviceinnovation.oss.constant.OssApplicationConstant;
-import ccw.serviceinnovation.oss.manager.consistenthashing.ConsistentHashing;
 import ccw.serviceinnovation.oss.manager.redis.ChunkRedisService;
-import ccw.serviceinnovation.oss.manager.redis.ColdDuplicateRemovalService;
 import ccw.serviceinnovation.oss.manager.redis.NorDuplicateRemovalService;
-import ccw.serviceinnovation.oss.manager.redis.ObjectStateRedisService;
 import ccw.serviceinnovation.oss.mapper.*;
 import ccw.serviceinnovation.oss.pojo.bo.BlockTokenBo;
 import ccw.serviceinnovation.oss.pojo.bo.ChunkBo;
@@ -36,7 +29,6 @@ import org.springframework.web.multipart.MultipartFile;
 import service.StorageTempObjectService;
 import service.bo.FilePrehandleBo;
 
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 
@@ -63,12 +55,6 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
     @Autowired
     private NorDuplicateRemovalService norDuplicateRemovalService;
 
-    @Autowired
-    private ColdDuplicateRemovalService coldDuplicateRemovalService;
-
-
-    @Autowired
-    ObjectStateRedisService objectStateRedisService;
 
     @Autowired
     BackupMapper backupMapper;

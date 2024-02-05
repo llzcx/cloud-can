@@ -134,22 +134,6 @@ public class BucketController {
     }
 
     /**
-     * 更新StorageLevel
-     * @param bucketName 桶名
-     * @param storageLevel 存储类型对应的编码
-     * @return 返回是否更新成功
-     * @throws Exception
-     */
-    @PutMapping("/updateStorageLevel")
-    @OssApi(target = API_BUCKET,type = AuthorityConstant.API_WRITER, name = "updateStorageLevel",description = "更新StorageLevel")
-    public ApiResp<Boolean> updateStorageLevel(@RequestParam(value = "bucketName") String bucketName
-            ,@RequestParam(value = "storageLevel") Integer storageLevel) throws Exception {
-        Boolean flag = bucketService.updateStorageLevel(bucketName,storageLevel);
-        return ApiResp.ifResponse(flag,flag,ResultCode.COMMON_FAIL);
-    }
-
-
-    /**
      * 获取bucket中存在的文件类型
      * @param bucketName 桶名
      * @return 返回视图对象

@@ -72,7 +72,6 @@ public class ManageObjectServiceImpl extends ServiceImpl<ManageObjectMapper, Oss
             for (OssObject ossObject : ossObjects) {
                 ManageObjectListVo objectListVo = new ManageObjectListVo();
                 BeanUtil.copyProperties(ossObject,objectListVo);
-                objectListVo.setStorageLevelString(StorageTypeEnum.getEnum(ossObject.getStorageLevel()).getMessage());
                 objectListVos.add(objectListVo);
             }
             objectRPage = new RPage<>(pageNum,size,objectListVos);
@@ -87,7 +86,6 @@ public class ManageObjectServiceImpl extends ServiceImpl<ManageObjectMapper, Oss
         for (OssObject ossObject : ossObjects) {
             ManageObjectListVo objectListVo = new ManageObjectListVo();
             BeanUtil.copyProperties(ossObject,objectListVo);
-            objectListVo.setStorageLevelString(StorageTypeEnum.getEnum(ossObject.getStorageLevel()).getMessage());
             objectListVos.add(objectListVo);
         }
         objectRPage = new RPage<>(pageNum,size,objectListVos);
@@ -105,7 +103,6 @@ public class ManageObjectServiceImpl extends ServiceImpl<ManageObjectMapper, Oss
 
         ManageObjectDetailedVo objectVo = new ManageObjectDetailedVo();
         BeanUtil.copyProperties(ossObject,objectVo);
-        objectVo.setStorageLevelString(StorageTypeEnum.getEnum(ossObject.getStorageLevel()).getMessage());
         objectVo.setObjectAclString(ACLEnum.getEnum(ossObject.getObjectAcl()).getMessage());
 
         String bucketName = manageObjectMapper.getBucketName(id);
@@ -133,7 +130,6 @@ public class ManageObjectServiceImpl extends ServiceImpl<ManageObjectMapper, Oss
             for (OssObject ossObject : ossObjects) {
                 ManageObjectListVo objectListVo = new ManageObjectListVo();
                 BeanUtil.copyProperties(ossObject,objectListVo);
-                objectListVo.setStorageLevelString(StorageTypeEnum.getEnum(ossObject.getStorageLevel()).getMessage());
                 objectListVos.add(objectListVo);
             }
             objectRPage = new RPage<>(pageNum,size,objectListVos);

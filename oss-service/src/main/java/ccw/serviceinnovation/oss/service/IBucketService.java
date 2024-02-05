@@ -50,13 +50,6 @@ public interface IBucketService extends IService<Bucket> {
      */
     Bucket getBucketInfo(String bucketName);
 
-    /**
-     * 更新存储类型
-     * @param bucketName
-     * @param storageLevel
-     * @return
-     */
-    Boolean updateStorageLevel(String bucketName,Integer storageLevel);
 
 
     /**
