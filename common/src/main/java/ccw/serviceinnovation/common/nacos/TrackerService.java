@@ -43,7 +43,7 @@ public class TrackerService {
     }
 
     /**
-     * 获取Jraft服务列表(GRPC)
+     * 获取Jraft服务列表
      * @return
      */
     public static Map<String,List<Host>> getAllJraftList(String nacosPath){

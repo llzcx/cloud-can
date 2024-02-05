@@ -16,11 +16,10 @@
 <!--    子模块-->
     <modules>
         <module>common</module>
-        <module>oss-data</module>
-        <module>oss-interface</module>
+        <module>oss-rpc</module>
         <module>oss-service</module>
-        <module>oss-cold-data</module>
         <module>oss-gateway</module>
+        <module>oss-node</module>
     </modules>
 
     <groupId>ccw.serviceinnovation</groupId>

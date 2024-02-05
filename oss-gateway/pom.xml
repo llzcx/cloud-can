@@ -90,7 +90,7 @@
         <!--RPC接口包-->
         <dependency>
             <groupId>ccw.serviceinnovation</groupId>
-            <artifactId>oss-interface</artifactId>
+            <artifactId>oss-rpc</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <!--redis-->

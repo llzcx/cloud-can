@@ -406,9 +406,9 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
             locationVo.setPath(url);
             locationVo.setToken(blockToken);
             locationVo.setGroup(storageObjectNode.getGroup());
-            if (!RaftRpcRequest.save(leader.getCliClientService(), leader.getPeerId(), etag, locationVo)) {
-                throw new OssException(ResultCode.CANT_SYNC);
-            }
+//            if (!RaftRpcRequest.save(leader.getCliClientService(), leader.getPeerId(), etag, locationVo)) {
+//                throw new OssException(ResultCode.CANT_SYNC);
+//            }
             //引用次数+1
             norDuplicateRemovalService.save(etag, storageObjectNode.getGroup());
             //删除缓存
@@ -582,13 +582,13 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
                     LocationVo locationVo = new LocationVo(ip, port);
                     locationVo.setPath(url);
                     locationVo.setToken(blockToken);
-                    if (RaftRpcRequest.save(leader.getCliClientService(), leader.getPeerId(), etag, locationVo)) {
-                        System.out.println("完成同步!");
-                        //删除缓存数据
-                        submitDelTask(new MqDelTmpBo(blockToken, ip, ossDataProvidePort));
-                    } else {
-                        throw new OssException(ResultCode.CANT_SYNC);
-                    }
+//                    if (RaftRpcRequest.save(leader.getCliClientService(), leader.getPeerId(), etag, locationVo)) {
+//                        System.out.println("完成同步!");
+//                        //删除缓存数据
+//                        submitDelTask(new MqDelTmpBo(blockToken, ip, ossDataProvidePort));
+//                    } else {
+//                        throw new OssException(ResultCode.CANT_SYNC);
+//                    }
                     //标记次数+1
                     norDuplicateRemovalService.save(etag, chunkBo.getGroupId());
                 }

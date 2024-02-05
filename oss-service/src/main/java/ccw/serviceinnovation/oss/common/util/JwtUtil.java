@@ -113,7 +113,6 @@ public class JwtUtil {
         //秘钥是密码则省略
         Algorithm algorithm = Algorithm.HMAC256(TOKEN_SECRET);
         //生成签名
-        AtomicInteger
         String sign = JWT.create()
                 .withHeader(header)
                 .withExpiresAt(date)

@@ -16,9 +16,9 @@ spring:
   datasource:
     druid:
       driver-class-name: com.mysql.jdbc.Driver
-      url: jdbc:mysql://${mysql.addr:101.35.43.156:3306}/oss?useSSL=false&amp&serverTimezone=UTC
+      url: jdbc:mysql://${mysql.addr:127.0.0.1:3306}/oss?useSSL=false&amp&serverTimezone=UTC
       username: ${mysql.username:root}
-      password: ${mysql.password:123abc456}
+      password: ${mysql.password:chenxiang}
   redis:
     host: ${redis.ip:192.168.50.236}
     port: ${redis.port:6379}

@@ -19,7 +19,7 @@ import static ccw.serviceinnovation.oss.constant.OssApplicationConstant.NACOS_SE
 @Slf4j
 public class ColdConsistHashing {
     // 物理节点
-    public static Set<String> physicalNodes = new TreeSet<String>();
+    public static Set<String> physicalNodes = new TreeSet<>();
 
     /**
      * 虚拟节点
