@@ -1,10 +1,5 @@
 package ccw.serviceinnovation.ossgateway.gateway;
 
-import ccw.serviceinnovation.common.entity.OssObject;
-import ccw.serviceinnovation.common.exception.OssException;
-import ccw.serviceinnovation.common.request.ResultCode;
-import ccw.serviceinnovation.common.util.http.HttpUtils;
-
 import ccw.serviceinnovation.ossgateway.manager.redis.NorDuplicateRemovalService;
 import ccw.serviceinnovation.ossgateway.mapper.OssObjectMapper;
 import com.alibaba.fastjson.JSONObject;
@@ -90,39 +85,40 @@ public class CacheBodyGlobalFilter implements Ordered, GlobalFilter {
     }
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        URI uri = exchange.getRequest().getURI();
-        String[] pathParams = HttpUtils.getPathParams(uri);
-        String path = exchange.getRequest().getPath().toString();
-        //下载文件请求格式为/object/download/{objectName}
-        if ("object".equals(pathParams[0])) {
-            String bucketName = pathParams[2];
-            String objectName = getObjectName(pathParams);
-            addOriginalRequestUrl(exchange, uri);
-            log.info("s3:{}",bucketName+"/"+objectName);
-            OssObject ossObject = ossObjectMapper.selectObjectIdByName(bucketName,objectName);
-            log.info(JSONObject.toJSONString(ossObject));
-            String etag = ossObject.getEtag();
-            String group = norDuplicateRemovalService.getGroup(etag);
-            String newPath = "/object/"+pathParams[1]+"/"+ group + "/" + etag + "?name=" + objectName;
-            if(ossObject.getSecret()!=null){
-                newPath += "&secret="+ossObject.getSecret();
-            }
-            log.info("newPath:{}",newPath);
-            //将请求格式改变重新路由 /object/download/{etag}?name={objectName}
-            ServerHttpRequest newRequest = exchange.getRequest().mutate()
-                    .path(newPath)
-
-                    .build();
-            exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, newRequest.getURI());
-            return chain.filter(exchange.mutate()
-//                        .response(handle(exchange))
-                    .request(newRequest).build());
-
-        } else {
-            System.out.println("no contain");
-            // 继续向下执
-            return chain.filter(exchange);
-        }
+//        URI uri = exchange.getRequest().getURI();
+//        String[] pathParams = HttpUtils.getPathParams(uri);
+//        String path = exchange.getRequest().getPath().toString();
+//        //下载文件请求格式为/object/download/{objectName}
+//        if ("object".equals(pathParams[0])) {
+//            String bucketName = pathParams[2];
+//            String objectName = getObjectName(pathParams);
+//            addOriginalRequestUrl(exchange, uri);
+//            log.info("s3:{}",bucketName+"/"+objectName);
+//            OssObject ossObject = ossObjectMapper.selectObjectIdByName(bucketName,objectName);
+//            log.info(JSONObject.toJSONString(ossObject));
+//            String etag = ossObject.getEtag();
+//            String group = norDuplicateRemovalService.getGroup(etag);
+//            String newPath = "/object/"+pathParams[1]+"/"+ group + "/" + etag + "?name=" + objectName;
+//            if(ossObject.getSecret()!=null){
+//                newPath += "&secret="+ossObject.getSecret();
+//            }
+//            log.info("newPath:{}",newPath);
+//            //将请求格式改变重新路由 /object/download/{etag}?name={objectName}
+//            ServerHttpRequest newRequest = exchange.getRequest().mutate()
+//                    .path(newPath)
+//
+//                    .build();
+//            exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, newRequest.getURI());
+//            return chain.filter(exchange.mutate()
+////                        .response(handle(exchange))
+//                    .request(newRequest).build());
+//
+//        } else {
+//            System.out.println("no contain");
+//            // 继续向下执
+//            return chain.filter(exchange);
+//        }
+        return null;
     }
 
     @Override

@@ -21,7 +21,7 @@
         <!--        导入公共包-->
         <dependency>
             <groupId>ccw.serviceinnovation</groupId>
-            <artifactId>common</artifactId>
+            <artifactId>oss-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>

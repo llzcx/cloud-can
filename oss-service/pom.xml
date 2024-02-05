@@ -8,9 +8,18 @@
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-
     <artifactId>oss-service</artifactId>
-
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-parent</artifactId>
+                <version>2.3.11.RELEASE</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <packaging>jar</packaging>
 
     <version>0.0.1-SNAPSHOT</version>
@@ -160,7 +169,7 @@
         <!--公共包-->
         <dependency>
             <groupId>ccw.serviceinnovation</groupId>
-            <artifactId>common</artifactId>
+            <artifactId>oss-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <!--RPC接口包-->
@@ -202,11 +211,11 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.3.11.RELEASE</version>
                 <configuration>
                     <!-- 工程主入口-->
                     <mainClass>ccw.serviceinnovation.oss.OssApplication</mainClass>
                     <includeSystemScope>true</includeSystemScope>
-                    <fork>true</fork>
                     <jvmArguments>-Dfile.encoding=UTF-8</jvmArguments>
                 </configuration>
                 <executions>

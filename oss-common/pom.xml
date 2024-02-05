@@ -11,10 +11,20 @@
     <packaging>jar</packaging>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>common</artifactId>
+    <artifactId>oss-common</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
-
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-parent</artifactId>
+                <version>2.3.11.RELEASE</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -66,13 +76,6 @@
             <artifactId>commons-compress</artifactId>
             <version>1.20</version>
         </dependency>
-
-        <dependency>
-            <groupId>ws.schild</groupId>
-            <artifactId>jave-core</artifactId>
-            <version>3.0.0</version>
-        </dependency>
-
         <!-- 在windows上开发 开发机可实现压缩效果 window64位 -->
         <dependency>
             <groupId>ws.schild</groupId>

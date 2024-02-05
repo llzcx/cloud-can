@@ -2,23 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-<!--    parent不能删,如果删除侧边的maven波浪线会出现-->
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.11.RELEASE</version>
-    </parent>
-
-
 <!--    定义packing声明用于管理其他模块-聚合-->
     <packaging>pom</packaging>
 <!--    子模块-->
     <modules>
-        <module>common</module>
+        <module>oss-common</module>
         <module>oss-rpc</module>
         <module>oss-service</module>
-        <module>oss-gateway</module>
+        <module>oss-nginx</module>
         <module>oss-node</module>
         <module>oss-loadbalance</module>
         <module>oss-hash</module>
@@ -52,6 +43,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>1.18.26</version>
         </dependency>
 
 
@@ -61,7 +53,11 @@
 <!--    版本控制 只是声明版本-->
     <dependencyManagement>
         <dependencies>
-
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.26</version>
+            </dependency>
             <!--cloudalibaba-->
             <dependency>
                 <groupId>com.alibaba.cloud</groupId>
@@ -77,14 +73,6 @@
                 <scope>import</scope>
             </dependency>
 
-
-            <!--boot-->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-parent</artifactId>
-                <version>${spring.boot.version}</version>
-            </dependency>
-
             <!--cloud-->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
@@ -96,7 +84,7 @@
 
             <dependency>
                 <groupId>ccw.serviceinnovation</groupId>
-                <artifactId>common</artifactId>
+                <artifactId>oss-common</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
 
@@ -105,6 +93,12 @@
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-bootstrap</artifactId>
                 <version>3.0.4</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alipay.sofa</groupId>
+                <artifactId>jraft-example</artifactId>
+                <version>1.3.13-SNAPSHOT</version>
             </dependency>
         </dependencies>
 

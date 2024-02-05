@@ -3,9 +3,7 @@ package ccw.serviceinnovation.oss.manager.redis;
 import ccw.serviceinnovation.common.entity.LocationVo;
 import ccw.serviceinnovation.common.exception.OssException;
 import ccw.serviceinnovation.common.request.ResultCode;
-import ccw.serviceinnovation.common.util.hash.QETag;
 import ccw.serviceinnovation.oss.common.util.RedisUtil;
-import ccw.serviceinnovation.oss.manager.consistenthashing.ConsistentHashing;
 import ccw.serviceinnovation.oss.pojo.bo.ChunkBo;
 import ccw.serviceinnovation.oss.pojo.vo.FragmentVo;
 import com.alibaba.fastjson.JSONObject;
@@ -45,9 +43,6 @@ public class ChunkRedisService {
 
 
 
-    @Autowired
-    ConsistentHashing consistentHashing;
-
 
     public Boolean saveChunkBit(String blockToken,Integer chunk){
         return redisUtil.setBit(CHUNK_BIT_PREFIX+blockToken, chunk, true);
@@ -67,12 +62,12 @@ public class ChunkRedisService {
         if (isExist(buckName,blockToken)) {
             ChunkBo chunkBo = JSONObject.parseObject(redisUtil.hget(BLOCK_TOKEN_PREFIX+buckName, blockToken), ChunkBo.class);
             Long size = chunkBo.getSize();
-            int chunks = QETag.getChunks(size);
-            for (int i = 0; i < chunks; i++) {
-                if(!redisUtil.getBit(CHUNK_BIT_PREFIX+blockToken, i)){
-                    return false;
-                }
-            }
+            //int chunks = QETag.getChunks(size);
+//            for (int i = 0; i < chunks; i++) {
+//                if(!redisUtil.getBit(CHUNK_BIT_PREFIX+blockToken, i)){
+//                    return false;
+//                }
+//            }
             return true;
         }
         return false;
@@ -85,19 +80,19 @@ public class ChunkRedisService {
      * @return
      */
     public byte[] getSha1(String bucketName,String blockToken) {
-        if(isExist(bucketName,blockToken)){
-            ChunkBo chunkBo = getChunkBo(bucketName,blockToken);
-            int chunks = QETag.getChunks(chunkBo.getSize());
-            int byteLen = chunks*20;
-            byte[] allSha1 = new byte[byteLen];
-            for (int i = 0; i < chunks ; i++) {
-                String sha1 = redisUtil.hget(CHUNK_SHA1_PREFIX + blockToken, String.valueOf(i));
-                byte[] decode = Base64.getDecoder().decode(sha1);
-                int left = 20*i;
-                System.arraycopy(decode, 0, allSha1, left, decode.length);
-            }
-            return allSha1;
-        }
+//        if(isExist(bucketName,blockToken)){
+//            ChunkBo chunkBo = getChunkBo(bucketName,blockToken);
+//            int chunks = QETag.getChunks(chunkBo.getSize());
+//            int byteLen = chunks*20;
+//            byte[] allSha1 = new byte[byteLen];
+//            for (int i = 0; i < chunks ; i++) {
+//                String sha1 = redisUtil.hget(CHUNK_SHA1_PREFIX + blockToken, String.valueOf(i));
+//                byte[] decode = Base64.getDecoder().decode(sha1);
+//                int left = 20*i;
+//                System.arraycopy(decode, 0, allSha1, left, decode.length);
+//            }
+//            return allSha1;
+//        }
         return null;
     }
 
@@ -113,10 +108,11 @@ public class ChunkRedisService {
 
     public ChunkBo saveBlockToken(String bucketName,String blockToken,String etag,Long userId,Long bucketId,Long size,Long parentObjectId,Integer secret,
                                   Integer objectAcl,String name){
-        LocationVo location = ConsistentHashing.getStorageObjectNode(etag);
-        ChunkBo chunkBo = new ChunkBo(etag,userId,bucketId,size,location.getIp(),location.getPort(),parentObjectId,secret,objectAcl,name,location.getGroup());
-        redisUtil.hset(BLOCK_TOKEN_PREFIX+bucketName, blockToken,JSONObject.toJSONString(chunkBo));
-        return chunkBo;
+//        LocationVo location = ConsistentHashing.getStorageObjectNode(etag);
+//        ChunkBo chunkBo = new ChunkBo(etag,userId,bucketId,size,location.getIp(),location.getPort(),parentObjectId,secret,objectAcl,name,location.getGroup());
+//        redisUtil.hset(BLOCK_TOKEN_PREFIX+bucketName, blockToken,JSONObject.toJSONString(chunkBo));
+//        return chunkBo;
+        return null;
     }
     /**
      * 获取ChunkBo
@@ -129,16 +125,16 @@ public class ChunkRedisService {
 
     public Integer getChunkNum(String bucketName,String blockToken){
         if (isExist(bucketName,blockToken)) {
-            Integer count = 0;
-            ChunkBo chunkBo = JSONObject.parseObject(redisUtil.hget(BLOCK_TOKEN_PREFIX+bucketName, blockToken), ChunkBo.class);
-            Long size = chunkBo.getSize();
-            int chunks = QETag.getChunks(size);
-            for (int i = 0; i < chunks; i++) {
-                if(redisUtil.getBit(CHUNK_BIT_PREFIX+blockToken, i)){
-                    count += 1;
-                }
-            }
-            return count;
+//            Integer count = 0;
+//            ChunkBo chunkBo = JSONObject.parseObject(redisUtil.hget(BLOCK_TOKEN_PREFIX+bucketName, blockToken), ChunkBo.class);
+//            Long size = chunkBo.getSize();
+//            int chunks = QETag.getChunks(size);
+//            for (int i = 0; i < chunks; i++) {
+//                if(redisUtil.getBit(CHUNK_BIT_PREFIX+blockToken, i)){
+//                    count += 1;
+//                }
+//            }
+//            return count;
         }
         throw new OssException(ResultCode.EVENT_NULL);
     }
@@ -160,7 +156,7 @@ public class ChunkRedisService {
             FragmentVo fragmentVo = new FragmentVo();
             fragmentVo.setObjectName(value.getName());
             fragmentVo.setChunkNum(getChunkNum(bucketName, blockToken));
-            fragmentVo.setChunks(QETag.getChunks(value.getSize()));
+//            fragmentVo.setChunks(QETag.getChunks(value.getSize()));
             BeanUtils.copyProperties(value, fragmentVo);
             fragmentVo.setBlockToken(blockToken);
             list.add(fragmentVo);

@@ -4,7 +4,6 @@ import ccw.serviceinnovation.common.constant.*;
 import ccw.serviceinnovation.common.entity.*;
 import ccw.serviceinnovation.common.exception.OssException;
 import ccw.serviceinnovation.common.request.ResultCode;
-import ccw.serviceinnovation.common.util.hash.QETag;
 import ccw.serviceinnovation.common.util.object.ObjectUtil;
 import ccw.serviceinnovation.oss.common.util.MPUtil;
 import ccw.serviceinnovation.oss.manager.redis.ChunkRedisService;
@@ -393,21 +392,21 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
 
     @Override
     public Boolean addObjectChunk(MultipartFile file, Integer chunk, String blockToken, String bucketName) throws Exception {
-        chunk = chunk + 1;
-        log.info("当前为第:{}块分片", chunk);
-        ChunkBo chunkBo = chunkRedisService.getChunkBo(bucketName, blockToken);
-        Integer providerPort = TrackerService.getProvidePort(chunkBo.getIp(), chunkBo.getPort());
-        long size = chunkBo.getSize();
-        int chunks = QETag.getChunks(size);
-        String etag = chunkBo.getEtag();
-        byte[] bytes = file.getBytes();
-        //向磁盘服务器存储该分块
-        log.info("向{}:{}存储文件块", chunkBo.getIp(), providerPort);
-//        UserSpecifiedAddressUtil.setAddress(new Address(chunkBo.getIp(), chunkBo.getPort(), true));
-//        storageTempObjectService.saveBlock(blockToken, size, bytes,
-//                file.getSize(), chunks, chunk, chunkBo.getSecret());
-        //redis保存该分块信息
-        chunkRedisService.saveChunkBit(blockToken, chunk);
+//        chunk = chunk + 1;
+//        log.info("当前为第:{}块分片", chunk);
+//        ChunkBo chunkBo = chunkRedisService.getChunkBo(bucketName, blockToken);
+//        Integer providerPort = TrackerService.getProvidePort(chunkBo.getIp(), chunkBo.getPort());
+//        long size = chunkBo.getSize();
+//        int chunks = QETag.getChunks(size);
+//        String etag = chunkBo.getEtag();
+//        byte[] bytes = file.getBytes();
+//        //向磁盘服务器存储该分块
+//        log.info("向{}:{}存储文件块", chunkBo.getIp(), providerPort);
+////        UserSpecifiedAddressUtil.setAddress(new Address(chunkBo.getIp(), chunkBo.getPort(), true));
+////        storageTempObjectService.saveBlock(blockToken, size, bytes,
+////                file.getSize(), chunks, chunk, chunkBo.getSecret());
+//        //redis保存该分块信息
+//        chunkRedisService.saveChunkBit(blockToken, chunk);
         return true;
     }
 
@@ -474,7 +473,7 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
         Integer port = chunkBo.getPort();
         String ObjectName = chunkBo.getName();
         String groupId = chunkBo.getGroupId();
-        Integer ossDataProvidePort = TrackerService.getOssDataProvidePort(ip, port);
+        Integer ossDataProvidePort = 1;
         if (ossDataProvidePort == null) {
             throw new OssException(ResultCode.SERVER_EXCEPTION);
         }
