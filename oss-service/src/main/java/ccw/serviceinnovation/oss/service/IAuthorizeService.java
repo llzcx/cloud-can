@@ -1,13 +1,9 @@
 package ccw.serviceinnovation.oss.service;
 
 
-import ccw.serviceinnovation.common.entity.Authorize;
 import ccw.serviceinnovation.oss.pojo.dto.PutAuthorizeDto;
 import ccw.serviceinnovation.oss.pojo.vo.AuthorizeVo;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
 
 
 /**bucket授权策略业务类

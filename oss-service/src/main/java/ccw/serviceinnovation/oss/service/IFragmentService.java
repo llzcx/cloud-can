@@ -1,9 +1,6 @@
 package ccw.serviceinnovation.oss.service;
 
 
-
-import ccw.serviceinnovation.common.entity.BucketTag;
-import ccw.serviceinnovation.oss.pojo.bo.ChunkBo;
 import ccw.serviceinnovation.oss.pojo.vo.FragmentVo;
 
 import java.util.List;

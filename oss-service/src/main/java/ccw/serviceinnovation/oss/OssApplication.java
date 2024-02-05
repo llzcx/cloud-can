@@ -1,7 +1,6 @@
 package ccw.serviceinnovation.oss;
 
 import ccw.serviceinnovation.oss.common.InitApplication;
-import ccw.serviceinnovation.oss.constant.OssApplicationConstant;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

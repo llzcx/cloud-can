@@ -4,7 +4,6 @@ import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.entity.UserFavorite;
 import com.baomidou.mybatisplus.extension.service.IService;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**

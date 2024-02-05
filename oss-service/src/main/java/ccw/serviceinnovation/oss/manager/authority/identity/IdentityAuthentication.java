@@ -1,10 +1,10 @@
 package ccw.serviceinnovation.oss.manager.authority.identity;
 
+import ccw.serviceinnovation.common.constant.RequestHeadersConstant;
 import ccw.serviceinnovation.common.entity.User;
 import ccw.serviceinnovation.common.exception.OssException;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.oss.common.util.JwtUtil;
-import ccw.serviceinnovation.common.constant.RequestHeadersConstant;
 import ccw.serviceinnovation.oss.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

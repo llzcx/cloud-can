@@ -1,9 +1,9 @@
 package ccw.serviceinnovation.oss.manager.authority.bucketpolicy;
 
+import ccw.serviceinnovation.common.constant.AuthorizeOperationEnum;
 import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.exception.OssException;
 import ccw.serviceinnovation.common.request.ResultCode;
-import ccw.serviceinnovation.common.constant.AuthorizeOperationEnum;
 import ccw.serviceinnovation.oss.mapper.AuthorizeMapper;
 import ccw.serviceinnovation.oss.mapper.AuthorizePathMapper;
 import ccw.serviceinnovation.oss.mapper.AuthorizeUserMapper;
@@ -13,6 +13,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import java.util.List;
 import java.util.Objects;
 

@@ -1,7 +1,6 @@
 package ccw.serviceinnovation.oss.pojo.bo;
 
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 /**
  * 存在redis中键为BLOCK_TOKEN的value

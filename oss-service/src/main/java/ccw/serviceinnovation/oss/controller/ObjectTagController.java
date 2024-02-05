@@ -3,7 +3,6 @@ package ccw.serviceinnovation.oss.controller;
 import ccw.serviceinnovation.common.constant.AuthorityConstant;
 import ccw.serviceinnovation.common.entity.ObjectTag;
 import ccw.serviceinnovation.common.request.ApiResp;
-import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.oss.manager.authority.OssApi;
 import ccw.serviceinnovation.oss.pojo.dto.DeleteObjectTagDto;
 import ccw.serviceinnovation.oss.pojo.dto.PutObjectTagDto;

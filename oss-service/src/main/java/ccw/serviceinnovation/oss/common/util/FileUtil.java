@@ -1,15 +1,8 @@
 package ccw.serviceinnovation.oss.common.util;
 
 
-import cn.hutool.crypto.SecureUtil;
-import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.codec.digest.DigestUtils;
-
 import java.io.File;
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 
 

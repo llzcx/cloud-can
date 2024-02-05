@@ -3,9 +3,6 @@ package ccw.serviceinnovation.oss.common;
 
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Map;
-
 
 /**
  * 初始化方法

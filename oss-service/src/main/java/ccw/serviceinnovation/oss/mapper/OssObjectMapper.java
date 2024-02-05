@@ -2,7 +2,6 @@ package ccw.serviceinnovation.oss.mapper;
 
 import ccw.serviceinnovation.common.entity.OssObject;
 import ccw.serviceinnovation.oss.pojo.vo.ObjectVo;
-import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

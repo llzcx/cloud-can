@@ -10,8 +10,6 @@ import ccw.serviceinnovation.oss.service.IManageBucketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 /**
  * 管理Bucket接口
  * @author 杨世博

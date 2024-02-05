@@ -1,9 +1,6 @@
 package ccw.serviceinnovation.oss.mapper;
 
-import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.entity.BucketTag;
-import ccw.serviceinnovation.common.entity.ObjectTag;
-import ccw.serviceinnovation.oss.pojo.dto.TagDto;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;

@@ -1,6 +1,5 @@
 package ccw.serviceinnovation.oss.pojo.dto;
 
-import ccw.serviceinnovation.common.entity.BucketTag;
 import lombok.Data;
 
 import java.io.Serializable;

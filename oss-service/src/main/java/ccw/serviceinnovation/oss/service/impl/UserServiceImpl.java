@@ -2,6 +2,7 @@ package ccw.serviceinnovation.oss.service.impl;
 
 import ccw.serviceinnovation.common.entity.User;
 import ccw.serviceinnovation.oss.common.util.JwtUtil;
+import ccw.serviceinnovation.oss.common.util.MPUtil;
 import ccw.serviceinnovation.oss.mapper.UserMapper;
 import ccw.serviceinnovation.oss.pojo.vo.LoginVo;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
@@ -13,7 +14,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ccw.serviceinnovation.oss.common.util.MPUtil;
 
 import java.util.LinkedList;
 import java.util.List;

@@ -3,7 +3,6 @@ package ccw.serviceinnovation.oss.service;
 import ccw.serviceinnovation.common.entity.BucketTag;
 import ccw.serviceinnovation.oss.pojo.dto.DeleteBucketTagDto;
 import ccw.serviceinnovation.oss.pojo.dto.PutBucketTagDto;
-import ccw.serviceinnovation.oss.pojo.dto.PutObjectTagDto;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;

@@ -1,7 +1,6 @@
 package ccw.serviceinnovation.oss.controller;
 
 import ccw.serviceinnovation.common.constant.AuthorityConstant;
-import ccw.serviceinnovation.common.entity.Authorize;
 import ccw.serviceinnovation.common.request.ApiResp;
 import ccw.serviceinnovation.oss.manager.authority.OssApi;
 import ccw.serviceinnovation.oss.pojo.dto.PutAuthorizeDto;
@@ -10,6 +9,7 @@ import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import ccw.serviceinnovation.oss.service.IAuthorizeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 

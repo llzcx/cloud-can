@@ -2,7 +2,6 @@ package ccw.serviceinnovation.oss.controller;
 
 
 import ccw.serviceinnovation.common.constant.AuthorityConstant;
-import ccw.serviceinnovation.common.entity.Api;
 import ccw.serviceinnovation.common.entity.User;
 import ccw.serviceinnovation.common.request.ApiResp;
 import ccw.serviceinnovation.common.request.ResultCode;
@@ -21,8 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-
-import static ccw.serviceinnovation.common.constant.AuthorityConstant.API_OPEN;
 
 /**
  * 用户接口

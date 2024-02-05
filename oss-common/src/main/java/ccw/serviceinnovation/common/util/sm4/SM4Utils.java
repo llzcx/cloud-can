@@ -1,7 +1,6 @@
 package ccw.serviceinnovation.common.util.sm4;
 
 
-import ccw.serviceinnovation.common.constant.FileConstant;
 import org.apache.commons.net.util.Base64;
 
 import java.io.*;

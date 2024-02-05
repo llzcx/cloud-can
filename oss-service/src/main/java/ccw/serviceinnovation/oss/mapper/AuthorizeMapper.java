@@ -2,7 +2,6 @@ package ccw.serviceinnovation.oss.mapper;
 
 import ccw.serviceinnovation.common.entity.Authorize;
 import ccw.serviceinnovation.oss.pojo.bo.AuthorizeBo;
-import ccw.serviceinnovation.oss.pojo.dto.PutAuthorizeDto;
 import ccw.serviceinnovation.oss.pojo.vo.AuthorizeVo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;

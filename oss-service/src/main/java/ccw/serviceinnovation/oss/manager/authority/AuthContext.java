@@ -1,7 +1,5 @@
 package ccw.serviceinnovation.oss.manager.authority;
 
-import ccw.serviceinnovation.common.entity.User;
-
 public class AuthContext {
     private static ThreadLocal<AuthInfo> context = new ThreadLocal<>();
 

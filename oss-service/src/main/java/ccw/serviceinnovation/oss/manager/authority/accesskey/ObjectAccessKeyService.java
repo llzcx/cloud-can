@@ -3,11 +3,9 @@ package ccw.serviceinnovation.oss.manager.authority.accesskey;
 import ccw.serviceinnovation.common.entity.OssObject;
 import ccw.serviceinnovation.oss.pojo.dto.MessageDto;
 import ccw.serviceinnovation.oss.service.IAccessKeyService;
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 /**

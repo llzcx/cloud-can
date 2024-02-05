@@ -11,8 +11,6 @@ import ccw.serviceinnovation.oss.service.IManageUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 
 /**
  * 管理用户接口

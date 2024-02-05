@@ -1,7 +1,6 @@
 package ccw.serviceinnovation.node.bo;
 
 import ccw.serviceinnovation.node.secret.SecretEnum;
-import ccw.serviceinnovation.node.util.MySerialize;
 import lombok.Data;
 
 import java.io.Serializable;

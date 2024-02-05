@@ -1,17 +1,14 @@
 package ccw.serviceinnovation.oss.controller;
 
 import ccw.serviceinnovation.common.constant.AuthorityConstant;
-import ccw.serviceinnovation.common.entity.OssObject;
 import ccw.serviceinnovation.common.request.ApiResp;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.oss.manager.authority.OssApi;
 import ccw.serviceinnovation.oss.pojo.vo.ManageObjectDetailedVo;
 import ccw.serviceinnovation.oss.pojo.vo.ManageObjectListVo;
-import ccw.serviceinnovation.oss.pojo.vo.ObjectVo;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import ccw.serviceinnovation.oss.service.IManageObjectService;
 import ccw.serviceinnovation.oss.service.IObjectService;
-import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

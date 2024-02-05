@@ -1,11 +1,8 @@
 package ccw.serviceinnovation.oss.controller;
 
 import ccw.serviceinnovation.common.constant.AuthorityConstant;
-import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.entity.BucketTag;
-import ccw.serviceinnovation.common.entity.ObjectTag;
 import ccw.serviceinnovation.common.request.ApiResp;
-import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.oss.manager.authority.OssApi;
 import ccw.serviceinnovation.oss.pojo.dto.DeleteBucketTagDto;
 import ccw.serviceinnovation.oss.pojo.dto.PutBucketTagDto;

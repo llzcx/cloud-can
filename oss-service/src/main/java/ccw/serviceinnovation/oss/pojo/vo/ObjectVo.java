@@ -1,14 +1,9 @@
 package ccw.serviceinnovation.oss.pojo.vo;
 
 
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 获取对象列表Vo

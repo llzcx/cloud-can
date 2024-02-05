@@ -1,9 +1,7 @@
 package ccw.serviceinnovation.common.util;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
 
 /**
  * @author 陈翔

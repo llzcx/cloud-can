@@ -2,6 +2,7 @@ package ccw.serviceinnovation.oss.service.impl;
 
 import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.entity.UserFavorite;
+import ccw.serviceinnovation.oss.common.util.MPUtil;
 import ccw.serviceinnovation.oss.mapper.BucketMapper;
 import ccw.serviceinnovation.oss.mapper.UserFavoriteMapper;
 import ccw.serviceinnovation.oss.service.IUserFavoriteService;
@@ -9,9 +10,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ccw.serviceinnovation.oss.common.util.MPUtil;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 

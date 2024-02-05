@@ -1,13 +1,12 @@
 package ccw.serviceinnovation.oss.manager.authority.bucketacl;
 
+import ccw.serviceinnovation.common.constant.ACLEnum;
+import ccw.serviceinnovation.common.constant.AuthorityConstant;
 import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.entity.User;
 import ccw.serviceinnovation.common.exception.OssException;
 import ccw.serviceinnovation.common.request.ResultCode;
-import ccw.serviceinnovation.common.constant.AuthorityConstant;
-import ccw.serviceinnovation.common.constant.ACLEnum;
 import ccw.serviceinnovation.oss.mapper.BucketMapper;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

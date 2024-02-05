@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import static ccw.serviceinnovation.common.constant.AuthorityConstant.API_BUCKET;
-import static ccw.serviceinnovation.common.constant.AuthorityConstant.API_OBJECT;
 
 /**
  * 获取用户对象存储可展示数据的接口

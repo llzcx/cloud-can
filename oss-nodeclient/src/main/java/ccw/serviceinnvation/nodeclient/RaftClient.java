@@ -14,16 +14,14 @@ import com.alipay.sofa.jraft.option.CliOptions;
 import com.alipay.sofa.jraft.rpc.impl.cli.CliClientServiceImpl;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.locks.ReentrantLock;
-
 import service.raft.request.GetRequest;
 import service.raft.request.JRaftRpcReq;
 import service.raft.rpc.DataGrpcHelper;
 import service.raft.rpc.RpcResponse;
+
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeoutException;
 
 @Data
 @Slf4j

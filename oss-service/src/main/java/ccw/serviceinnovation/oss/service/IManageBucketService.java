@@ -5,8 +5,6 @@ import ccw.serviceinnovation.oss.pojo.vo.BucketVo;
 import ccw.serviceinnovation.oss.pojo.vo.RPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
-import java.util.List;
-
 /**
  * @author 杨世博
  */

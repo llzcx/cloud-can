@@ -1,7 +1,6 @@
 package ccw.serviceinnovation.oss.common.util;
 
 import ccw.serviceinnovation.common.constant.RequestHeadersConstant;
-
 import ccw.serviceinnovation.common.exception.OssException;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.common.util.StringUtil;
@@ -17,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @Author: LEAVES
