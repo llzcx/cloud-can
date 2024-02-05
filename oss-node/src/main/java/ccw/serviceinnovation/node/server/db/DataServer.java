@@ -144,7 +144,7 @@ public class DataServer {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("Started counter server at port:" + dataServer.getNode().getNodeId().getPeerId().getPort());
+        System.out.println("Started node server at port:" + dataServer.getNode().getNodeId().getPeerId().getPort());
         // GrpcServer need block to prevent process exit
         DataGrpcHelper.blockUntilShutdown();
     }

@@ -3,7 +3,6 @@ package ccw.serviceinnovation.oss.service.impl;
 import ccw.serviceinnovation.common.constant.*;
 import ccw.serviceinnovation.common.entity.*;
 import ccw.serviceinnovation.common.exception.OssException;
-import ccw.serviceinnovation.common.nacos.TrackerService;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.common.util.hash.QETag;
 import ccw.serviceinnovation.common.util.object.ObjectUtil;
