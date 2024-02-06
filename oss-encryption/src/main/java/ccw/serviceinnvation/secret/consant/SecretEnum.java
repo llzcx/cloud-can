@@ -1,4 +1,4 @@
-package ccw.serviceinnovation.common.constant;
+package ccw.serviceinnvation.secret.consant;
 
 /**
  * 加密方式
@@ -6,6 +6,7 @@ package ccw.serviceinnovation.common.constant;
  */
 public enum SecretEnum {
 
+    NULL(0,"无加密"),
     /**
      * SM4加密
      */

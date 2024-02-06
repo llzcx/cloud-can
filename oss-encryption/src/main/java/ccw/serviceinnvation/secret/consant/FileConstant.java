@@ -1,4 +1,4 @@
-package ccw.serviceinnovation.common.constant;
+package ccw.serviceinnvation.secret.consant;
 
 /**
  * @author 陈翔

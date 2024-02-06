@@ -3,7 +3,7 @@ package ccw.serviceinnovation.oss.manager.authority;
 public class AuthContext {
     private static ThreadLocal<AuthInfo> context = new ThreadLocal<>();
 
-    public static ThreadLocal<AuthInfo> get(){
+    public static ThreadLocal<AuthInfo> context(){
         return context;
     }
 

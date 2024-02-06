@@ -108,11 +108,6 @@ public class ManageObjectServiceImpl extends ServiceImpl<ManageObjectMapper, Oss
         BeanUtil.copyProperties(ossObject,objectVo);
         objectVo.setObjectAclString(ACLEnum.getEnum(ossObject.getObjectAcl()).getMessage());
 
-        String bucketName = manageObjectMapper.getBucketName(id);
-        String objectName = manageObjectMapper.getObjectName(id);
-        ObjectStateVo state = objectService.getState(bucketName, objectName);
-
-        objectVo.setState(state.getStateStr());
         return objectVo;
     }
 

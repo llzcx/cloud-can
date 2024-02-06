@@ -6,7 +6,11 @@ import ccw.serviceinnovation.common.entity.*;
 import ccw.serviceinnovation.common.exception.OssException;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.common.util.object.ObjectUtil;
+import ccw.serviceinnovation.hash.etag.EtagHandler;
+import ccw.serviceinnovation.loadbalance.OssGroup;
 import ccw.serviceinnovation.oss.common.util.MPUtil;
+import ccw.serviceinnovation.oss.manager.authority.AuthContext;
+import ccw.serviceinnovation.oss.manager.group.FindNodeHandler;
 import ccw.serviceinnovation.oss.manager.redis.ChunkRedisService;
 import ccw.serviceinnovation.oss.manager.redis.NorDuplicateRemovalService;
 import ccw.serviceinnovation.oss.mapper.*;
@@ -15,6 +19,7 @@ import ccw.serviceinnovation.oss.pojo.bo.ChunkBo;
 import ccw.serviceinnovation.oss.pojo.dto.BatchDeletionObjectDto;
 import ccw.serviceinnovation.oss.pojo.vo.*;
 import ccw.serviceinnovation.oss.service.IObjectService;
+import ccw.serviceinnvation.nodeclient.RaftClient;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -27,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import service.StorageTempObjectService;
 import service.bo.FilePrehandleBo;
+import service.raft.request.UploadRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +71,15 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
 
     @Autowired
     ObjectTagObjectMapper objectTagObjectMapper;
+
+    @Autowired
+    FindNodeHandler findNodeHandler;
+
+    @Autowired
+    RaftClient raftClient;
+
+    @Autowired
+    EtagHandler etagHandler;
 
 
     @Override
@@ -265,7 +280,7 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
         }
     }
 
-    public Boolean saveObject(Bucket bucket, String objectName, Long parentObjectId, String etag, Integer ext, Long size, Integer objectAcl) {
+    public void saveObject(Bucket bucket, String objectName, Long parentObjectId, String etag, Integer ext, Long size, Integer objectAcl) {
         //-----------持久化元数据-------------
         //插入文件夹
         Long parent = saveFolder(bucket.getId(), objectName, parentObjectId);
@@ -297,71 +312,38 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
             //不存在则插入
             ossObjectMapper.insert(ossObject);
         }
-        return true;
     }
 
 
     @Override
     public Boolean addSmallObject(String bucketName, String objectName, String etag, MultipartFile file,
                                   Long parentObjectId, Integer objectAcl) throws Exception {
-
-        Bucket bucket = bucketMapper.selectBucketByName(bucketName);
-        if (file.getSize() > 5 * (1 << 20)) {
-            //上传
-            throw new OssException(ResultCode.FILE_IS_BIG);
+        Bucket bucket = AuthContext.context().get().getBucket();
+        Integer secret = bucket.getSecret();
+        //TODO 检查
+        if (file.getSize() > 5 * (1 << 20)) throw new OssException(ResultCode.FILE_IS_BIG);
+        //TODO 对象去重
+        String oldGroupName = norDuplicateRemovalService.getGroup(RaftClient.getObjectKey(etag, secret));
+        if (oldGroupName != null) {
+            log.info("{} exist!", etag);
+            saveObject(bucket, objectName, parentObjectId, etag, null, file.getSize(), ACLEnum.PRIVATE.getCode());
+            return true;
         }
-//        String group1 = norDuplicateRemovalService.getGroup(etag);
-//        if (group1 != null) {
-//            log.info("{} exist!", etag);
-//            saveObject(bucket, objectName, parentObjectId, etag, null, file.getSize(), ACLEnum.PRIVATE.getCode());
-//            return true;
-//        } else {
-//            log.info("{} not exist!", etag);
-//        }
-//        byte[] bytes = file.getBytes();
-//        //利用一致性hash去寻找存储group
-//        String blockToken = UUID.randomUUID().toString().replace('-', '_');
-//        LocationVo storageObjectNode = ConsistentHashing.getStorageObjectNode(etag);
-//        //保存到该节点
-//        Integer providePort = TrackerService.getOssDataProvidePort(storageObjectNode.getIp(), storageObjectNode.getPort());
-//        UserSpecifiedAddressUtil.setAddress(new Address(storageObjectNode.getIp(), providePort, true));
-//        storageTempObjectService.saveBlock(blockToken, file.getSize(), bytes,
-//                file.getSize(), 1, 0, bucket.getSecret());
-//        //校验客户端etag
-//        UserSpecifiedAddressUtil.setAddress(new Address(storageObjectNode.getIp(), providePort, true));
-//        FilePrehandleBo filePrehandleBo = storageTempObjectService.preHandle(etag, blockToken, false, bucket.getSecret());
-//        if (filePrehandleBo == null) {
-//            throw new OssException(ResultCode.FILE_CHECK_ERROR);
-//        }
-//        //校验成功
-//        if (filePrehandleBo.getNewEtag() != null) {
-//            etag = filePrehandleBo.getNewEtag();
-//        }
-//        //-----------持久化元数据-------------
-//        saveObject(bucket, objectName, parentObjectId, etag, filePrehandleBo.getFileType(), file.getSize(), ACLEnum.PRIVATE.getCode());
-//        String group = norDuplicateRemovalService.getGroup(etag);
-//        //检查是否已经存储
-//        if (group != null) {
-//            //已经存储了 则+1
-//            norDuplicateRemovalService.save(etag, group);
-//            return true;
-//        } else {
-//            //通过group去找leader
-////            RaftRpcRequest.RaftRpcRequestBo leader = RaftRpcRequest.getLeader(OssApplicationConstant.NACOS_SERVER_ADDR, storageObjectNode.getGroup());
-//            //发save请求完成同步
-//            String url = "http://" + storageObjectNode.getIp() + ":" + storageObjectNode.getPort() + "/object/download_temp/" + blockToken;
-//            LocationVo locationVo = new LocationVo(storageObjectNode.getIp(), storageObjectNode.getPort());
-//            locationVo.setPath(url);
-//            locationVo.setToken(blockToken);
-//            locationVo.setGroup(storageObjectNode.getGroup());
-////            if (!RaftRpcRequest.save(leader.getCliClientService(), leader.getPeerId(), etag, locationVo)) {
-////                throw new OssException(ResultCode.CANT_SYNC);
-////            }
-//            //引用次数+1
-//            norDuplicateRemovalService.save(etag, storageObjectNode.getGroup());
-//            //删除缓存
-//            UserSpecifiedAddressUtil.setAddress(new Address(storageObjectNode.getIp(), providePort, true));
-//        }
+        //TODO 保存二进制数据
+        byte[] bytes = file.getBytes();
+        //TODO 对象校验
+        String calculateEtag = etagHandler.calculate(bytes);
+        if(!calculateEtag.equals(etag)){
+            throw new OssException(ResultCode.FILE_CHECK_ERROR);
+        }
+        //TODO 寻找存储的节点
+        OssGroup ossGroup = findNodeHandler.find(etag);
+        String newGroupName = ossGroup.getGroupName();
+        raftClient.sync(newGroupName,new UploadRequest(bytes,calculateEtag, secret));
+
+        //TODO 保存元数据
+        saveObject(bucket, objectName, parentObjectId, etag, null, file.getSize(), ACLEnum.PRIVATE.getCode());
+        norDuplicateRemovalService.save(RaftClient.getObjectKey(etag, secret), newGroupName);
         return true;
     }
 

@@ -1,14 +1,15 @@
-package ccw.serviceinnovation.common.util.sm4;
+package ccw.serviceinnvation.secret.sm4;
 
 
-import org.apache.commons.net.util.Base64;
+import org.apache.tomcat.util.codec.binary.Base64;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static ccw.serviceinnovation.common.constant.FileConstant.READ_WRITER_SIZE;
+import static ccw.serviceinnvation.secret.consant.FileConstant.READ_WRITER_SIZE;
+
 
 /**
  * @author 陈翔

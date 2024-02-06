@@ -27,14 +27,14 @@ public class NorDuplicateRemovalService {
         return Long.parseLong(redisUtil.hget(COUNT_PREFIX, etag));
     }
 
-    public String getGroup(String etag) {
-        return redisUtil.hget(GROUP_PREFIX, etag);
+    public String getGroup(String key) {
+        return redisUtil.hget(GROUP_PREFIX, key);
     }
 
-    public boolean save(String etag,String group) {
-        log.info("nor save:{}/{}",group,etag);
-        redisUtil.hset(GROUP_PREFIX, etag, group);
-        redisUtil.hincr(COUNT_PREFIX, etag, 1);
+    public boolean save(String key,String group) {
+        log.info("nor save:{}/{}",group,key);
+        redisUtil.hset(GROUP_PREFIX, key, group);
+        redisUtil.hincr(COUNT_PREFIX, key, 1);
         return true;
     }
 

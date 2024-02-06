@@ -7,6 +7,13 @@ import java.io.Serializable;
 @Data
 public class UploadRequest implements Serializable,JRaftRpcReq {
     private static final long serialVersionUID = -6597003954824547294L;
+
+    public UploadRequest(byte[] data, String etag, Integer secret) {
+        this.data = data;
+        this.etag = etag;
+        this.secret = secret;
+    }
+
     /**
      * 二进制数据
      */
@@ -16,7 +23,7 @@ public class UploadRequest implements Serializable,JRaftRpcReq {
      */
     private String etag;
     /**
-     * 是否使用rs纠删码技术分片
+     * 加密
      */
-    private boolean rs;
+    private Integer secret;
 }

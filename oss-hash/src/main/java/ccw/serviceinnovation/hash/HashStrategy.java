@@ -8,7 +8,10 @@ public abstract class HashStrategy {
     public int getHashCode(String origin){
         throw new RuntimeException("no impl");
     }
-    public byte[] getHashByte(String origin) throws Exception{
+
+
+
+    public String getHashString(byte[] bytes){
         throw new RuntimeException("no impl");
     }
 

@@ -51,21 +51,6 @@ public class OssObjectController {
     }
 
     /**
-     * 从桶中获取一个对象的状态
-     * @param objectName 对象名
-     * @param bucketName 桶名
-     * @return
-     * @throws Exception
-     */
-    @GetMapping("/getState")
-    @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_READ,name = "getState",description = "从桶中获取一个对象的状态")
-    public ApiResp<OssObject> getState(@RequestParam("objectName") String objectName, @RequestParam("bucketName") String bucketName) throws Exception{
-        ObjectStateVo state = objectService.getState(bucketName, objectName);
-        return ApiResp.ifResponse(state!=null,state,ResultCode.COMMON_FAIL);
-    }
-
-
-    /**
      * 在桶中添加一个文件夹
      * @param bucketName 桶名称
      * @param objectName 文件夹名称

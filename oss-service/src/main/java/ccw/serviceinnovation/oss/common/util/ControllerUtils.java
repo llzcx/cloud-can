@@ -1,8 +1,8 @@
 package ccw.serviceinnovation.oss.common.util;
-import ccw.serviceinnovation.common.constant.SecretEnum;
+import ccw.serviceinnvation.secret.consant.SecretEnum;
 import ccw.serviceinnovation.common.request.ApiResp;
 import ccw.serviceinnovation.common.request.ResultCode;
-import ccw.serviceinnovation.common.util.sm4.SM4Utils;
+import ccw.serviceinnvation.secret.sm4.SM4Utils;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +14,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Objects;
 
-import static ccw.serviceinnovation.common.constant.FileConstant.READ_WRITER_SIZE;
+import static ccw.serviceinnvation.secret.consant.FileConstant.READ_WRITER_SIZE;
 
 /**
  * @author 陈翔

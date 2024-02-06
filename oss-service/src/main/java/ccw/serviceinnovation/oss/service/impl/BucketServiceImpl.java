@@ -2,7 +2,7 @@ package ccw.serviceinnovation.oss.service.impl;
 
 
 import ccw.serviceinnovation.common.constant.ACLEnum;
-import ccw.serviceinnovation.common.constant.SecretEnum;
+import ccw.serviceinnvation.secret.consant.SecretEnum;
 import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.entity.User;
 import ccw.serviceinnovation.common.exception.OssException;

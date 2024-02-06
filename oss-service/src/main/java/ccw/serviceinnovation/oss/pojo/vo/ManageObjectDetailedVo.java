@@ -39,11 +39,6 @@ public class ManageObjectDetailedVo implements Serializable {
     private String lastUpdateTime;
 
     /**
-     * 当前的状态
-     */
-    private String state;
-
-    /**
      * 存储水平
      */
     private String storageLevelString;

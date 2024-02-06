@@ -137,7 +137,6 @@
             <version>2.8.0</version>
         </dependency>
 
-        <!-- swagger3-->
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-boot-starter</artifactId>
@@ -178,8 +177,12 @@
             <artifactId>oss-rpc</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
-
-
+        <!--node客户端包-->
+        <dependency>
+            <groupId>ccw.serviceinnovation</groupId>
+            <artifactId>oss-nodeclient</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
 
         <!--        从上面可以看出，是com/alibaba/spring/spring-context-support/1.0.8/spring-context-support-1.0.8.jar  这个包版本有问-->
 <!--        解决： 升级spring-context-support版本到1.0.11，即添加以下依赖再次启动，成功了-->
@@ -198,10 +201,10 @@
             <artifactId>nacos-client</artifactId>
             <version>2.0.4</version>
         </dependency>
-        <!--httpCLient-->
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
+            <groupId>ccw.serviceinnovation</groupId>
+            <artifactId>oss-encryption</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
     </dependencies>

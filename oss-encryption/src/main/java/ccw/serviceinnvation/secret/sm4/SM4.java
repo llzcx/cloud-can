@@ -1,4 +1,4 @@
-package ccw.serviceinnovation.common.util.sm4;
+package ccw.serviceinnvation.secret.sm4;
 
 
 import java.io.*;
