@@ -39,6 +39,37 @@
             <artifactId>oss-encryption</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>ccw.serviceinnovation</groupId>
+            <artifactId>oss-disk</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>ccw.serviceinnovation</groupId>
+            <artifactId>oss-reedsolomon</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+<!--        nacos客户端需要的序列化jar-->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.12.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>ccw.serviceinnovation</groupId>
+            <artifactId>oss-hash</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+
+
     </dependencies>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

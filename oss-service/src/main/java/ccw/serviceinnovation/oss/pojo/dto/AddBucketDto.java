@@ -16,11 +16,6 @@ public class AddBucketDto implements Serializable {
     private String bucketName;
 
     /**
-     * 归档类型
-     */
-    private Integer storageType;
-
-    /**
      * 桶读写权限ACL
      */
     private Integer bucketAcl;

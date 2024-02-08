@@ -17,6 +17,7 @@
 package ccw.serviceinnovation.node.server.db;
 
 import ccw.serviceinnovation.common.entity.LocationVo;
+import ccw.serviceinnovation.node.index.IndexContext;
 import ccw.serviceinnovation.node.server.constant.RegisterConstant;
 import com.alipay.remoting.exception.CodecException;
 import com.alipay.remoting.serialization.SerializerManager;
@@ -93,10 +94,10 @@ public class DataServiceImpl implements DataService {
     @Override
     public void get(GetRequest getRequest, DataClosure closure) {
         boolean readOnlySafe = getRequest.isReadOnSafe();
-        String etag = getRequest.getEtag();
+        String objectKey = getRequest.getEtag();
         if (!readOnlySafe) {
             //非线性读直接读取结果
-            closure.success(StorageEngine.index.get(etag));
+            closure.success(IndexContext.index.get(objectKey));
             closure.run(Status.OK());
             return;
         }
@@ -105,13 +106,13 @@ public class DataServiceImpl implements DataService {
             @Override
             public void run(Status status, long index, byte[] reqCtx) {
                 if (status.isOk()) {
-                    String value = String.valueOf(StorageEngine.index.get(etag));
+                    String value = String.valueOf(IndexContext.index.get(objectKey));
                     if (value != null) {
-                        LOG.info("本地存在该文件:{},在{}", etag, value);
+                        LOG.info("本地存在该文件:{},在{}", objectKey, value);
                         //NetUtil.getLANAddressOnWindows().getHostAddress()
                         closure.success(new LocationVo(RegisterConstant.HOST, RegisterConstant.PORT));
                     } else {
-                        LOG.info("本地不存在该文件:{}", etag);
+                        LOG.info("本地不存在该文件:{}", objectKey);
                         closure.success(null);
                     }
                     closure.run(Status.OK());

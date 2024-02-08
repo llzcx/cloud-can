@@ -7,11 +7,26 @@ import ccw.serviceinnovation.hash.Crc32c;
  */
 public class Crc32EtagHandlerAdapter implements EtagHandler{
 
-    Crc32c crc32 = new Crc32c();
+    Crc32c crc32;
+
+
+    public Crc32EtagHandlerAdapter(){
+        this.crc32 = new Crc32c();
+    }
     @Override
     public String calculate(byte[] bytes) {
         update(bytes,0,bytes.length);
         return String.valueOf(getValue());
+    }
+
+    @Override
+    public String serialize() {
+        return String.valueOf(crc32.getValue());
+    }
+
+    @Override
+    public void deserialize(String s) {
+        crc32 = new Crc32c(Long.parseLong(s));
     }
 
     @Override

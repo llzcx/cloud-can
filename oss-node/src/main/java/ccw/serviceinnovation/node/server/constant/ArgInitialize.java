@@ -43,7 +43,7 @@ public class ArgInitialize {
         //注册中心
         RegisterConstant.NACOS_HOST = map.get(MustParamsKey.NACOS_HOST);
         RegisterConstant.NACOS_PORT = Integer.valueOf(map.get(MustParamsKey.NACOS_PORT));
-        RegisterConstant.NACOS_ADDR = "nacos://" + IpUtils.getAddr(RegisterConstant.NACOS_HOST, RegisterConstant.NACOS_PORT) + "?registry-type=service";
+        RegisterConstant.NACOS_ADDR = IpUtils.getAddr(RegisterConstant.NACOS_HOST, RegisterConstant.NACOS_PORT);
 
         //元数据信息
         RegisterConstant.REDIS_HOST = map.get(MustParamsKey.REDIS_HOST);

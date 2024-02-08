@@ -9,12 +9,13 @@
         <module>oss-common</module>
         <module>oss-rpc</module>
         <module>oss-service</module>
-        <module>oss-nginx</module>
         <module>oss-node</module>
         <module>oss-loadbalance</module>
         <module>oss-hash</module>
         <module>oss-nodeclient</module>
         <module>oss-encryption</module>
+        <module>oss-disk</module>
+        <module>oss-reedsolomon</module>
     </modules>
 
     <groupId>ccw.serviceinnovation</groupId>
@@ -35,52 +36,13 @@
         <nacos.version>2.0.4</nacos.version>
     </properties>
 
-
-<!--    子工程中将包含的依赖-->
-    <dependencies>
-
-
-        <!--lombok-->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.26</version>
-        </dependency>
-
-
-    </dependencies>
-
-
 <!--    版本控制 只是声明版本-->
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>1.18.26</version>
-            </dependency>
-            <!--cloudalibaba-->
-            <dependency>
-                <groupId>com.alibaba.cloud</groupId>
-                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
-                <version>${spring.cloud.alibaba.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.alibaba.nacos</groupId>
-                        <artifactId>nacos-client</artifactId>
-                    </exclusion>
-                </exclusions>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <!--cloud-->
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring.cloud.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>1.2.62</version>
             </dependency>
 
             <dependency>

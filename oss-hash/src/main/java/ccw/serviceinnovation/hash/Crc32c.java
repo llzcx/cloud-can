@@ -83,6 +83,10 @@ public final class Crc32c implements Checksum {
     crc = 0;
   }
 
+  public Crc32c(long crc) {
+    this.crc = crc;
+  }
+
   /**
    * Updates the checksum with a new byte.
    * @param b the new byte.

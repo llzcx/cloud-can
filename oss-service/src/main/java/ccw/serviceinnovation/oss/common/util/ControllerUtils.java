@@ -1,8 +1,8 @@
 package ccw.serviceinnovation.oss.common.util;
-import ccw.serviceinnvation.secret.consant.SecretEnum;
+import ccw.serviceinnvation.encryption.consant.EncryptionEnum;
 import ccw.serviceinnovation.common.request.ApiResp;
 import ccw.serviceinnovation.common.request.ResultCode;
-import ccw.serviceinnvation.secret.sm4.SM4Utils;
+import ccw.serviceinnvation.encryption.sm4.SM4Utils;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +14,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Objects;
 
-import static ccw.serviceinnvation.secret.consant.FileConstant.READ_WRITER_SIZE;
+import static ccw.serviceinnvation.encryption.consant.FileConstant.READ_WRITER_SIZE;
 
 /**
  * @author 陈翔
@@ -82,7 +82,7 @@ public class ControllerUtils {
             while (-1 != (len = in.read(b))) {
                 os.write(b,0,len);
             }
-        }else if(Objects.equals(secret, SecretEnum.SM4.getCode())){
+        }else if(Objects.equals(secret, EncryptionEnum.SM4.getCode())){
             //需要加密SM4
             SM4Utils sm4Utils = new SM4Utils();
             //每次写入的大小改变

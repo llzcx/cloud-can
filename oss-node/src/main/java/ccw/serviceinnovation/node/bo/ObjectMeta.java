@@ -1,6 +1,6 @@
 package ccw.serviceinnovation.node.bo;
 
-import ccw.serviceinnovation.node.secret.SecretEnum;
+import ccw.serviceinnvation.encryption.consant.EncryptionEnum;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -16,14 +16,14 @@ public class ObjectMeta implements Serializable {
     /**
      * 加密算法
      */
-    private SecretEnum secret;
+    private EncryptionEnum secret;
 
     /**
      * 纠删码参数
      */
     private RsParam rs;
 
-    public ObjectMeta(String etag, SecretEnum secret) {
+    public ObjectMeta(String etag, EncryptionEnum secret) {
         this.etag = etag;
         this.secret = secret;
         this.rs = RsParam.instance;

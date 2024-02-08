@@ -5,7 +5,9 @@ import ccw.serviceinnovation.common.constant.FileTypeConstant;
 import ccw.serviceinnovation.common.entity.*;
 import ccw.serviceinnovation.common.exception.OssException;
 import ccw.serviceinnovation.common.request.ResultCode;
+import ccw.serviceinnovation.common.util.NodeObjectKeyUtil;
 import ccw.serviceinnovation.common.util.object.ObjectUtil;
+import ccw.serviceinnovation.hash.etag.Crc32EtagHandlerAdapter;
 import ccw.serviceinnovation.hash.etag.EtagHandler;
 import ccw.serviceinnovation.loadbalance.OssGroup;
 import ccw.serviceinnovation.oss.common.util.MPUtil;
@@ -30,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import service.StorageTempObjectService;
 import service.bo.FilePrehandleBo;
 import service.raft.request.UploadRequest;
 
@@ -46,8 +47,6 @@ import java.util.UUID;
 @Slf4j
 @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> implements IObjectService {
-
-    private StorageTempObjectService storageTempObjectService;
 
     @Autowired
     private OssObjectMapper ossObjectMapper;
@@ -78,8 +77,7 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
     @Autowired
     RaftClient raftClient;
 
-    @Autowired
-    EtagHandler etagHandler;
+
 
 
     @Override
@@ -323,7 +321,7 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
         //TODO 检查
         if (file.getSize() > 5 * (1 << 20)) throw new OssException(ResultCode.FILE_IS_BIG);
         //TODO 对象去重
-        String oldGroupName = norDuplicateRemovalService.getGroup(RaftClient.getObjectKey(etag, secret));
+        String oldGroupName = norDuplicateRemovalService.getGroup(NodeObjectKeyUtil.getObjectKey(etag, secret));
         if (oldGroupName != null) {
             log.info("{} exist!", etag);
             saveObject(bucket, objectName, parentObjectId, etag, null, file.getSize(), ACLEnum.PRIVATE.getCode());
@@ -332,18 +330,20 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
         //TODO 保存二进制数据
         byte[] bytes = file.getBytes();
         //TODO 对象校验
+        EtagHandler etagHandler = new Crc32EtagHandlerAdapter();
         String calculateEtag = etagHandler.calculate(bytes);
+        System.out.println("calculateEtag:"+calculateEtag);
         if(!calculateEtag.equals(etag)){
             throw new OssException(ResultCode.FILE_CHECK_ERROR);
         }
         //TODO 寻找存储的节点
         OssGroup ossGroup = findNodeHandler.find(etag);
         String newGroupName = ossGroup.getGroupName();
-        raftClient.sync(newGroupName,new UploadRequest(bytes,calculateEtag, secret));
-
+        UploadRequest uploadRequest = new UploadRequest(bytes, calculateEtag, secret);
+        raftClient.sync(newGroupName, uploadRequest,ResultCode.UPLOAD_ERROR);
         //TODO 保存元数据
         saveObject(bucket, objectName, parentObjectId, etag, null, file.getSize(), ACLEnum.PRIVATE.getCode());
-        norDuplicateRemovalService.save(RaftClient.getObjectKey(etag, secret), newGroupName);
+        norDuplicateRemovalService.save(NodeObjectKeyUtil.getObjectKey(etag, secret), newGroupName);
         return true;
     }
 
@@ -448,107 +448,108 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
             throw new OssException(ResultCode.BLOCK_TOKEN_NULL);
         }
         log.info("此次合并的blockToken:{}", blockToken);
-        ChunkBo chunkBo = chunkRedisService.getChunkBo(bucketName, blockToken);
-        if (chunkBo == null) {
-            throw new OssException(ResultCode.UPLOAD_EVENT_EXPIRATION);
-        }
-        long size = chunkBo.getSize();
-        String etag = chunkBo.getEtag();
-        String ip = chunkBo.getIp();
-        Integer port = chunkBo.getPort();
-        String ObjectName = chunkBo.getName();
-        String groupId = chunkBo.getGroupId();
-        Integer ossDataProvidePort = 1;
-        if (ossDataProvidePort == null) {
-            throw new OssException(ResultCode.SERVER_EXCEPTION);
-        }
-        OssObject ossObject = new OssObject();
-        //文件校验是否上传完所有分块
-        if (chunkRedisService.isUploaded(bucketName, blockToken)) {
-            log.info("所有分块上传完毕");
-            log.info("preHandle:{}:{}", ip, port);
-//            UserSpecifiedAddressUtil.setAddress(new Address(ip, ossDataProvidePort, true));
-            FilePrehandleBo filePrehandleBo = storageTempObjectService.preHandle(etag, blockToken, false, chunkBo.getSecret());
-            if (filePrehandleBo == null) {
-                //校验失败
-                log.info("校验失败");
-                chunkRedisService.removeChunk(bucketName, blockToken);
-//                UserSpecifiedAddressUtil.setAddress(new Address(ip, ossDataProvidePort, true));
-                throw new OssException(ResultCode.CLIENT_ETAG_ERROR);
-            } else {
-                //校验成功
-                log.info("校验成功");
-                if (filePrehandleBo.getNewEtag() != null) {
-                    etag = filePrehandleBo.getNewEtag();
-                }
-                log.info("最终的etag:{}", etag);
-                ossObject.setExt(filePrehandleBo.getFileType());
-                if (filePrehandleBo.getNewEtag() != null) {
-                    etag = filePrehandleBo.getNewEtag();
-                }
-                //去redis查这个文件是否存在
-                String group = norDuplicateRemovalService.getGroup(etag);
-                //文件去重
-                if (group != null) {
-                    //有重复 ->  删除缓存
-                    //标记次数+1
-                    norDuplicateRemovalService.save(etag, group);
-                    log.info("文件hash已经存在");
-                } else {
-                    log.info("文件不存在,需要进行落盘");
-//                    RaftRpcRequest.RaftRpcRequestBo leader = RaftRpcRequest.getLeader(OssApplicationConstant.NACOS_SERVER_ADDR, chunkBo.getGroupId());
-                    String url = "http://" + ip + ":" + port + "/object/download_temp/" + blockToken;
-                    LocationVo locationVo = new LocationVo(ip, port);
-                    locationVo.setPath(url);
-                    locationVo.setToken(blockToken);
-//                    if (RaftRpcRequest.save(leader.getCliClientService(), leader.getPeerId(), etag, locationVo)) {
-//                        System.out.println("完成同步!");
-//                        //删除缓存数据
-//                        submitDelTask(new MqDelTmpBo(blockToken, ip, ossDataProvidePort));
-//                    } else {
-//                        throw new OssException(ResultCode.CANT_SYNC);
-//                    }
-                    //标记次数+1
-                    norDuplicateRemovalService.save(etag, chunkBo.getGroupId());
-                }
-                Long bucketId = chunkBo.getBucketId();
-                Bucket bucket = bucketMapper.selectById(bucketId);
-                Long parentObjectId = chunkBo.getParentObjectId();
-                // 删除redis相关信息
-                chunkRedisService.removeChunk(bucketName, blockToken);
-                //-----------持久化元数据-------------
-                //插入文件夹
-                Long parent = saveFolder(bucketId, chunkBo.getName(), parentObjectId);
-                //真实
-                ossObject.setBucketId(bucketId);
-                String time = DateUtil.now();
-                ossObject.setCreateTime(time);
-                ossObject.setLastUpdateTime(time);
-                ossObject.setSize(size);
-                ossObject.setEtag(etag);
-                ossObject.setName(chunkBo.getName());
-                ossObject.setParent(parent);
-                if (chunkBo.getObjectAcl() != null) {
-                    ossObject.setObjectAcl(ACLEnum.getEnum(chunkBo.getObjectAcl()).getCode());
-                } else {
-                    ossObject.setObjectAcl(ACLEnum.DEFAULT.getCode());
-                }
-                ossObject.setSecret(chunkBo.getSecret());
-                ossObject.setIsFolder(false);
-                Long id = ossObjectMapper.selectObjectIdByIdAndName(bucketId, ObjectName);
-                if (id != null) {
-                    //存在则更新
-                    ossObject.setId(id);
-                    ossObjectMapper.updateById(ossObject);
-                } else {
-                    //不存在则插入
-                    ossObjectMapper.insert(ossObject);
-                }
-                return true;
-            }
-        } else {
-            throw new OssException(ResultCode.CHUNK_NOT_UP_FINISH);
-        }
+//        ChunkBo chunkBo = chunkRedisService.getChunkBo(bucketName, blockToken);
+//        if (chunkBo == null) {
+//            throw new OssException(ResultCode.UPLOAD_EVENT_EXPIRATION);
+//        }
+//        long size = chunkBo.getSize();
+//        String etag = chunkBo.getEtag();
+//        String ip = chunkBo.getIp();
+//        Integer port = chunkBo.getPort();
+//        String ObjectName = chunkBo.getName();
+//        String groupId = chunkBo.getGroupId();
+//        Integer ossDataProvidePort = 1;
+//        if (ossDataProvidePort == null) {
+//            throw new OssException(ResultCode.SERVER_EXCEPTION);
+//        }
+//        OssObject ossObject = new OssObject();
+//        //文件校验是否上传完所有分块
+//        if (chunkRedisService.isUploaded(bucketName, blockToken)) {
+//            log.info("所有分块上传完毕");
+//            log.info("preHandle:{}:{}", ip, port);
+////            UserSpecifiedAddressUtil.setAddress(new Address(ip, ossDataProvidePort, true));
+//            //FilePrehandleBo filePrehandleBo = storageTempObjectService.preHandle(etag, blockToken, false, chunkBo.getSecret());
+//            if (filePrehandleBo == null) {
+//                //校验失败
+//                log.info("校验失败");
+//                chunkRedisService.removeChunk(bucketName, blockToken);
+////                UserSpecifiedAddressUtil.setAddress(new Address(ip, ossDataProvidePort, true));
+//                throw new OssException(ResultCode.CLIENT_ETAG_ERROR);
+//            } else {
+//                //校验成功
+//                log.info("校验成功");
+//                if (filePrehandleBo.getNewEtag() != null) {
+//                    etag = filePrehandleBo.getNewEtag();
+//                }
+//                log.info("最终的etag:{}", etag);
+//                ossObject.setExt(filePrehandleBo.getFileType());
+//                if (filePrehandleBo.getNewEtag() != null) {
+//                    etag = filePrehandleBo.getNewEtag();
+//                }
+//                //去redis查这个文件是否存在
+//                String group = norDuplicateRemovalService.getGroup(etag);
+//                //文件去重
+//                if (group != null) {
+//                    //有重复 ->  删除缓存
+//                    //标记次数+1
+//                    norDuplicateRemovalService.save(etag, group);
+//                    log.info("文件hash已经存在");
+//                } else {
+//                    log.info("文件不存在,需要进行落盘");
+////                    RaftRpcRequest.RaftRpcRequestBo leader = RaftRpcRequest.getLeader(OssApplicationConstant.NACOS_SERVER_ADDR, chunkBo.getGroupId());
+//                    String url = "http://" + ip + ":" + port + "/object/download_temp/" + blockToken;
+//                    LocationVo locationVo = new LocationVo(ip, port);
+//                    locationVo.setPath(url);
+//                    locationVo.setToken(blockToken);
+////                    if (RaftRpcRequest.save(leader.getCliClientService(), leader.getPeerId(), etag, locationVo)) {
+////                        System.out.println("完成同步!");
+////                        //删除缓存数据
+////                        submitDelTask(new MqDelTmpBo(blockToken, ip, ossDataProvidePort));
+////                    } else {
+////                        throw new OssException(ResultCode.CANT_SYNC);
+////                    }
+//                    //标记次数+1
+//                    norDuplicateRemovalService.save(etag, chunkBo.getGroupId());
+//                }
+//                Long bucketId = chunkBo.getBucketId();
+//                Bucket bucket = bucketMapper.selectById(bucketId);
+//                Long parentObjectId = chunkBo.getParentObjectId();
+//                // 删除redis相关信息
+//                chunkRedisService.removeChunk(bucketName, blockToken);
+//                //-----------持久化元数据-------------
+//                //插入文件夹
+//                Long parent = saveFolder(bucketId, chunkBo.getName(), parentObjectId);
+//                //真实
+//                ossObject.setBucketId(bucketId);
+//                String time = DateUtil.now();
+//                ossObject.setCreateTime(time);
+//                ossObject.setLastUpdateTime(time);
+//                ossObject.setSize(size);
+//                ossObject.setEtag(etag);
+//                ossObject.setName(chunkBo.getName());
+//                ossObject.setParent(parent);
+//                if (chunkBo.getObjectAcl() != null) {
+//                    ossObject.setObjectAcl(ACLEnum.getEnum(chunkBo.getObjectAcl()).getCode());
+//                } else {
+//                    ossObject.setObjectAcl(ACLEnum.DEFAULT.getCode());
+//                }
+//                ossObject.setSecret(chunkBo.getSecret());
+//                ossObject.setIsFolder(false);
+//                Long id = ossObjectMapper.selectObjectIdByIdAndName(bucketId, ObjectName);
+//                if (id != null) {
+//                    //存在则更新
+//                    ossObject.setId(id);
+//                    ossObjectMapper.updateById(ossObject);
+//                } else {
+//                    //不存在则插入
+//                    ossObjectMapper.insert(ossObject);
+//                }
+//                return true;
+//            }
+//        } else {
+//            throw new OssException(ResultCode.CHUNK_NOT_UP_FINISH);
+//        }
+        return null;
     }
 
 

@@ -4,4 +4,8 @@ import java.util.zip.Checksum;
 
 public interface EtagHandler extends Checksum {
     String calculate(byte[] bytes);
+
+    String serialize();
+
+    void deserialize(String s);
 }

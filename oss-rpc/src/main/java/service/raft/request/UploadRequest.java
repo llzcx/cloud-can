@@ -8,9 +8,9 @@ import java.io.Serializable;
 public class UploadRequest implements Serializable,JRaftRpcReq {
     private static final long serialVersionUID = -6597003954824547294L;
 
-    public UploadRequest(byte[] data, String etag, Integer secret) {
+    public UploadRequest(byte[] data, String nodeObjectKey, Integer secret) {
         this.data = data;
-        this.etag = etag;
+        this.nodeObjectKey = nodeObjectKey;
         this.secret = secret;
     }
 
@@ -21,7 +21,7 @@ public class UploadRequest implements Serializable,JRaftRpcReq {
     /**
      * hash值
      */
-    private String etag;
+    private String nodeObjectKey;
     /**
      * 加密
      */

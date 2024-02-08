@@ -58,14 +58,4 @@ public class OssApplicationConstant {
         OssApplicationConstant.PORT = port;
     }
 
-
-    /**
-     * http port
-     */
-    public static String MQ_ADDR;
-    @Value("${rocketmq.addr}")
-    public void setMqAddr(String addr) {
-        OssApplicationConstant.MQ_ADDR = addr;
-    }
-
 }

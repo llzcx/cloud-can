@@ -2,10 +2,14 @@ package ccw.serviceinnovation.node.server.db;
 
 import service.raft.request.*;
 
+import java.io.IOException;
+
 /**
  * 方法将被状态机反射调用
  */
 public interface OnApply {
+
+    void initialize() throws IOException;
     void get(GetRequest getRequest);
 
     /**
@@ -16,7 +20,7 @@ public interface OnApply {
     /**
      * 上传对象
      */
-    void upload(UploadRequest uploadRequest);
+    void upload(UploadRequest uploadRequest) throws IOException;
 
     /**
      *创建分片上传事件

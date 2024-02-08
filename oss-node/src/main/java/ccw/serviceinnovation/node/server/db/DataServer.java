@@ -113,7 +113,7 @@ public class DataServer {
      * 启动Jraft服务
      * @throws IOException
      */
-    public static void start() {
+    public static void start() throws IOException {
         final String dataPath = RegisterConstant.RAFT_LOG_DISK;
         final String groupId = RegisterConstant.GROUP_NAME;
         final String serverIdStr = RegisterConstant.ADDR;

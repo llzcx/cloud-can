@@ -16,6 +16,16 @@ public class Md5EtagHandlerAdapter implements EtagHandler {
     }
 
     @Override
+    public String serialize() {
+        return null;
+    }
+
+    @Override
+    public void deserialize(String s) {
+
+    }
+
+    @Override
     public void update(int b) {
         throw new RuntimeException("no impl");
     }

@@ -17,6 +17,8 @@
 package ccw.serviceinnovation.node.server.db;
 
 
+import ccw.serviceinnovation.common.request.ApiResp;
+import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.node.util.StringUtil;
 import com.alipay.remoting.exception.CodecException;
 import com.alipay.remoting.serialization.SerializerManager;
@@ -93,12 +95,15 @@ public class DataStateMachine extends StateMachineAdapter {
                     Method myMethod = StorageEngine.onApply.getClass().getDeclaredMethod(methodName, req);
                     myMethod.setAccessible(true);
                     returnData = myMethod.invoke(StorageEngine.onApply,dataOperation.getRequest());
+                    if (closure != null) {
+                        closure.success(returnData);
+                        closure.run(Status.OK());
+                    }
                 } catch (Exception e) {
+                    if (closure != null) {
+                        closure.failure("ERROR");
+                    }
                     e.printStackTrace();
-                }
-                if (closure != null) {
-                    closure.success(returnData);
-                    closure.run(Status.OK());
                 }
             }
             iter.next();

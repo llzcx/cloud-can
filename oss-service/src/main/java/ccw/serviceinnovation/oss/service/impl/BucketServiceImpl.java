@@ -2,7 +2,7 @@ package ccw.serviceinnovation.oss.service.impl;
 
 
 import ccw.serviceinnovation.common.constant.ACLEnum;
-import ccw.serviceinnvation.secret.consant.SecretEnum;
+import ccw.serviceinnvation.encryption.consant.EncryptionEnum;
 import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.entity.User;
 import ccw.serviceinnovation.common.exception.OssException;
@@ -79,7 +79,7 @@ public class BucketServiceImpl extends ServiceImpl<BucketMapper, Bucket> impleme
         bucket.setUpdateTime(DateUtil.now());
         Integer secret = addBucketDto.getSecret();
         if(secret!=null){
-            bucket.setSecret(SecretEnum.getEnum(secret).getCode());
+            bucket.setSecret(EncryptionEnum.getEnum(secret).getCode());
         }
         Integer bucketAcl = addBucketDto.getBucketAcl();
         if(bucketAcl!=null){
@@ -87,7 +87,6 @@ public class BucketServiceImpl extends ServiceImpl<BucketMapper, Bucket> impleme
         }else{
             bucket.setBucketAcl(ACLEnum.PRIVATE.getCode());
         }
-        Integer storageType = addBucketDto.getStorageType();
         bucketMapper.insert(bucket);
         return bucket;
     }
@@ -155,7 +154,7 @@ public class BucketServiceImpl extends ServiceImpl<BucketMapper, Bucket> impleme
             if(secret==null){
                 bucket.setSecret(null);
             }else{
-                SecretEnum anEnum = SecretEnum.getEnum(secret);
+                EncryptionEnum anEnum = EncryptionEnum.getEnum(secret);
                 if(anEnum==null){
                     throw new OssException(ResultCode.UNDEFINED);
                 }else{

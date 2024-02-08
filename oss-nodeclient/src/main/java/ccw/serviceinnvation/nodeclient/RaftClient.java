@@ -1,5 +1,7 @@
 package ccw.serviceinnvation.nodeclient;
 
+import ccw.serviceinnovation.common.exception.OssException;
+import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.loadbalance.OssGroup;
 import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.exception.NacosException;
@@ -19,6 +21,7 @@ import service.raft.request.JRaftRpcReq;
 import service.raft.rpc.DataGrpcHelper;
 import service.raft.rpc.RpcResponse;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -128,13 +131,16 @@ public class RaftClient {
     }
 
 
-    public Object sync(final String groupName, JRaftRpcReq request) throws RemotingException, InterruptedException {
+    public Object sync(final String groupName, JRaftRpcReq request,ResultCode resultCode) throws RemotingException, InterruptedException {
         CliClientServiceImpl cliClientService = getGroupClient(groupName);
         PeerId leader = getLeader(groupName);
         if (cliClientService == null || leader == null) {
             throw new RuntimeException("no group:" + groupName);
         }
         RpcResponse rpcResponse = (RpcResponse) cliClientService.getRpcClient().invokeSync(leader.getEndpoint(), request, 5000000);
+        if(!rpcResponse.getSuccess()){
+            throw new OssException(resultCode);
+        }
         return rpcResponse.getData();
     }
 
@@ -146,6 +152,7 @@ public class RaftClient {
     public int getGroupCount() {
         ReentrantReadWriteLock.ReadLock readLock = mainLock.readLock();
         try {
+            readLock.lock();
             return groupList.size();
         } finally {
             readLock.unlock();
@@ -156,14 +163,11 @@ public class RaftClient {
     public List<OssGroup> getList() {
         ReentrantReadWriteLock.ReadLock readLock = mainLock.readLock();
         try {
+            readLock.lock();
             return groupList;
         } finally {
             readLock.unlock();
         }
-    }
-
-    public static String getObjectKey(String etag,Integer secret){
-        return etag + "#" +secret;
     }
 
     public static void main(String[] args) throws InterruptedException {

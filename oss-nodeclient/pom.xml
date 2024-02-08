@@ -52,6 +52,7 @@
             <groupId>com.alipay.sofa</groupId>
             <artifactId>jraft-example</artifactId>
         </dependency>
+
     </dependencies>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

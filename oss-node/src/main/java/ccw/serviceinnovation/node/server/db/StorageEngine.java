@@ -1,20 +1,22 @@
 package ccw.serviceinnovation.node.server.db;
 
-import ccw.serviceinnovation.node.disk.Disk;
-import ccw.serviceinnovation.node.disk.DiskImpl;
-import ccw.serviceinnovation.node.index.EtagIndexHashMapImpl;
-import ccw.serviceinnovation.node.index.Index;
 import ccw.serviceinnovation.node.server.constant.ArgInitialize;
+import ccw.serviceinnovation.node.server.constant.RegisterConstant;
 import ccw.serviceinnovation.node.server.http.HttpServer;
 import ccw.serviceinnovation.node.server.nacos.NacosConfig;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alipay.sofa.jraft.rhea.util.concurrent.NamedThreadFactory;
 import com.alipay.sofa.jraft.util.ThreadPoolUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 
+
+@Slf4j
 public class StorageEngine {
     private static ThreadPoolExecutor executor   = ThreadPoolUtil
             .newBuilder()
@@ -25,13 +27,8 @@ public class StorageEngine {
             .keepAliveSeconds(60L)
             .workQueue(new SynchronousQueue<>())
             .threadFactory(
-                    new NamedThreadFactory("JRaft-Test-Executor-", true)).build();
+                    new NamedThreadFactory("JRaft-Executor-", true)).build();
     private StorageEngine(){}
-
-    /**
-     * 索引实现
-     */
-    public static Index index;
     /**
      * 状态机实现
      */
@@ -39,15 +36,7 @@ public class StorageEngine {
     /**
      * 注册中心
      */
-    private static NacosConfig register;
-    /**
-     * 持久化
-     */
-    private static Disk disk;
-
-
-
-
+    public static NacosConfig register;
 
 
 
@@ -56,31 +45,27 @@ public class StorageEngine {
         ArgInitialize.handle(args);
 
         //文件路径
-        disk = new DiskImpl();
-        disk.initialize();
+        FileUtils.forceMkdir(new File(RegisterConstant.LOG_DISK));
+        FileUtils.forceMkdir(new File(RegisterConstant.RAFT_LOG_DISK));
+        FileUtils.forceMkdir(new File(RegisterConstant.TMP_LOG_DISK));
+        for (String path : RegisterConstant.PARTITION_DISK) {
+            FileUtils.forceMkdir(new File(path));
+        }
 
-        //索引
-        index = new EtagIndexHashMapImpl();
-        index.load();
 
         //应用状态机实现
         onApply = new OnApplyImpl();
+        onApply.initialize();
 
         //开启http访问服务
         executor.submit(HttpServer::start);
 
 
-        //连接到Nacos
+        //连接到注册中心
         register = new NacosConfig();
-        executor.submit(() -> {
-            try {
-                register.connect();
-            } catch (NacosException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        register.connect();
 
-        //启动Jraft服务
+        //启动raft服务
         DataServer.start();
     }
 }
