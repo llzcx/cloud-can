@@ -210,8 +210,13 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
     @Override
     public Boolean deleteObject(String bucketName, String objectName) throws Exception {
         OssObject ossObject = ossObjectMapper.selectObjectByName(bucketName, objectName);
-        if (ossObject == null) {
-            return true;
+        if (ossObject == null) return true;
+        if (!ossObject.getIsFolder()) {
+            String etag = ossObject.getEtag();
+            NodeObjectKeyUtil.getObjectKey(etag);
+            String group = norDuplicateRemovalService.getGroup(NodeObjectKeyUtil.getObjectKey(etag));
+            raftClient.sync(group, new DelRequest(NodeObjectKeyUtil.getObjectKey(etag)), ResultCode.SERVER_EXCEPTION);
+            norDuplicateRemovalService.del(NodeObjectKeyUtil.getObjectKey(etag));
         }
         //删除元数据
         ossObjectMapper.deleteById(ossObject.getId());
@@ -220,32 +225,6 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
         objectTagObjectMapper.delete(MPUtil.queryWrapperEq("object_id", ossObject.getId()));
         for (ObjectTagObject objectTagObject : objectTagObjects) {
             objectTagMapper.delete(MPUtil.queryWrapperEq("id", objectTagObject.getTagId()));
-        }
-        if (!ossObject.getIsFolder()) {
-//            String group = norDuplicateRemovalService.getGroup(ossObject.getEtag());
-//            if (ossObject.getStorageLevel().equals(StorageTypeEnum.ARCHIVAL.getCode())) {
-//                //删除真实数据
-//                if (coldDuplicateRemovalService.del(ossObject.getEtag()) == 0) {
-//                    String ServerName = coldDuplicateRemovalService.getName(ossObject.getEtag());
-//                    List<Host> coldList = TrackerService.getColdList(OssApplicationConstant.NACOS_SERVER_ADDR);
-//                    for (Host host : coldList) {
-//                        if (host.getMetadata().getCold_storage_name().equals(ServerName)) {
-//                            String url = "http://" + host.getIp() + ":" + host.getPort() + "/cold/deleteNor/" + ossObject.getEtag();
-//                            String delete = HttpUtils.requestTo(url, "DELETE");
-//                            log.info("{}/{} delete success", bucketName, objectName);
-//                        }
-//                    }
-//                }
-//                return true;
-//            } else if (ossObject.getStorageLevel().equals(StorageTypeEnum.STANDARD.getCode())) {
-//                //删除真实数据
-//                if (norDuplicateRemovalService.del(ossObject.getEtag()) == 0) {
-////                    RaftRpcRequest.RaftRpcRequestBo leader = RaftRpcRequest.getLeader(OssApplicationConstant.NACOS_SERVER_ADDR, group);
-////                    RaftRpcRequest.del(leader.getCliClientService(), leader.getPeerId(), ossObject.getEtag());
-//                    log.info("对象{}删除成功", bucketName + "/" + objectName);
-//                }
-//            }
-
         }
         return true;
     }
@@ -389,12 +368,12 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
         String groupName = chunkBo.getGroupId();
         byte[] bytes = file.getBytes();
         int chunks = (int) Math.ceil((double) chunkBo.getSize() / CHUNK_SIZE);
-        if(chunk != chunks && bytes.length != CHUNK_SIZE) throw new OssException(ResultCode.FRAGMENT_SIZE_ERROR);
+        if (chunk != chunks && bytes.length != CHUNK_SIZE) throw new OssException(ResultCode.FRAGMENT_SIZE_ERROR);
         Long off = CHUNK_SIZE * chunk;
         if (off > chunkBo.getSize()) throw new OssException(ResultCode.OFFSET_LIMIT);
         String checkSum = chunkRedisService.getCheckSum(eventId);
         Checksum deserialize = etagHandler.deserialize(checkSum);
-        etagHandler.update(deserialize,bytes,0,bytes.length);
+        etagHandler.update(deserialize, bytes, 0, bytes.length);
         //TODO 保存到数据服务
         if (bytes.length != CHUNK_SIZE) throw new OssException(ResultCode.FRAGMENT_SIZE_ERROR);
         WriteFragmentRequest writeFragmentRequest = new WriteFragmentRequest(eventId, bytes, off);
@@ -452,7 +431,7 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
 
     @Override
     public Boolean merge(String bucketName, String eventId) throws Exception {
-        if (eventId == null || "".equals(eventId.trim()))  throw new OssException(ResultCode.EVENT_ID_NULL);
+        if (eventId == null || "".equals(eventId.trim())) throw new OssException(ResultCode.EVENT_ID_NULL);
         Bucket bucket = AuthContext.context().get().getBucket();
         ChunkBo chunkBo = chunkRedisService.getChunkBo(bucketName, eventId);
         Long size = chunkBo.getSize();
@@ -467,24 +446,24 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
         //TODO 分片数量检查
         int current = chunkRedisService.counter(bucketName, eventId);
         int chunks = (int) Math.ceil((double) size / CHUNK_SIZE);
-        if(current!=chunks) throw new OssException(ResultCode.CHUNK_NOT_UP_FINISH);
+        if (current != chunks) throw new OssException(ResultCode.CHUNK_NOT_UP_FINISH);
         //TODO 对象校验
         String calculateEtag = chunkRedisService.getCheckSum(etag);
-        if(!Objects.equals(etag, calculateEtag)){
-            raftClient.sync(groupName,writeDelEventRequest,ResultCode.SERVER_EXCEPTION);
-           throw new OssException(ResultCode.FILE_CHECK_ERROR);
+        if (!Objects.equals(etag, calculateEtag)) {
+            raftClient.sync(groupName, writeDelEventRequest, ResultCode.SERVER_EXCEPTION);
+            throw new OssException(ResultCode.FILE_CHECK_ERROR);
         }
         //TODO 对象去重
         String oldGroupName = norDuplicateRemovalService.getGroup(NodeObjectKeyUtil.getObjectKey(etag));
         if (oldGroupName != null) {
             log.info("{} exist.", etag);
             saveObject(bucket, objectName, parentObjectId, etag, null, size, ACLEnum.PRIVATE.getCode());
-            raftClient.sync(groupName,writeDelEventRequest,ResultCode.SERVER_EXCEPTION);
+            raftClient.sync(groupName, writeDelEventRequest, ResultCode.SERVER_EXCEPTION);
             return true;
         }
         //TODO 数据层合并
-        WriterMergeRequest writerMergeRequest = new WriterMergeRequest(eventId,NodeObjectKeyUtil.getObjectKey(etag));
-        raftClient.sync(groupName,writerMergeRequest,ResultCode.SERVER_EXCEPTION);
+        WriterMergeRequest writerMergeRequest = new WriterMergeRequest(eventId, NodeObjectKeyUtil.getObjectKey(etag));
+        raftClient.sync(groupName, writerMergeRequest, ResultCode.SERVER_EXCEPTION);
         //TODO 保存元数据
         saveObject(bucket, objectName, parentObjectId, NodeObjectKeyUtil.getObjectKey(etag), null, size, ACLEnum.PRIVATE.getCode());
         norDuplicateRemovalService.save(NodeObjectKeyUtil.getObjectKey(etag), groupName);
