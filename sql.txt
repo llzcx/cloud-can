@@ -1,0 +1,195 @@
+/*
+SQLyog Ultimate v12.09 (64 bit)
+MySQL - 8.0.28 : Database - oss
+*********************************************************************
+*/
+
+
+/*!40101 SET NAMES utf8 */;
+
+/*!40101 SET SQL_MODE=''*/;
+
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/`oss` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+
+USE `oss`;
+
+/*Table structure for table `api` */
+
+DROP TABLE IF EXISTS `api`;
+
+CREATE TABLE `api` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '唯一ID',
+  `name` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '接口名字',
+  `description` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '接口描述',
+  `type` varchar(256) DEFAULT NULL COMMENT '接口类型',
+  `target` varchar(256) DEFAULT NULL COMMENT '接口的目标',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UNIQUE1` (`name`),
+  UNIQUE KEY `UNIQUE2` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Table structure for table `authorize` */
+
+DROP TABLE IF EXISTS `authorize`;
+
+CREATE TABLE `authorize` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '授权策略唯一ID',
+  `user_is_all` bit(1) DEFAULT b'0' COMMENT '授权用户是否是全局',
+  `path_is_all` bit(1) DEFAULT b'0' COMMENT '授权资源是否是全部',
+  `operation` int DEFAULT NULL COMMENT '操作/效力',
+  `bucket_id` bigint DEFAULT NULL COMMENT '桶唯一ID',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Table structure for table `authorize_path` */
+
+DROP TABLE IF EXISTS `authorize_path`;
+
+CREATE TABLE `authorize_path` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `authorize_id` bigint DEFAULT NULL COMMENT '授权ID',
+  `path` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '路径',
+  `bucket_id` bigint DEFAULT NULL COMMENT '桶id',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Table structure for table `authorize_user` */
+
+DROP TABLE IF EXISTS `authorize_user`;
+
+CREATE TABLE `authorize_user` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `authorize_id` bigint DEFAULT NULL COMMENT '授权用户id',
+  `user_id` bigint DEFAULT NULL COMMENT '授权id',
+  `bucket_id` bigint DEFAULT NULL COMMENT '桶id',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Table structure for table `backup` */
+
+DROP TABLE IF EXISTS `backup`;
+
+CREATE TABLE `backup` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `source_object_id` bigint DEFAULT NULL COMMENT '备份自哪个对象',
+  `target_object_id` bigint DEFAULT NULL COMMENT '备份数据的id',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `backup` (`source_object_id`,`target_object_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Table structure for table `bucket` */
+
+DROP TABLE IF EXISTS `bucket`;
+
+CREATE TABLE `bucket` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '桶ID',
+  `name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '桶名字',
+  `user_id` bigint DEFAULT NULL COMMENT '用户ID',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `bucket_acl` int DEFAULT NULL COMMENT '桶读写权限ACL',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `NAME` (`name`,`bucket_acl`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Table structure for table `bucket_tag` */
+
+DROP TABLE IF EXISTS `bucket_tag`;
+
+CREATE TABLE `bucket_tag` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'bucket唯一接口',
+  `key` varchar(1024) DEFAULT NULL COMMENT '标签键',
+  `value` varchar(1024) DEFAULT NULL COMMENT '标签值',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Table structure for table `bucket_tag_bucket` */
+
+DROP TABLE IF EXISTS `bucket_tag_bucket`;
+
+CREATE TABLE `bucket_tag_bucket` (
+  `bucket_id` bigint NOT NULL COMMENT 'bucket唯一ID',
+  `tag_id` bigint NOT NULL COMMENT 'tag唯一ID',
+  PRIMARY KEY (`bucket_id`,`tag_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Table structure for table `object_tag` */
+
+DROP TABLE IF EXISTS `object_tag`;
+
+CREATE TABLE `object_tag` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '对象标签唯一ID',
+  `key` varchar(1024) DEFAULT NULL COMMENT '标签键',
+  `value` varchar(1024) DEFAULT NULL COMMENT '标签值',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Table structure for table `object_tag_object` */
+
+DROP TABLE IF EXISTS `object_tag_object`;
+
+CREATE TABLE `object_tag_object` (
+  `object_id` bigint NOT NULL COMMENT '对象ID',
+  `tag_id` bigint NOT NULL COMMENT '标签ID',
+  PRIMARY KEY (`object_id`,`tag_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Table structure for table `oss_object` */
+
+DROP TABLE IF EXISTS `oss_object`;
+
+CREATE TABLE `oss_object` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '唯一ID',
+  `name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '对象名字',
+  `bucket_id` bigint DEFAULT NULL COMMENT '桶ID',
+  `ext` int DEFAULT NULL COMMENT '文件类型',
+  `etag` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '文件的etag值',
+  `size` bigint DEFAULT NULL COMMENT '文件总大小',
+  `is_folder` bit(1) DEFAULT b'0' COMMENT '是否为文件夹',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `last_update_time` datetime DEFAULT NULL COMMENT '最近更新时间',
+  `object_acl` int DEFAULT NULL COMMENT '对象访问控制权限',
+  `parent` bigint DEFAULT NULL COMMENT '父级对象id',
+  `is_backup` bit(1) DEFAULT b'0' COMMENT '是否为备份对象',
+  `rs` bit(1) DEFAULT b'0' COMMENT '是否使用rs纠删码分片',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `PATHKEY` (`bucket_id`,`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Table structure for table `user` */
+
+DROP TABLE IF EXISTS `user`;
+
+CREATE TABLE `user` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '用户唯一标识',
+  `username` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '用户名',
+  `password` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '用户密码',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `phone` varchar(256) DEFAULT NULL COMMENT '电话',
+  `parent` bigint DEFAULT NULL COMMENT '父级id',
+  `admin` bit(1) DEFAULT b'0' COMMENT '是否为管理员',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `NAME_KEY` (`username`),
+  KEY `id` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Table structure for table `user_favorite` */
+
+DROP TABLE IF EXISTS `user_favorite`;
+
+CREATE TABLE `user_favorite` (
+  `user_id` bigint NOT NULL COMMENT '用户id',
+  `bucket_id` bigint NOT NULL COMMENT 'bucket_id',
+  PRIMARY KEY (`user_id`,`bucket_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;

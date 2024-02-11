@@ -10,9 +10,9 @@ import java.sql.*;
 public class MysqlToMarkdown {
 
     public static void createMarkDownFromMysql() {
-        String url = "jdbc:mysql://101.35.43.156:3306/oss";
+        String url = "jdbc:mysql://127.0.0.1:3306/oss";
         String user = "root";
-        String password = "123abc456";
+        String password = "chenxiang";
 
         try (Connection con = DriverManager.getConnection(url, user, password);
              Statement stmt = con.createStatement();
