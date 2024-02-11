@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.util.zip.Checksum;
 
 public class ByteHandlerTest {
     @Test
@@ -26,13 +27,19 @@ public class ByteHandlerTest {
         byte[] randomBytes = new byte[10 * 1024];
         secureRandom.nextBytes(randomBytes);
         EtagHandler etagHandler = new Crc32EtagHandlerAdapter();
-        String calculate1 = etagHandler.calculate(randomBytes);
-        etagHandler.reset();
-        System.out.println("before:" + calculate1);
+
+        Checksum deserialize1 = etagHandler.deserialize("0");
+        etagHandler.update(deserialize1,randomBytes,0,randomBytes.length);
+        String serialize1 = etagHandler.serialize(deserialize1);
+        System.out.println("before:" +serialize1);
+
         byte[][] encoder = byteHandler.encoder(randomBytes);
         byte[] decoder = byteHandler.decoder(encoder);
-        String calculate2 = etagHandler.calculate(decoder);
-        System.out.println("after :" + calculate2);
-        System.out.println(calculate1.equals(calculate2));
+
+        Checksum deserialize2 = etagHandler.deserialize("0");
+        etagHandler.update(deserialize2,decoder,0,decoder.length);
+        String serialize2 = etagHandler.serialize(deserialize2);
+        System.out.println("after :" + serialize2);
+        System.out.println(serialize1.equals(serialize2));
     }
 }
