@@ -8,13 +8,13 @@ import java.io.Serializable;
  * @author 陈翔
  */
 @Data
-public class GetRequest implements Serializable,JRaftRpcReq {
+public class ReadDelEventRequest implements Serializable,JRaftRpcReq {
     private static final long serialVersionUID = -6597003954824547294L;
     private boolean readOnSafe;
-    private String etag;
+    private String eventId;
 
-    public GetRequest(boolean readOnSafe, String etag) {
+    public ReadDelEventRequest(boolean readOnSafe, String eventId) {
         this.readOnSafe = readOnSafe;
-        this.etag = etag;
+        this.eventId = eventId;
     }
 }

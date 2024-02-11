@@ -18,45 +18,25 @@ package ccw.serviceinnovation.node.server.db;
 
 import service.raft.request.*;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * @author 陈翔
  */
 public interface DataService {
-
-    /**
-     * 获取某个对象
-     */
-    void get(GetRequest getRequest,DataClosure closure);
-
-    /**
-     * 删除某个对象
-     */
     void del(DelRequest delRequest,DataClosure closure);
+    void readDelEvent(ReadDelEventRequest readDelEventRequest, DataClosure closure) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
+    void readEvent(ReadEventRequest readEventRequest, DataClosure closure) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException;
+    void readFragment(ReadFragmentRequest readFragmentRequest, DataClosure closure) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException;
 
-    /**
-     * 上传对象
-     */
+
     void upload(UploadRequest uploadRequest,DataClosure closure);
 
-    /**
-     *创建分片上传事件
-     */
-    void event(EventRequest eventRequest,DataClosure closure);
-
-    /**
-     * 上传某个分块
-     */
-    void fragment(FragmentRequest fragmentRequest,DataClosure closure);
-
-    /**
-     * 删除分片上传的事件
-     */
-    void delEvent(DelEventRequest delEventRequest,DataClosure closure);
-
-    /**
-     * 合并分块
-     */
-    void merge(MergeRequest mergeRequest,DataClosure closure);
+    void writeDelEvent(WriteDelEventRequest writeDelEventRequest, DataClosure closure);
+    void writeEvent(WriteEventRequest writeEventRequest, DataClosure closure);
+    void writeFragment(WriteFragmentRequest writeFragmentRequest, DataClosure closure);
+    void writeMerge(WriterMergeRequest writerMergeRequest, DataClosure closure);
 
 
 }

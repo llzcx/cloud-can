@@ -1,7 +1,6 @@
 package ccw.serviceinnovation.oss.controller;
 
 import ccw.serviceinnovation.common.constant.AuthorityConstant;
-import ccw.serviceinnovation.common.entity.OssObject;
 import ccw.serviceinnovation.common.request.ApiResp;
 import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.oss.manager.authority.OssApi;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
@@ -35,6 +35,20 @@ public class OssObjectController {
 
     @Autowired
     IObjectService objectService;
+
+
+    /**
+     * 下载对象
+     * @param objectName 对象名
+     * @param bucketName 桶名
+     * @return HttpServletResponse流中返回二进制数据
+     * @throws Exception
+     */
+    @GetMapping("/download")
+    @OssApi(target = AuthorityConstant.API_OBJECT,type = AuthorityConstant.API_READ,name = "download",description = "下载对象")
+    public void download(@RequestParam("objectName") String objectName, @RequestParam("bucketName") String bucketName, HttpServletResponse response) throws Exception{
+        objectService.download(bucketName,objectName,response);
+    }
 
     /**
      * 对象的元数据
@@ -76,13 +90,13 @@ public class OssObjectController {
      * @return 返回是否上传成功
      * @throws Exception
      */
-    @PutMapping("/putSmallObject")
+    @PutMapping("/upload")
     @OssApi(target = AuthorityConstant.API_BUCKET,type = AuthorityConstant.API_WRITER,name = "putSmallObject",description = "在桶中添加一个对象[小文件]")
     public ApiResp<Boolean> putSmallObject(@RequestParam("bucketName") String bucketName, String objectName,
                                            String etag,@RequestParam(value = "parentObjectId",required = false) Long parentObjectId,
                                            Integer objectAcl,
                                            MultipartFile file) throws Exception{
-        return ApiResp.success(objectService.addSmallObject(bucketName,objectName,etag,file,parentObjectId,objectAcl));
+        return ApiResp.success(objectService.upload(bucketName,objectName,etag,file,parentObjectId,objectAcl));
     }
 
 
@@ -97,7 +111,7 @@ public class OssObjectController {
      * @return 该事件的唯一ID / 或者直接上传成功
      * @throws Exception
      */
-    @PostMapping("/createChunkToken")
+    @PostMapping("/createUploadEvent")
     @OssApi(target = AuthorityConstant.API_BUCKET,type = AuthorityConstant.API_WRITER,name = "createChunkToken",description = "创建一个文件分块上传事件")
     public ApiResp<BlockTokenBo> createChunkToken(@RequestParam("bucketName") String bucketName,
                                               String objectName,
@@ -106,21 +120,40 @@ public class OssObjectController {
                                               Integer chunks,
                                               Long parentObjectId,
                                               Integer objectAcl) throws Exception{
-        return ApiResp.success(objectService.getBlockToken(etag, bucketName, objectName, parentObjectId,objectAcl ,chunks, size));
+        return ApiResp.success(objectService.createUploadEvent(etag, bucketName, objectName, parentObjectId,objectAcl ,chunks, size));
+    }
+
+    /**
+     * 追加分片
+     * @param bucketName 桶名
+     * @param eventId 事件id
+     * @param chunk 第几块分片
+     * @param file 数据流
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/append")
+    @OssApi(target = AuthorityConstant.API_BUCKET,type = AuthorityConstant.API_WRITER,name = "createChunkToken",description = "创建一个文件分块上传事件")
+    public ApiResp<Boolean> append(@RequestParam("bucketName") String bucketName,
+                                                  String eventId,
+                                                  Integer chunk,
+                                                  MultipartFile file) throws Exception{
+
+        return ApiResp.success(objectService.append(file, chunk, eventId, bucketName));
     }
 
 
     /**
      * 合并文件分块
-     * @param blockToken 文件事件的id
+     * @param eventId 文件事件的id
      * @param bucketName 桶名字
      * @return 返回是否合并成功
      * @throws Exception
      */
     @PostMapping("/merge")
     @OssApi(target = AuthorityConstant.API_BUCKET,type = AuthorityConstant.API_WRITER,name = "putBigObject",description = "在桶中添加一个对象[大文件]")
-    public ApiResp<Boolean> merge(String bucketName,String blockToken) throws Exception{
-        return ApiResp.success(objectService.mergeObjectChunk(bucketName,blockToken));
+    public ApiResp<Boolean> merge(String bucketName,String eventId) throws Exception{
+        return ApiResp.success(objectService.merge(bucketName,eventId));
     }
 
 

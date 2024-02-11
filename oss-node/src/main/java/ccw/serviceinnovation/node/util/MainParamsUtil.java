@@ -1,15 +1,24 @@
 package ccw.serviceinnovation.node.util;
 
-import java.util.HashMap;
-import java.util.Map;
+import ccw.serviceinnovation.node.server.constant.MustParamsKey;
+
+import java.util.*;
 
 public class MainParamsUtil {
+
+    /**
+     * 非必要参数
+     */
+    public static final List<String> notMust =
+            Arrays.asList(new String[]{
+                    MustParamsKey.ENCRYPT,
+            });
     public static Map<String, String> read(String[] array){
         HashMap<String, String> hashMap = new HashMap<String,String>(){
             @Override
             public String get(Object key) {
                 String res = super.get(key);
-                if(res == null){
+                if(res == null && !notMust.contains(key)){
                     throw new RuntimeException("missing operating parameters:"+key);
                 }
                 return res;

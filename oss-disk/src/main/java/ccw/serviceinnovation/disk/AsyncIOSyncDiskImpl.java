@@ -8,10 +8,10 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * 异步IO实现
  */
-public class AsyncIOSyncDiskImpl implements AsyncDisk {
-
+public class AsyncIOSyncDiskImpl<T> implements AsyncDisk {
 }

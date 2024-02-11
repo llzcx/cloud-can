@@ -17,9 +17,6 @@
 package ccw.serviceinnovation.node.server.db;
 
 
-import ccw.serviceinnovation.common.request.ApiResp;
-import ccw.serviceinnovation.common.request.ResultCode;
-import ccw.serviceinnovation.node.util.StringUtil;
 import com.alipay.remoting.exception.CodecException;
 import com.alipay.remoting.serialization.SerializerManager;
 import com.alipay.sofa.jraft.Iterator;
@@ -28,9 +25,7 @@ import com.alipay.sofa.jraft.core.StateMachineAdapter;
 import com.alipay.sofa.jraft.error.RaftException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import service.raft.request.JRaftRpcReq;
 
-import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -86,15 +81,7 @@ public class DataStateMachine extends StateMachineAdapter {
             }
             if (dataOperation != null) {
                 try {
-                    //反射调用
-                    Class<? extends JRaftRpcReq> req = dataOperation.getRequest().getClass();
-                    String methodName = StringUtil.getBetweenLastTwoDots(req.getName());
-                    assert methodName != null;
-                    //截断后缀Request,变成小写
-                    methodName = methodName.substring(0, methodName.length() - 7).toLowerCase();
-                    Method myMethod = StorageEngine.onApply.getClass().getDeclaredMethod(methodName, req);
-                    myMethod.setAccessible(true);
-                    returnData = myMethod.invoke(StorageEngine.onApply,dataOperation.getRequest());
+                    returnData = ServiceHandler.invoke(dataOperation.request);
                     if (closure != null) {
                         closure.success(returnData);
                         closure.run(Status.OK());

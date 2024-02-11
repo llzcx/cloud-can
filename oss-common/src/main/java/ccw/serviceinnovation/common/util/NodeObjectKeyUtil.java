@@ -4,7 +4,7 @@ public class NodeObjectKeyUtil {
     /**
      * 上层唯一key
      */
-    public static String getObjectKey(String etag,Integer secret){
-        return etag + "&" +secret;
+    public static String getObjectKey(String etag){
+        return etag;
     }
 }

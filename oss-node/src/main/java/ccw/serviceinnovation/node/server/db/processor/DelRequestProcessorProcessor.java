@@ -23,13 +23,15 @@ import com.alipay.sofa.jraft.rpc.RpcContext;
 import com.alipay.sofa.jraft.rpc.RpcProcessor;
 import service.raft.request.DelRequest;
 
+import java.io.InputStream;
+
 /**
  * @author 陈翔
  */
-public class DelRequestProcessor implements RpcProcessor<DelRequest> {
+public class DelRequestProcessorProcessor implements RpcProcessor<DelRequest> {
     private final DataService dataService;
 
-    public DelRequestProcessor(DataService neService) {
+    public DelRequestProcessorProcessor(DataService neService) {
         super();
         this.dataService = neService;
     }
@@ -48,5 +50,6 @@ public class DelRequestProcessor implements RpcProcessor<DelRequest> {
     @Override
     public String interest() {
         return DelRequest.class.getName();
+
     }
 }

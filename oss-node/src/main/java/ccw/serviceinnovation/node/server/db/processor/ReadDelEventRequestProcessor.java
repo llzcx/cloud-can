@@ -5,28 +5,35 @@ import ccw.serviceinnovation.node.server.db.DataService;
 import com.alipay.sofa.jraft.Status;
 import com.alipay.sofa.jraft.rpc.RpcContext;
 import com.alipay.sofa.jraft.rpc.RpcProcessor;
-import service.raft.request.DelEventRequest;
+import service.raft.request.DelRequest;
+import service.raft.request.ReadDelEventRequest;
 
-public class DelEventRequestProcessor implements RpcProcessor<DelEventRequest> {
+import java.lang.reflect.InvocationTargetException;
+
+public class ReadDelEventRequestProcessor implements RpcProcessor<ReadDelEventRequest> {
     private final DataService dataService;
 
-    public DelEventRequestProcessor(DataService neService) {
+    public ReadDelEventRequestProcessor(DataService neService) {
         super();
         this.dataService = neService;
     }
     @Override
-    public void handleRequest(RpcContext rpcCtx, DelEventRequest request) {
+    public void handleRequest(RpcContext rpcCtx, ReadDelEventRequest request) {
         final DataClosure closure = new DataClosure() {
             @Override
             public void run(Status status) {
                 rpcCtx.sendResponse(getResponse());
             }
         };
-        this.dataService.delEvent(request, closure);
+        try {
+            this.dataService.readDelEvent(request, closure);
+        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public String interest() {
-        return DelEventRequest.class.getName();
+        return ReadDelEventRequest.class.getName();
     }
 }

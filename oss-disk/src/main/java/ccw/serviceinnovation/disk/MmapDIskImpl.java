@@ -13,38 +13,31 @@ import java.nio.file.StandardOpenOption;
 /**
  * mmap
  */
-public class MmapDIskImpl implements SyncDisk {
-    @Override
+public class MmapDIskImpl extends SyncDisk {
+
     public void initialize() throws IOException {
-        // Implement initialization logic here
+        // 初始化逻辑，例如打开文件通道等
+        // 此处略
     }
 
-    @Override
-    public void save(Path path, byte[] bytes, int start, int size) throws IOException {
-        try (FileChannel channel = FileChannel.open(path, StandardOpenOption.READ, StandardOpenOption.WRITE, StandardOpenOption.CREATE)) {
-            MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_WRITE, 0, bytes.length);
-            buffer.put(bytes, start, size);
-            MMapUtil.unmap(buffer);
+    public void save(Path path, long begin, byte[] buffer, int start, int size) throws IOException {
+        // 将buffer中从start位置开始的size字节写入文件的begin位置处
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile(path.toFile(), "rw");
+             FileChannel fileChannel = randomAccessFile.getChannel()) {
+            MappedByteBuffer mappedByteBuffer = fileChannel.map(FileChannel.MapMode.READ_WRITE, begin, size);
+            mappedByteBuffer.put(buffer, start, size);
+            MMapUtil.unmap(mappedByteBuffer);
         }
     }
 
-    @Override
-    public byte[] read(Path path, int start, int size) throws IOException {
-        try (RandomAccessFile raf = new RandomAccessFile(path.toFile(), "r")) {
-            MappedByteBuffer buffer = raf.getChannel().map(FileChannel.MapMode.READ_ONLY, start, size);
-            byte[] data = new byte[size];
-            buffer.get(data);
-            return data;
+    public byte[] read(Path path, long start, int size,byte[] buffer) throws IOException {
+        // 从文件的start位置处读取size字节到buffer中
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile(path.toFile(), "r");
+             FileChannel fileChannel = randomAccessFile.getChannel()) {
+            MappedByteBuffer mappedByteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, start, size);
+            mappedByteBuffer.get(buffer, 0, size);
+            MMapUtil.unmap(mappedByteBuffer);
         }
-    }
-
-    @Override
-    public void updateName(Path oldName, String newName) throws IOException {
-        Files.move(oldName, oldName.resolveSibling(newName));
-    }
-
-    @Override
-    public void del(Path path) throws IOException {
-        Files.delete(path);
+        return buffer;
     }
 }

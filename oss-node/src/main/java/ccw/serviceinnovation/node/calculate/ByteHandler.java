@@ -12,7 +12,7 @@ import java.io.IOException;
 public interface ByteHandler<T> {
     void initialize();
 
-    T[] encoder(byte[] data, EncryptionEnum encryptionEnum) throws IOException;
+    T[] encoder(byte[] data) throws IOException;
 
-    byte[] decoder(T[] data, EncryptionEnum encryptionEnum) throws IOException;
+    byte[] decoder(T[] data) throws IOException;
 }

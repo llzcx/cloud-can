@@ -77,7 +77,7 @@ public enum ResultCode {
     PARENT_ID_IS_INVALID(3031,"父级文件夹无效"),
     CANT_SET_STATE(3032,"不能设置为该状态"),
     BUCKET_NAME_NULL(3033,"桶名字为空"),
-    BLOCK_TOKEN_NULL(3034,"blockToken为NULL"),
+    EVENT_ID_NULL(3034,"eventId为NULL"),
     CREATE_USER_EXIST(3035,"用户名已存在"),
     BUCKET_NOT_EXIST(3036,"bucket不存在"),
     EVENT_NULL(3037,"该事件不存在"),
@@ -87,7 +87,11 @@ public enum ResultCode {
     CANT_BACKUP_BY_STORAGE(3041,"非标准存储不支持备份"),
     UPDATE_AUTHORIZE_EXCEPTION(3041,"权限更新异常"),
     USER_IS_NULL(3042,"用户不存在"),
-    NO_IMPL(3042,"暂无实现"),
+    NO_IMPL(3043,"暂无实现"),
+
+    OFFSET_LIMIT(3044,"偏移量越界"),
+
+    FRAGMENT_SIZE_ERROR(3045,"文件分片大小不为4KB"),
 
     ;
     private Integer code;

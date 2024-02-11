@@ -1,15 +1,14 @@
 package ccw.serviceinnovation.node.calculate;
 
-import ccw.serviceinnovation.hash.etag.Crc32EtagHandlerAdapter;
-import ccw.serviceinnovation.hash.etag.EtagHandler;
+import ccw.serviceinnovation.hash.checksum.Crc32EtagHandlerAdapter;
+import ccw.serviceinnovation.hash.checksum.EtagHandler;
 import ccw.serviceinnovation.node.server.constant.RegisterConstant;
 import ccw.serviceinnovation.split.*;
 import ccw.serviceinnvation.encryption.*;
-import ccw.serviceinnvation.encryption.consant.EncryptionEnum;
-import org.apache.http.cookie.SM;
 
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.util.zip.Checksum;
 
 /**
  * 字节流处理实现类 加密和拆分
@@ -23,8 +22,8 @@ public class EncryptAndSplitByteHandlerImpl implements ByteHandler<byte[]> {
     }
 
     @Override
-    public byte[][] encoder(byte[] data, EncryptionEnum encryptionEnum) throws IOException {
-        EncryptEncodeHandler encryptEncodeHandler = EncryptorFactory.createEncoder(encryptionEnum);
+    public byte[][] encoder(byte[] data) throws IOException {
+        EncryptEncodeHandler encryptEncodeHandler = EncryptorFactory.createEncoder(RegisterConstant.ENCRYPT);
         if(encryptEncodeHandler!=null){
             data = encryptEncodeHandler.encoder(data);
         }
@@ -33,15 +32,15 @@ public class EncryptAndSplitByteHandlerImpl implements ByteHandler<byte[]> {
     }
 
     @Override
-    public byte[] decoder(byte[][] data, EncryptionEnum encryptionEnum) throws IOException {
+    public byte[] decoder(byte[][] data) throws IOException {
 
         SplitDecoderHandler splitDecoderHandler = SplitHandlerFactory.createDecoder(SplitEnum.RS);
         byte[] merge = splitDecoderHandler.merge(data);
-        EncryptDecodeHandler encryptDecodeHandler = EncryptorFactory.createDecoder(encryptionEnum);
+        EncryptDecodeHandler encryptDecodeHandler = EncryptorFactory.createDecoder(RegisterConstant.ENCRYPT);
         if(encryptDecodeHandler != null){
-            return encryptDecodeHandler.decoder(merge);
+            merge =  encryptDecodeHandler.decoder(merge);
         }
-        throw new IOException("decode error");
+        return merge;
     }
 
     public static void main(String[] args) throws IOException {
@@ -53,12 +52,16 @@ public class EncryptAndSplitByteHandlerImpl implements ByteHandler<byte[]> {
         byte[] randomBytes = new byte[10 * 1024];
         secureRandom.nextBytes(randomBytes);
         EtagHandler etagHandler = new Crc32EtagHandlerAdapter();
-        String calculate1 = etagHandler.calculate(randomBytes);
-        etagHandler.reset();
-        System.out.println("before:" + calculate1);
-        byte[][] encoder = byteHandler.encoder(randomBytes, EncryptionEnum.SM4);
-        byte[] decoder = byteHandler.decoder(encoder, EncryptionEnum.SM4);
-        String calculate2 = etagHandler.calculate(decoder);
-        System.out.println("after :" + calculate2);
+
+        Checksum deserialize = etagHandler.deserialize("0");
+        etagHandler.update(deserialize,randomBytes,0,randomBytes.length);
+        System.out.println("before:" + etagHandler.serialize(deserialize));
+
+        byte[][] encoder = byteHandler.encoder(randomBytes);
+        byte[] decoder = byteHandler.decoder(encoder);
+
+        deserialize = etagHandler.deserialize("0");
+        etagHandler.update(deserialize,decoder,0,decoder.length);
+        System.out.println("before:" + etagHandler.serialize(deserialize));
     }
 }

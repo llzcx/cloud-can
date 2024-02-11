@@ -3,6 +3,7 @@ package ccw.serviceinnovation.node.server.constant;
 import ccw.serviceinnovation.common.util.IpUtils;
 import ccw.serviceinnovation.node.bo.RsParam;
 import ccw.serviceinnovation.node.util.MainParamsUtil;
+import ccw.serviceinnvation.encryption.consant.EncryptionEnum;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -45,7 +46,7 @@ public class ArgInitialize {
         RegisterConstant.NACOS_PORT = Integer.valueOf(map.get(MustParamsKey.NACOS_PORT));
         RegisterConstant.NACOS_ADDR = IpUtils.getAddr(RegisterConstant.NACOS_HOST, RegisterConstant.NACOS_PORT);
 
-        //元数据信息
+        //redis
         RegisterConstant.REDIS_HOST = map.get(MustParamsKey.REDIS_HOST);
         RegisterConstant.REDIS_PORT = Integer.valueOf(map.get(MustParamsKey.REDIS_PORT));
 
@@ -54,6 +55,15 @@ public class ArgInitialize {
         RegisterConstant.PARITY_SHARDS = Integer.valueOf(map.get(MustParamsKey.PARITY_SHARDS));
         RsParam.instance = new RsParam(RegisterConstant.DATA_SHARDS, RegisterConstant.PARITY_SHARDS);
         RegisterConstant.TOTAL_SHARDS = RegisterConstant.DATA_SHARDS + RegisterConstant.PARITY_SHARDS;
+        System.out.println("RS data_shards:"+RegisterConstant.DATA_SHARDS);
+        System.out.println("RS parity_shards:"+RegisterConstant.PARITY_SHARDS);
+
+        //encrypt
+        if(map.get(MustParamsKey.ENCRYPT)!=null){
+            RegisterConstant.ENCRYPT = EncryptionEnum.getEnum(map.get(MustParamsKey.ENCRYPT));
+            System.out.println("encrypt:"+RegisterConstant.ENCRYPT);
+        }
+
 
         //http
         RegisterConstant.HTTP_PORT = IpUtils.findAvailablePort();

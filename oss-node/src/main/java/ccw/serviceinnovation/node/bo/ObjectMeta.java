@@ -1,5 +1,6 @@
 package ccw.serviceinnovation.node.bo;
 
+import ccw.serviceinnovation.node.util.Bitmap;
 import ccw.serviceinnvation.encryption.consant.EncryptionEnum;
 import lombok.Data;
 
@@ -11,7 +12,7 @@ public class ObjectMeta implements Serializable {
     /**
      * hash值
      */
-    private String etag;
+    private String key;
 
     /**
      * 加密算法
@@ -19,13 +20,14 @@ public class ObjectMeta implements Serializable {
     private EncryptionEnum secret;
 
     /**
-     * 纠删码参数
+     * 第几块
      */
-    private RsParam rs;
+    private Bitmap bitmap;
 
-    public ObjectMeta(String etag, EncryptionEnum secret) {
-        this.etag = etag;
+    public ObjectMeta(String key, EncryptionEnum secret) {
+        this.key = key;
         this.secret = secret;
-        this.rs = RsParam.instance;
+        bitmap = new Bitmap();
     }
+
 }

@@ -5,8 +5,7 @@ package ccw.serviceinnvation.encryption.consant;
  * @author 陈翔
  */
 public enum EncryptionEnum {
-
-    NULL(0,"无加密"),
+    NULL(0,"NULL"),
     /**
      * SM4加密
      */
@@ -43,6 +42,15 @@ public enum EncryptionEnum {
     public static EncryptionEnum getEnum(Integer code) {
         for (EncryptionEnum ele : values()) {
             if (ele.getCode().equals(code)) {
+                return ele;
+            }
+        }
+        return null;
+    }
+
+    public static EncryptionEnum getEnum(String str) {
+        for (EncryptionEnum ele : values()) {
+            if (ele.getMessage().equals(str)) {
                 return ele;
             }
         }

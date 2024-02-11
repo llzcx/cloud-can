@@ -44,11 +44,11 @@ public class DataGrpcHelper {
                 Method registerRespInstance = clazz.getMethod("registerRespInstance", String.class, Message.class);
                 registerRespInstance.invoke(null, DelRequest.class.getName(), RpcResponse.getInstance());
                 registerRespInstance.invoke(null, UploadRequest.class.getName(), RpcResponse.getInstance());
-                registerRespInstance.invoke(null, GetRequest.class.getName(), RpcResponse.getInstance());
-                registerRespInstance.invoke(null, EventRequest.class.getName(), RpcResponse.getInstance());
-                registerRespInstance.invoke(null, FragmentRequest.class.getName(), RpcResponse.getInstance());
-                registerRespInstance.invoke(null, DelEventRequest.class.getName(), RpcResponse.getInstance());
-                registerRespInstance.invoke(null, MergeRequest.class.getName(), RpcResponse.getInstance());
+                registerRespInstance.invoke(null, ReadDelEventRequest.class.getName(), RpcResponse.getInstance());
+                registerRespInstance.invoke(null, WriteEventRequest.class.getName(), RpcResponse.getInstance());
+                registerRespInstance.invoke(null, WriteFragmentRequest.class.getName(), RpcResponse.getInstance());
+                registerRespInstance.invoke(null, WriteDelEventRequest.class.getName(), RpcResponse.getInstance());
+                registerRespInstance.invoke(null, WriterMergeRequest.class.getName(), RpcResponse.getInstance());
             } catch (Exception e) {
                 LOG.error("Failed to init grpc server", e);
             }

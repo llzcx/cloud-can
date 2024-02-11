@@ -1,9 +1,13 @@
 package ccw.serviceinnovation.node.server.constant;
 
 public interface StaticConstant {
-    String STANDARD = "standard&";
+    String STANDARD = "standard_";
 
-    String TEMPORARY = "temporary&";
+    String WRITE_TEMPORARY = "w_temporary_";
 
-    String PARTITION_SUFFIX = ".";
+    String READ_TEMPORARY = "r_temporary_";
+
+    String SUFFIX = ".oss";
+
+    String SPLIT = "_";
 }

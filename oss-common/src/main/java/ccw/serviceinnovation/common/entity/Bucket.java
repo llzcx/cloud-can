@@ -54,11 +54,4 @@ public class Bucket implements Serializable {
     private Integer bucketAcl;
 
 
-    /**
-     * 加密存储
-     */
-    private Integer secret;
-
-
-
 }

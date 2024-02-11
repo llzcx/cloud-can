@@ -60,13 +60,20 @@ public class DataServer {
 
         // register business processor
         DataService dataService = new DataServiceImpl(this);
-        rpcServer.registerProcessor(new GetRequestProcessor(dataService));
+
+
+        rpcServer.registerProcessor(new ReadEventRequestProcessor(dataService));
+        rpcServer.registerProcessor(new ReadFragmentRequestProcessor(dataService));
+        rpcServer.registerProcessor(new ReadDelEventRequestProcessor(dataService));
+
         rpcServer.registerProcessor(new UploadRequestProcessor(dataService));
-        rpcServer.registerProcessor(new DelRequestProcessor(dataService));
-        rpcServer.registerProcessor(new EventRequestProcessor(dataService));
-        rpcServer.registerProcessor(new FragmentRequestProcessor(dataService));
-        rpcServer.registerProcessor(new DelEventRequestProcessor(dataService));
-        rpcServer.registerProcessor(new MergeRequestProcessor(dataService));
+
+        rpcServer.registerProcessor(new DelRequestProcessorProcessor(dataService));
+
+        rpcServer.registerProcessor(new WriteEventRequestProcessor(dataService));
+        rpcServer.registerProcessor(new WriteFragmentRequestProcessor(dataService));
+        rpcServer.registerProcessor(new WriteDelEventRequestProcessor(dataService));
+        rpcServer.registerProcessor(new WriteMergeRequestProcessor(dataService));
         // init state machine
         this.fsm = new DataStateMachine();
         // set fsm to nodeOptions

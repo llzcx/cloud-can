@@ -1,5 +1,14 @@
 package ccw.serviceinnovation.node.server.db;
 
+import ccw.serviceinnovation.disk.FileChannelSyncDiskImpl;
+import ccw.serviceinnovation.disk.SyncDisk;
+import ccw.serviceinnovation.node.calculate.ByteHandler;
+import ccw.serviceinnovation.node.calculate.EncryptAndSplitByteHandlerImpl;
+import ccw.serviceinnovation.node.index.EtagIndexHashMapImpl;
+import ccw.serviceinnovation.node.index.Index;
+import ccw.serviceinnovation.node.index.IndexContext;
+import ccw.serviceinnovation.node.partition.PartitionSelector;
+import ccw.serviceinnovation.node.partition.SurplusPartitionSelectorIMpl;
 import ccw.serviceinnovation.node.server.constant.ArgInitialize;
 import ccw.serviceinnovation.node.server.constant.RegisterConstant;
 import ccw.serviceinnovation.node.server.http.HttpServer;
@@ -14,6 +23,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
+
+import static ccw.serviceinnovation.node.server.constant.RegisterConstant.PARTITION_DISK;
 
 
 @Slf4j
@@ -32,15 +43,34 @@ public class StorageEngine {
     /**
      * 状态机实现
      */
-    public static OnApply onApply;
+    public static ServiceHandler serviceHandler;
     /**
      * 注册中心
      */
     public static NacosConfig register;
 
+    /**
+     * 索引实现
+     */
+    public static Index index;
+
+    /**
+     * 持久化
+     */
+    public static SyncDisk syncDisk;
+
+    /**
+     * 字节流处理
+     */
+    public static ByteHandler<byte[]> byteHandler;
+
+    public static PartitionSelector partitionSelector;
+
 
 
     public static void start(String[] args) throws IOException, NacosException {
+
+        /*-----------------文件夹、变量-------------------*/
         //参数初始化
         ArgInitialize.handle(args);
 
@@ -52,10 +82,30 @@ public class StorageEngine {
             FileUtils.forceMkdir(new File(path));
         }
 
+        /*-----------------索引、磁盘、字节处理、磁盘分区选择器-------------------*/
 
         //应用状态机实现
-        onApply = new OnApplyImpl();
-        onApply.initialize();
+        serviceHandler = new ServiceHandlerImpl();
+        serviceHandler.initialize();
+
+        //磁盘
+        syncDisk = new FileChannelSyncDiskImpl();
+        syncDisk.initialize();
+
+        //字节流处理
+        byteHandler = new EncryptAndSplitByteHandlerImpl();
+        byteHandler.initialize();
+
+        //索引
+        index = new EtagIndexHashMapImpl();
+        IndexContext.index = index;
+        index.load();
+
+        //磁盘分区选择器
+        partitionSelector = new SurplusPartitionSelectorIMpl(PARTITION_DISK);
+
+
+        /*-----------------服务注册-------------------*/
 
         //开启http访问服务
         executor.submit(HttpServer::start);

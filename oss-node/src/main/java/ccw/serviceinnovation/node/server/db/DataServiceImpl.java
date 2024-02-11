@@ -33,6 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.raft.request.*;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.Executor;
 
@@ -92,36 +94,36 @@ public class DataServiceImpl implements DataService {
 
 
     @Override
-    public void get(GetRequest getRequest, DataClosure closure) {
-        boolean readOnlySafe = getRequest.isReadOnSafe();
-        String objectKey = getRequest.getEtag();
+    public void readDelEvent(ReadDelEventRequest readDelEventRequest, DataClosure closure) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        boolean readOnlySafe = readDelEventRequest.isReadOnSafe();
         if (!readOnlySafe) {
             //非线性读直接读取结果
-            closure.success(IndexContext.index.get(objectKey));
-            closure.run(Status.OK());
+            ServiceHandler.invoke(readDelEventRequest);
             return;
         }
+        indexReadOrApplyToStateMachine(readDelEventRequest,closure);
+    }
+
+    public void indexReadOrApplyToStateMachine(JRaftRpcReq req,DataClosure closure){
         //线性读取readIndex
         this.dataServer.getNode().readIndex(BytesUtil.EMPTY_BYTES, new ReadIndexClosure() {
             @Override
             public void run(Status status, long index, byte[] reqCtx) {
                 if (status.isOk()) {
-                    String value = String.valueOf(IndexContext.index.get(objectKey));
-                    if (value != null) {
-                        LOG.info("本地存在该文件:{},在{}", objectKey, value);
-                        //NetUtil.getLANAddressOnWindows().getHostAddress()
-                        closure.success(new LocationVo(RegisterConstant.HOST, RegisterConstant.PORT));
-                    } else {
-                        LOG.info("本地不存在该文件:{}", objectKey);
-                        closure.success(null);
+                    Object res;
+                    try {
+                        res = ServiceHandler.invoke(req);
+                    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                        throw new RuntimeException(e);
                     }
+                    closure.success(res);
                     closure.run(Status.OK());
                     return;
                 }
                 DataServiceImpl.this.readIndexExecutor.execute(() -> {
                     if (isLeader()) {
                         LOG.debug("Fail to get value with 'ReadIndex': {}, try to applying to the state machine.", status);
-                        applyOperation(DataOperation.create(getRequest), closure);
+                        applyOperation(DataOperation.create(req), closure);
                     } else {
                         handlerNotLeaderError(closure);
                     }
@@ -129,6 +131,29 @@ public class DataServiceImpl implements DataService {
             }
         });
     }
+
+    @Override
+    public void readEvent(ReadEventRequest readEventRequest, DataClosure closure) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        boolean readOnlySafe = readEventRequest.isReadOnSafe();
+        if (!readOnlySafe) {
+            //非线性读直接读取结果
+            ServiceHandler.invoke(readEventRequest);
+            return;
+        }
+        indexReadOrApplyToStateMachine(readEventRequest,closure);
+    }
+
+    @Override
+    public void readFragment(ReadFragmentRequest readFragmentRequest, DataClosure closure) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        boolean readOnlySafe = readFragmentRequest.isReadOnSafe();
+        if (!readOnlySafe) {
+            //非线性读直接读取结果
+            ServiceHandler.invoke(readFragmentRequest);
+            return;
+        }
+        indexReadOrApplyToStateMachine(readFragmentRequest,closure);
+    }
+
 
     //其他请求都需要应用到状态机
 
@@ -143,22 +168,22 @@ public class DataServiceImpl implements DataService {
     }
 
     @Override
-    public void event(EventRequest eventRequest, DataClosure closure) {
-        applyOperation(new DataOperation(eventRequest), closure);
+    public void writeEvent(WriteEventRequest writeEventRequest, DataClosure closure) {
+        applyOperation(new DataOperation(writeEventRequest), closure);
     }
 
     @Override
-    public void fragment(FragmentRequest fragmentRequest, DataClosure closure) {
-        applyOperation(new DataOperation(fragmentRequest), closure);
+    public void writeFragment(WriteFragmentRequest writeFragmentRequest, DataClosure closure) {
+        applyOperation(new DataOperation(writeFragmentRequest), closure);
     }
 
     @Override
-    public void delEvent(DelEventRequest delEventRequest, DataClosure closure) {
-        applyOperation(new DataOperation(delEventRequest), closure);
+    public void writeDelEvent(WriteDelEventRequest writeDelEventRequest, DataClosure closure) {
+        applyOperation(new DataOperation(writeDelEventRequest), closure);
     }
 
     @Override
-    public void merge(MergeRequest mergeRequest, DataClosure closure) {
-        applyOperation(new DataOperation(mergeRequest), closure);
+    public void writeMerge(WriterMergeRequest writerMergeRequest, DataClosure closure) {
+        applyOperation(new DataOperation(writerMergeRequest), closure);
     }
 }

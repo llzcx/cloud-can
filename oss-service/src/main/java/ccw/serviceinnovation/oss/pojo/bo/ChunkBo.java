@@ -2,12 +2,14 @@ package ccw.serviceinnovation.oss.pojo.bo;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * 存在redis中键为BLOCK_TOKEN的value
  * @author 陈翔
  */
 @Data
-public class ChunkBo {
+public class ChunkBo implements Serializable {
 
 
 
@@ -31,9 +33,6 @@ public class ChunkBo {
      */
     private Long size;
 
-    private String ip;
-
-    private Integer port;
 
     private Long parentObjectId;
 
@@ -41,21 +40,18 @@ public class ChunkBo {
 
     private String groupId;
 
-    private Integer secret;
 
     private Integer objectAcl;
 
-    public ChunkBo(String etag, Long userId, Long bucketId, Long size, String ip,Integer port,Long parentObjectId,Integer secret,
+
+    public ChunkBo(String etag, Long userId, Long bucketId, Long size,Long parentObjectId,
                    Integer objectAcl,String name,String groupId) {
 
         this.etag = etag;
         this.userId = userId;
         this.bucketId = bucketId;
         this.size = size;
-        this.ip = ip;
-        this.port = port;
         this.parentObjectId = parentObjectId;
-        this.secret =secret;
         this.objectAcl = objectAcl;
         this.name = name;
         this.groupId = groupId;

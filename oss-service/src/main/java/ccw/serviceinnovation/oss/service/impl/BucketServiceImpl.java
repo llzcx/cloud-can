@@ -77,10 +77,6 @@ public class BucketServiceImpl extends ServiceImpl<BucketMapper, Bucket> impleme
         }
         bucket.setCreateTime(DateUtil.now());
         bucket.setUpdateTime(DateUtil.now());
-        Integer secret = addBucketDto.getSecret();
-        if(secret!=null){
-            bucket.setSecret(EncryptionEnum.getEnum(secret).getCode());
-        }
         Integer bucketAcl = addBucketDto.getBucketAcl();
         if(bucketAcl!=null){
             bucket.setBucketAcl(ACLEnum.getEnum(bucketAcl).getCode());
@@ -147,24 +143,7 @@ public class BucketServiceImpl extends ServiceImpl<BucketMapper, Bucket> impleme
 
     @Override
     public Boolean updateSecret(String bucketName, Integer secret) {
-        Bucket bucket = bucketMapper.selectBucketByName(bucketName);
-        if(bucket==null){
-            throw new OssException(ResultCode.BUCKET_IS_DEFECT);
-        }else{
-            if(secret==null){
-                bucket.setSecret(null);
-            }else{
-                EncryptionEnum anEnum = EncryptionEnum.getEnum(secret);
-                if(anEnum==null){
-                    throw new OssException(ResultCode.UNDEFINED);
-                }else{
-                    bucket.setSecret(anEnum.getCode());
-                    bucketMapper.updateById(bucket);
-                }
-            }
-            bucketMapper.updateById(bucket);
-            return true;
-        }
+        throw new OssException(ResultCode.NO_IMPL);
     }
 
     @Override

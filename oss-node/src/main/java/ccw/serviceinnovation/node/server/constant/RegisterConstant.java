@@ -1,5 +1,7 @@
 package ccw.serviceinnovation.node.server.constant;
 
+import ccw.serviceinnvation.encryption.consant.EncryptionEnum;
+
 public class RegisterConstant {
     /**
      * 本机IP（自动获取）
@@ -79,4 +81,6 @@ public class RegisterConstant {
     public static Integer TOTAL_SHARDS;
 
     public static Integer HTTP_PORT;
+
+    public static EncryptionEnum ENCRYPT;
 }

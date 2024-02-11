@@ -5,27 +5,27 @@ import ccw.serviceinnovation.node.server.db.DataService;
 import com.alipay.sofa.jraft.Status;
 import com.alipay.sofa.jraft.rpc.RpcContext;
 import com.alipay.sofa.jraft.rpc.RpcProcessor;
-import service.raft.request.MergeRequest;
+import service.raft.request.WriterMergeRequest;
 
-public class MergeRequestProcessor implements RpcProcessor<MergeRequest> {
+public class WriteMergeRequestProcessor implements RpcProcessor<WriterMergeRequest> {
     private final DataService dataService;
-    public MergeRequestProcessor(DataService dataService) {
+    public WriteMergeRequestProcessor(DataService dataService) {
         super();
         this.dataService = dataService;
     }
     @Override
-    public void handleRequest(RpcContext rpcCtx, MergeRequest request) {
+    public void handleRequest(RpcContext rpcCtx, WriterMergeRequest request) {
         final DataClosure dataClosure = new DataClosure() {
             @Override
             public void run(Status status) {
                 rpcCtx.sendResponse(getResponse());
             }
         };
-        this.dataService.merge(request,dataClosure);
+        this.dataService.writeMerge(request,dataClosure);
     }
 
     @Override
     public String interest() {
-        return MergeRequest.class.getName();
+        return WriterMergeRequest.class.getName();
     }
 }

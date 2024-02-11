@@ -55,9 +55,7 @@ public class JwtUtil {
      * @return 是否正确
      */
     public static boolean verify(String token, String username){
-        log.info("JwtUtil==verify--->");
         try {
-            log.info("JwtUtil==verify--->校验token是否正确");
             //根据密码生成JWT效验器
             //秘钥是密码则省略
             Algorithm algorithm = Algorithm.HMAC256(TOKEN_SECRET);
@@ -67,8 +65,6 @@ public class JwtUtil {
                     .build();
             //效验TOKEN
             DecodedJWT jwt = verifier.verify(token);
-            log.info("JwtUtil==verify--->jwt = "+jwt.toString());
-            log.info("JwtUtil==verify--->JwtUtil验证token成功!");
             return true;
         }catch (Exception e){
             log.error("JwtUtil==verify--->JwtUtil验证token失败!");

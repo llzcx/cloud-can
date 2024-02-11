@@ -17,7 +17,7 @@
 package ccw.serviceinnovation.node.server.db;
 
 import lombok.Data;
-import service.raft.request.GetRequest;
+import service.raft.request.ReadDelEventRequest;
 import service.raft.request.JRaftRpcReq;
 
 import java.io.Serializable;
@@ -37,9 +37,9 @@ public class DataOperation implements Serializable {
     public JRaftRpcReq request;
 
     public static DataOperation create(JRaftRpcReq request) {
-        if(request instanceof  GetRequest){
-            GetRequest getRequest = (GetRequest) request;
-            return new DataOperation(getRequest,getRequest.isReadOnSafe());
+        if(request instanceof ReadDelEventRequest){
+            ReadDelEventRequest readDelEventRequest = (ReadDelEventRequest) request;
+            return new DataOperation(readDelEventRequest, readDelEventRequest.isReadOnSafe());
         }else{
             return new DataOperation(request);
         }

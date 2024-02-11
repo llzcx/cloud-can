@@ -7,6 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import javax.servlet.ServletOutputStream;
+
 /**
  * 启动类
  * @author 陈翔
@@ -22,5 +25,6 @@ public class OssApplication {
         run = SpringApplication.run(OssApplication.class, args);
         InitApplication initApplication =  run.getBean(InitApplication.class);
         initApplication.afterSpring();
+        ServletOutputStream servletOutputStream;
     }
 }

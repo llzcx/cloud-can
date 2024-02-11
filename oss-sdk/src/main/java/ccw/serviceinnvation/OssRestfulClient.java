@@ -1,14 +1,14 @@
 package ccw.serviceinnvation;
 
 
-import ccw.serviceinnovation.hash.etag.Crc32EtagHandlerAdapter;
-import ccw.serviceinnovation.hash.etag.EtagHandler;
+import ccw.serviceinnovation.hash.checksum.Crc32EtagHandlerAdapter;
+import ccw.serviceinnovation.hash.checksum.EtagHandler;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import okhttp3.*;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -42,7 +42,7 @@ public class OssRestfulClient {
         client = new OkHttpClient();
     }
 
-    private JSONObject sync(String url,String way ,Headers headers, RequestBody requestBody) throws IOException {
+    private Response getResponse(String url,String way ,Headers headers, RequestBody requestBody) throws IOException {
         // Create HTTP request
         Request.Builder builder = new Request.Builder();
         if(headers!=null){
@@ -63,6 +63,11 @@ public class OssRestfulClient {
             builder.patch(requestBody);
         }
         Response response = client.newCall(builder.build()).execute();
+        return response;
+    }
+
+    private JSONObject sync(String url,String way ,Headers headers, RequestBody requestBody) throws IOException {
+        Response response = getResponse(url, way, headers, requestBody);
         if (!response.isSuccessful()) {
             throw new IOException("Unexpected response code: " + response);
         }
@@ -91,7 +96,9 @@ public class OssRestfulClient {
         JSONObject response = sync(url, "post",null, requestBody);
 
         if (response != null) {
-            this.headers = new Headers.Builder().add("Authorization", response.getString("token")).build();
+            String token = response.getString("token");
+            System.out.println("令牌:"+token);
+            this.headers = new Headers.Builder().add("Authorization",token).build();
         }
 
     }
@@ -139,15 +146,43 @@ public class OssRestfulClient {
         }
         System.out.println("Response Body: " + response.body().string());
     }
+
+    private void download(String bucketName, String objectName, String path) throws IOException {
+        String url = this.url +"/ossObject/download?objectName=" +objectName + "&bucketName=" + bucketName;
+        Response response = getResponse(url, "get", headers, null);
+        Path parent = Paths.get(path);
+        if(!Files.exists(parent)){
+            Files.createDirectories(parent);
+        }
+        Path fileName = Paths.get(parent.toString(),objectName);
+        if(Files.exists(fileName)){
+            Files.delete(fileName);
+        }
+        Files.createFile(fileName);
+        OutputStream outputStream = Files.newOutputStream(fileName);
+        ResponseBody body = response.body();
+        if (body != null) {
+            try (InputStream inputStream = body.byteStream()) {
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+            }
+        } else {
+            throw new IOException("Response body is null");
+        }
+    }
     public static void main(String[] args) throws IOException {
         OssRestfulClient ossRestfulClient = new OssRestfulClient("localhost", 8080, "root", "123456");
         ossRestfulClient.login();
         String bucketName = "test";
+        String objectName = "2.jpg";
         Path path = Paths.get("D:\\IDEProJect\\springcloudalibaba\\oss-sdk\\src\\main\\java\\ccw\\serviceinnvation\\2.jpg");
-
 //        ossRestfulClient.createBucket(bucketName);
-        ossRestfulClient.upload(bucketName,path.toString());
-        System.out.println(ossRestfulClient.etagHandler.calculate(Files.readAllBytes(path)));
+//        ossRestfulClient.upload(bucketName,path.toString());
+//        System.out.println(ossRestfulClient.etagHandler.calculate(Files.readAllBytes(path)));
+        ossRestfulClient.download(bucketName,objectName, "D:\\oss\\test\\");
 
     }
 

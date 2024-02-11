@@ -56,6 +56,8 @@ public interface RedisConstant {
 
     String CHUNK_BIT = "CHUNK_BIT:";
 
+    String CHUNK_CRC = "CRC:";
+
     /**
      * 分块相关信息 UUID=>{userId,bucketId,etag}
      */

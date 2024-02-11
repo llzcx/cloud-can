@@ -10,19 +10,19 @@ public class DataMachineServiceHandler {
 
     }
 
-    public void event(EventRequest eventRequest){
+    public void event(WriteEventRequest writeEventRequest){
 
     }
 
-    public void fragment(FragmentRequest fragmentRequest){
+    public void fragment(WriteFragmentRequest writeFragmentRequest){
 
     }
 
-    public void delEvent(DelEventRequest delEventRequest){
+    public void delEvent(WriteDelEventRequest writeDelEventRequest){
 
     }
 
-    public void merge(MergeRequest mergeRequest){
+    public void merge(WriterMergeRequest writerMergeRequest){
 
     }
 

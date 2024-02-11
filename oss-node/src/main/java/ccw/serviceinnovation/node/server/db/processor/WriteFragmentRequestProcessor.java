@@ -5,27 +5,27 @@ import ccw.serviceinnovation.node.server.db.DataService;
 import com.alipay.sofa.jraft.Status;
 import com.alipay.sofa.jraft.rpc.RpcContext;
 import com.alipay.sofa.jraft.rpc.RpcProcessor;
-import service.raft.request.FragmentRequest;
+import service.raft.request.WriteFragmentRequest;
 
-public class FragmentRequestProcessor implements RpcProcessor<FragmentRequest> {
+public class WriteFragmentRequestProcessor implements RpcProcessor<WriteFragmentRequest> {
     private final DataService dataService;
-    public FragmentRequestProcessor(DataService dataService) {
+    public WriteFragmentRequestProcessor(DataService dataService) {
         super();
         this.dataService = dataService;
     }
     @Override
-    public void handleRequest(RpcContext rpcCtx, FragmentRequest request) {
+    public void handleRequest(RpcContext rpcCtx, WriteFragmentRequest request) {
         final DataClosure dataClosure = new DataClosure() {
             @Override
             public void run(Status status) {
                 rpcCtx.sendResponse(getResponse());
             }
         };
-        this.dataService.fragment(request,dataClosure);
+        this.dataService.writeFragment(request,dataClosure);
     }
 
     @Override
     public String interest() {
-        return FragmentRequest.class.getName();
+        return WriteFragmentRequest.class.getName();
     }
 }

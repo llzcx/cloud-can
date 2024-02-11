@@ -10,9 +10,9 @@ import java.io.Serializable;
 @Data
 public class DelRequest implements Serializable,JRaftRpcReq {
     private static final long serialVersionUID = -6597003954824547294L;
-    private String etag;
+    private String nodeObjectKey;
 
-    public DelRequest(String etag) {
-        this.etag = etag;
+    public DelRequest(String nodeObjectKey) {
+        this.nodeObjectKey = nodeObjectKey;
     }
 }

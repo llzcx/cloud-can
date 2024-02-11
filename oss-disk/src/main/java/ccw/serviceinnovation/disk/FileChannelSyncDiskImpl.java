@@ -11,40 +11,33 @@ import java.nio.file.StandardOpenOption;
 /**
  * NIO FileChannel
  */
-public class FileChannelSyncDiskImpl implements SyncDisk {
+public class FileChannelSyncDiskImpl extends SyncDisk {
     public FileChannelSyncDiskImpl() throws IOException {
     }
 
-    @Override
     public void initialize() throws IOException {
-        // Implement initialization logic here
+        // 初始化逻辑，例如打开文件通道等
+        // 此处略
     }
 
-    @Override
-    public void save(Path path, byte[] bytes, int start, int size) throws IOException {
-        try (FileChannel channel = FileChannel.open(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE)) {
-            ByteBuffer buffer = ByteBuffer.wrap(bytes, start, size);
-            channel.write(buffer);
+    public void save(Path path, long begin, byte[] buffer, int start, int size) throws IOException {
+        // 将buffer中从start位置开始的size字节写入文件的begin位置处
+        try (FileChannel fileChannel = FileChannel.open(path, StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE)) {
+            ByteBuffer byteBuffer = ByteBuffer.wrap(buffer, start, size);
+            fileChannel.write(byteBuffer, begin);
         }
     }
 
-    @Override
-    public byte[] read(Path path, int start, int size) throws IOException {
-        try (FileChannel channel = FileChannel.open(path, StandardOpenOption.READ)) {
-            ByteBuffer buffer = ByteBuffer.allocate(size);
-            channel.read(buffer, start);
-            return buffer.array();
+    public byte[] read(Path path, long start, int size,byte[] buffer) throws IOException {
+        // 从文件的start位置处读取size字节到buffer中
+        try (FileChannel fileChannel = FileChannel.open(path, StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE)) {
+            if(size == -1) buffer = new byte[(int) fileChannel.size()];
+            ByteBuffer byteBuffer = ByteBuffer.wrap(buffer, 0, size);
+            fileChannel.read(byteBuffer, start);
         }
+        return buffer;
     }
 
-    @Override
-    public void updateName(Path oldName, String newName) throws IOException {
-        Files.move(oldName, oldName.resolveSibling(newName));
-    }
 
-    @Override
-    public void del(Path path) throws IOException {
-        Files.delete(path);
-    }
 
 }

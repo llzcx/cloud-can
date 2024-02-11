@@ -78,11 +78,6 @@ public class OssObject implements Serializable {
     private Long parent;
 
     /**
-     * 加密方式
-     */
-    private Integer secret;
-
-    /**
      * 是否为备份文件
      */
     private Boolean isBackup;

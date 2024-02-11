@@ -4,9 +4,12 @@ import ccw.serviceinnovation.common.entity.OssObject;
 import ccw.serviceinnovation.oss.pojo.bo.BlockTokenBo;
 import ccw.serviceinnovation.oss.pojo.dto.BatchDeletionObjectDto;
 import ccw.serviceinnovation.oss.pojo.vo.*;
+import com.alipay.sofa.jraft.error.RemotingException;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -17,12 +20,13 @@ public interface IObjectService extends IService<OssObject> {
     Boolean deleteObject(String bucketName,String objectName) throws Exception;
     Boolean updateObjectName(String bucketName, String objectName,String newName);
     Boolean updateObjectAcl(String bucketName, String objectName,Integer objectAcl);
-    Boolean addSmallObject(String bucketName, String objectName, String etag, MultipartFile file,Long  parentObjectId,Integer objectAcl) throws Exception;
-    Boolean addObjectChunk(MultipartFile file, Integer chunk, String blockToken,String bucketName) throws Exception;
-    Boolean mergeObjectChunk(String bucketName,String blockToken) throws Exception;
-    BlockTokenBo getBlockToken(String etag, String bucketName, String objectName, Long parentObjectId,
-                               Integer objectAcl, Integer chunks, Long size);
+    Boolean upload(String bucketName, String objectName, String etag, MultipartFile file, Long  parentObjectId, Integer objectAcl) throws Exception;
+    Boolean append(MultipartFile file, Integer chunk, String eventId, String bucketName) throws Exception;
+    Boolean merge(String bucketName, String eventId) throws Exception;
+    BlockTokenBo createUploadEvent(String etag, String bucketName, String objectName, Long parentObjectId,
+                                   Integer objectAcl, Integer chunks, Long size) throws RemotingException, InterruptedException;
     OssObjectVo getObjectInfo(String bucketName, String objectName);
+    void download(String bucketName,String objectName, HttpServletResponse response) throws IOException, RemotingException, InterruptedException;
     Boolean deleteObjects(String bucketName) throws Exception;
     Boolean putFolder(String bucketName, String objectName,Long parentObjectId);
     RPage<ObjectVo> listObjects(String bucketName, Integer pageNum, Integer size, String key,Long parentObjectId,Boolean isImages);
