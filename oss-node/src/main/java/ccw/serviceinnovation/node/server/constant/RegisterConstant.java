@@ -79,8 +79,8 @@ public class RegisterConstant {
      * 总数量，自动获取
      */
     public static Integer TOTAL_SHARDS;
-
-    public static Integer HTTP_PORT;
-
+    /**
+     * 加密
+     */
     public static EncryptionEnum ENCRYPT;
 }

@@ -126,11 +126,11 @@ public class DataServer {
         final String serverIdStr = RegisterConstant.ADDR;
         final String initConfStr = RegisterConstant.GROUP_CLUSTER;
         final Long electionTimeoutMs = RegisterConstant.ELECTION_TIMEOUT;
-        log.info("Server:{} {} {} {} {}", dataPath, groupId, serverIdStr, initConfStr, electionTimeoutMs);
+        log.info("GroupName is {},NodeList is {}", groupId, serverIdStr);
         final NodeOptions nodeOptions = new NodeOptions();
         // for test, modify some params
         // set election timeout to 1s
-        nodeOptions.setElectionTimeoutMs(1000);
+        nodeOptions.setElectionTimeoutMs(Math.toIntExact(electionTimeoutMs));
         // disable CLI service。
         nodeOptions.setDisableCli(false);
         // parse server address
@@ -151,7 +151,6 @@ public class DataServer {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("Started node server at port:" + dataServer.getNode().getNodeId().getPeerId().getPort());
         // GrpcServer need block to prevent process exit
         DataGrpcHelper.blockUntilShutdown();
     }

@@ -11,7 +11,6 @@ import ccw.serviceinnovation.node.partition.PartitionSelector;
 import ccw.serviceinnovation.node.partition.SurplusPartitionSelectorIMpl;
 import ccw.serviceinnovation.node.server.constant.ArgInitialize;
 import ccw.serviceinnovation.node.server.constant.RegisterConstant;
-import ccw.serviceinnovation.node.server.http.HttpServer;
 import ccw.serviceinnovation.node.server.nacos.NacosConfig;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alipay.sofa.jraft.rhea.util.concurrent.NamedThreadFactory;
@@ -106,11 +105,6 @@ public class StorageEngine {
 
 
         /*-----------------服务注册-------------------*/
-
-        //开启http访问服务
-        executor.submit(HttpServer::start);
-
-
         //连接到注册中心
         register = new NacosConfig();
         register.connect();

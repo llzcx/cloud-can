@@ -5,6 +5,7 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingFactory;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -12,6 +13,7 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
+@Slf4j
 public class NacosConfig {
     public NamingService namingService;
 
@@ -20,8 +22,6 @@ public class NacosConfig {
     }
 
     public void connect() throws NacosException {
-
-        System.out.println(RegisterConstant.NACOS_ADDR);
         namingService = NamingFactory.createNamingService("127.0.0.1:8848");
         String ip = RegisterConstant.HOST;
         Integer port = RegisterConstant.PORT;
@@ -31,7 +31,7 @@ public class NacosConfig {
         instance.setPort(port);
         instance.setClusterName(RegisterConstant.GROUP_NAME);
         namingService.registerInstance("oss", "raft", instance);
-        System.out.println("nacos connect success.");
+        log.debug("nacos connect success.");
     }
 
     public static void main(String[] args) throws NacosException, IOException, InterruptedException {

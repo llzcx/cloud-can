@@ -6,6 +6,7 @@ import ccw.serviceinnovation.node.server.constant.RegisterConstant;
 import ccw.serviceinnovation.node.util.Bitmap;
 import ccw.serviceinnovation.node.util.FNameUtil;
 import ccw.serviceinnvation.encryption.consant.EncryptionEnum;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -15,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 文件索引
  */
+@Slf4j
 public class EtagIndexHashMapImpl extends ConcurrentHashMap<String, ObjectMeta> implements Index{
 
 
@@ -53,7 +55,6 @@ public class EtagIndexHashMapImpl extends ConcurrentHashMap<String, ObjectMeta> 
                 }
             });
         }
-
-        System.out.println("index load success.");
+        log.debug("index load success,total {}",map.size());
     }
 }

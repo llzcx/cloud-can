@@ -55,19 +55,16 @@ public class ArgInitialize {
         RegisterConstant.PARITY_SHARDS = Integer.valueOf(map.get(MustParamsKey.PARITY_SHARDS));
         RsParam.instance = new RsParam(RegisterConstant.DATA_SHARDS, RegisterConstant.PARITY_SHARDS);
         RegisterConstant.TOTAL_SHARDS = RegisterConstant.DATA_SHARDS + RegisterConstant.PARITY_SHARDS;
-        System.out.println("RS data_shards:"+RegisterConstant.DATA_SHARDS);
-        System.out.println("RS parity_shards:"+RegisterConstant.PARITY_SHARDS);
+        log.debug("RS data_shards:"+RegisterConstant.DATA_SHARDS);
+        log.debug("RS parity_shards:"+RegisterConstant.PARITY_SHARDS);
 
         //encrypt
         if(map.get(MustParamsKey.ENCRYPT)!=null){
             RegisterConstant.ENCRYPT = EncryptionEnum.getEnum(map.get(MustParamsKey.ENCRYPT));
-            System.out.println("encrypt:"+RegisterConstant.ENCRYPT);
+            log.debug("encrypt:"+RegisterConstant.ENCRYPT);
         }
 
 
-        //http
-        RegisterConstant.HTTP_PORT = IpUtils.findAvailablePort();
-
-        System.out.println("param init success.");
+        log.debug("param init success.");
     }
 }

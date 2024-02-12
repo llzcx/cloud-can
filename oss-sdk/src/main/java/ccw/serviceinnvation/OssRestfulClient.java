@@ -1,9 +1,9 @@
 package ccw.serviceinnvation;
 
 
+
 import ccw.serviceinnovation.hash.checksum.Crc32EtagHandlerAdapter;
 import ccw.serviceinnovation.hash.checksum.EtagHandler;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import okhttp3.*;
@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.Checksum;
 
 import static com.alibaba.fastjson.JSON.parseObject;
 import static com.alibaba.fastjson.JSON.toJSONString;
@@ -108,8 +109,9 @@ public class OssRestfulClient {
         byte[] bytes = Files.readAllBytes(pat);
         String url = this.url + "/ossObject/putSmallObject";
         String objectName = pat.getFileName().toString();
-        String etag = etagHandler.calculate(bytes);
-
+        Checksum deserialize = etagHandler.deserialize("0");
+        etagHandler.update(deserialize,bytes,0,bytes.length);
+        String etag = etagHandler.serialize(deserialize);
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("bucketName", bucketName)
