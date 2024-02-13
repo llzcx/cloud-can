@@ -290,6 +290,37 @@ Cloud Can最终采用Redis存储Location值。
 权值的设定具体需要看Group机器配置（CPU、磁盘的吞吐、IOPS以及容量）。
 
 
+## Read-After-Writer
+
+强一致性有许多实现方案，最终采用的是SOFAJraft的解决方案。
+
+### Raft Log read
+
+实现线性一致读最常规的办法是走 Raft 协议，将读请求同样按照 Log 处理，通过 Log 复制和状态机执行来获取读结果，
+然后再把读取的结果返回给 Client。因为 Raft 本来就是一个为了实现分布式环境下线性一致性的算法，
+所以通过 Raft 非常方便的实现线性 Read，也就是将任何的读请求走一次 Raft Log，
+等此 Log 提交之后在 apply 的时候从状态机里面读取值，一定能够保证这个读取到的值是满足线性要求的。
+
+### ReadIndex Read
+
+当 Leader 需要处理 Read 请求时，Leader 与过半机器交换心跳信息确定自己仍然是 Leader 后可提供线性一致读。
+不同于通过 Raft Log 的 Read，ReadIndex Read 使用 Heartbeat 方式来让 Leader 确认自己是 Leader，省去 Raft Log 流程。
+
+### Lease Read
+
+Raft 论文里面提及一种通过 Clock + Heartbeat 的 Lease Read 优化方法，
+也就是 Leader 发送 Heartbeat 的时候首先记录一个时间点 Start，当系统大部分节点都回复 Heartbeat Response，
+由于 Raft 的选举机制，Follower 会在 Election Timeout 的时间之后才重新发生选举，
+下一个 Leader 选举出来的时间保证大于 Start+Election Timeout/Clock Drift Bound，
+所以可以认为 Leader 的 Lease 有效期可以到 Start+Election Timeout/Clock Drift Bound 时间点。
+Lease Read 与 ReadIndex 类似但更进一步优化， 不仅节省 Log，而且省掉网络交互，大幅提升读的吞吐量并且能够显著降低延时。
+
+### SOFAJraft的解决方案
+
+SOFAJRaft 采用 ReadIndex 替代走 Raft 状态机的方案，简而言之是依靠 ReadIndex 原则直接从 Leader 读取结果：
+所有已经复制到多数派上的 Log（可视为写操作）被视为安全的 Log，Leader 状态机只要按照顺序执行到此条 Log之后，
+该 Log 所体现的数据就能对客户端 Client 可见。
+
 
 ## 项目模块
 
