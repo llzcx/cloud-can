@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 public class Util {
-    // 删除文件夹下所有文件的方法
+    // 删除文件夹下所有文件
     public static void deleteAllFilesInFolder(String folderPath) throws IOException {
         Path start = Paths.get(folderPath);
         try (Stream<Path> paths = Files.walk(start)) {
@@ -17,16 +17,12 @@ public class Util {
         Files.deleteIfExists(start);
     }
 
-    // 删除单个文件的方法
+    // 删除单个文件
     private static void deleteFile(Path path) {
         try {
             Files.deleteIfExists(path);
         } catch (IOException e) {
             System.err.println("Unable to delete file: " + path + ", Reason: " + e.getMessage());
         }
-    }
-
-    public static void main(String[] args) throws IOException {
-        deleteAllFilesInFolder("D:\\oss");
     }
 }

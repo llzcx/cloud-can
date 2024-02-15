@@ -16,6 +16,8 @@
         <module>oss-encryption</module>
         <module>oss-disk</module>
         <module>oss-reedsolomon</module>
+        <module>oss-example</module>
+        <module>oss-sdk</module>
     </modules>
 
     <groupId>ccw.serviceinnovation</groupId>

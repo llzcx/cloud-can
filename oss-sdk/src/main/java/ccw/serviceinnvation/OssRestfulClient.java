@@ -29,7 +29,7 @@ public class OssRestfulClient {
 
     private Headers headers;
 
-    private final EtagHandler etagHandler = new Crc32EtagHandlerAdapter();
+    public final EtagHandler etagHandler = new Crc32EtagHandlerAdapter();
 
     private final OkHttpClient client;
 
@@ -149,7 +149,7 @@ public class OssRestfulClient {
         System.out.println("Response Body: " + response.body().string());
     }
 
-    private void download(String bucketName, String objectName, String path) throws IOException {
+    public void download(String bucketName, String objectName, String path) throws IOException {
         String url = this.url +"/ossObject/download?objectName=" +objectName + "&bucketName=" + bucketName;
         Response response = getResponse(url, "get", headers, null);
         Path parent = Paths.get(path);
@@ -175,18 +175,7 @@ public class OssRestfulClient {
             throw new IOException("Response body is null");
         }
     }
-    public static void main(String[] args) throws IOException {
-        OssRestfulClient ossRestfulClient = new OssRestfulClient("localhost", 8080, "root", "123456");
-        ossRestfulClient.login();
-        String bucketName = "test";
-        String objectName = "2.jpg";
-        Path path = Paths.get("D:\\IDEProJect\\springcloudalibaba\\oss-sdk\\src\\main\\java\\ccw\\serviceinnvation\\2.jpg");
-//        ossRestfulClient.createBucket(bucketName);
-//        ossRestfulClient.upload(bucketName,path.toString());
-//        System.out.println(ossRestfulClient.etagHandler.calculate(Files.readAllBytes(path)));
-        ossRestfulClient.download(bucketName,objectName, "D:\\oss\\test\\");
 
-    }
 
 
 }
