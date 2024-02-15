@@ -1,7 +1,6 @@
 package ccw.serviceinnovation.node.server.db;
 
 import ccw.serviceinnovation.node.util.StringUtil;
-import service.bo.ReadEventBo;
 import service.raft.request.*;
 
 import java.io.IOException;
