@@ -35,7 +35,6 @@ cloud-can 是一个分布式对象存储系统(object storage system)。
 
 ### Plan
 - [ ] 支持对象不均匀分配的算法（Crush抽签算法）
-
 - [ ] 线程池并发写入磁盘
 - [ ] 更加完善的性能测试
 - [ ] 支持一键部署
@@ -119,8 +118,6 @@ node运行参数
 --partition_disk=./1,./2,./3,./4,./5,./6
 --data_shards=4
 --parity_shards=2
---redis_host=127.0.0.1
---redis_port=6379
 --nacos_host=127.0.0.1
 --nacos_port=8848
 --encrypt=NULL
