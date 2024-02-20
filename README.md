@@ -82,9 +82,9 @@ nacos安装
 
 `mvn package`
 
-`java -jar target/oss-node-0.0.1-SNAPSHOT.jar {node运行参数}`
+`java -cp -jar target/oss-node-0.0.1-SNAPSHOT.jar ccw.serviceinnovation.OssNodeApplication {node运行参数}`
 
-`java -jar target/oss-service-0.0.1-SNAPSHOT.jar {service运行参数}`
+`java -cp -jar target/oss-service-0.0.1-SNAPSHOT.jar ccw.serviceinnovation.OssApplication {service运行参数}`
 
 group_name为Group的唯一ID
 
