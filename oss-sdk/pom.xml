@@ -6,7 +6,7 @@
 
     <parent>
         <groupId>ccw.serviceinnovation</groupId>
-        <artifactId>springcloudalibaba</artifactId>
+        <artifactId>cloud-can</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>

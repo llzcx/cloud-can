@@ -21,7 +21,7 @@
     </modules>
 
     <groupId>ccw.serviceinnovation</groupId>
-    <artifactId>springcloudalibaba</artifactId>
+    <artifactId>cloud-can</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <name>springcloudalibaba</name>
