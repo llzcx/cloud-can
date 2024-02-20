@@ -27,19 +27,21 @@ cloud-can 是一个分布式对象存储系统(object storage system)。
 - [x] Node层支持Read-After-Write和Read-Eventually
 - [X] 利用反射机制解耦合状态机和处理实现
 - [x] 支持RS纠删码shards落盘
-- [ ] Node支持本地的KV数据库（leveldb）
+- [x] Node索引支持本地的KV数据库实现（leveldb）
+- [x] 元数据处理：对于自增操作的原子性采用分段锁思想提高并发度
 - [X] 支持多种文件Unique Key计算（MD5、CRC32）
-- [X] SDK支持更多service层功能
 - [X] SDK支持HTTP传输
 
 
 ### Plan
+- [ ] 利用Nacos配置中心进行Node配置
 - [ ] 支持对象不均匀分配的算法（Crush抽签算法）
 - [ ] 线程池并发写入磁盘
 - [ ] 更加完善的性能测试
 - [ ] 支持一键部署
 - [ ] SDK支持跨语言(Java、Python)
 - [ ] SDK支持更多协议传输（S3、FTP）
+- [ ] SDK支持更多service层功能
 
 ## Requirements
 
