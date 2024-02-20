@@ -30,4 +30,14 @@ public class JacksonHandlerImpl implements OssJsonHandler{
         return null;
     }
 
+    @Override
+    public <T> T decodeByte(byte[] bytes, Class<T> cls) {
+        return null;
+    }
+
+    @Override
+    public byte[] encodeByte(Object bytes) {
+        return new byte[0];
+    }
+
 }

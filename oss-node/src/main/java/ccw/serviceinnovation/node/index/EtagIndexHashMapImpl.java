@@ -27,15 +27,15 @@ public class EtagIndexHashMapImpl extends ConcurrentHashMap<String, ObjectMeta> 
     }
 
     @Override
-    public ObjectMeta get(String key) {
-        return map.get(key);
+    public ObjectMeta get(String uniqueKey) {
+        return map.get(uniqueKey);
     }
 
     @Override
-    public void add(String key, EncryptionEnum encryptionEnum) {
-        ObjectMeta objectMeta = new ObjectMeta(key,encryptionEnum);
+    public void add(String uniqueKey, EncryptionEnum encryptionEnum) {
+        ObjectMeta objectMeta = new ObjectMeta(uniqueKey,encryptionEnum);
         objectMeta.getBitmap().setAll();
-        map.put(key,objectMeta);
+        map.put(uniqueKey,objectMeta);
     }
 
     @Override
@@ -56,5 +56,15 @@ public class EtagIndexHashMapImpl extends ConcurrentHashMap<String, ObjectMeta> 
             });
         }
         log.debug("index load success,total {}",map.size());
+    }
+
+    @Override
+    public boolean incr(String uniqueKey) {
+        return false;
+    }
+
+    @Override
+    public boolean decr(String uniqueKey) {
+        return false;
     }
 }

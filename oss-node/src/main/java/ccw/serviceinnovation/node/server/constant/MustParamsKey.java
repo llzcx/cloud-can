@@ -9,10 +9,6 @@ public interface MustParamsKey {
 
     String ELECTION_TIMEOUT =  "election_timeout";
 
-    String REDIS_HOST = "redis_host";
-
-    String REDIS_PORT = "redis_port";
-
     String LOG_DISK = "log_disk";
     String PARTITION_DISK = "partition_disk";
 

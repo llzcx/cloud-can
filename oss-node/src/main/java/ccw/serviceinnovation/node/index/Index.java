@@ -8,15 +8,20 @@ import java.io.IOException;
 public interface Index {
     /**
      * 获取数据
-     * @param etag
+     *
+     * @param uniqueKey
      * @return
      */
-    ObjectMeta get(String etag);
+    ObjectMeta get(String uniqueKey);
 
-    void add(String key, EncryptionEnum encryptionEnum);
+    void add(String uniqueKey, EncryptionEnum encryptionEnum);
 
     /**
      * 索引加载
      */
     void load() throws IOException;
+
+    boolean incr(String uniqueKey);
+
+    boolean decr(String uniqueKey);
 }

@@ -13,6 +13,8 @@ cloud-can 是一个分布式对象存储系统(object storage system)。
 
 ## Features and Plan
 
+### Features
+
 - [x] 多用户访问
 - [x] 对象访问控制列表
 - [x] 对象桶访问控制列表
@@ -22,19 +24,22 @@ cloud-can 是一个分布式对象存储系统(object storage system)。
 - [x] 抽象出NodeClient，并使用sofa-bolt（RPC）与Node进行流式TransferTo
 - [x] NodeClient支持订阅服务变更，使用读写锁提高并发度
 - [x] 支持对象均匀分配的算法（随机、轮询、一致性hash、hash取余）
-- [ ] 支持对象不均匀分配的算法（Crush抽签算法）
-- [ ] 线程池实现异步磁盘IO
-- [ ] 利用阻塞队列池化分片和加密的缓冲区（对于大Buffer有类似线程池的超时销毁机制）
 - [x] Node层支持Read-After-Write和Read-Eventually
-- [X] 利用反射机制解耦合状态机和处理实现（类似SpringMVC）
-- [x] 支持RS纠删码shards保存
-- [X] 支持多种校验和（目前支持CRC32）
-- [X] 支持多种文件Unique Key计算（目前支持MD5）
-- [X] SDK支持多协议传输（目前只支持HTTP）
-- [X] SDK支持跨语言
+- [X] 利用反射机制解耦合状态机和处理实现
+- [x] 支持RS纠删码shards落盘
+- [X] 支持多种文件Unique Key计算（MD5、CRC32）
 - [X] SDK支持更多service层功能
-- [ ] 支持本地磁盘和网络磁盘同时装载
-- [ ] 更加完善的测试
+- [X] SDK支持HTTP传输
+
+
+### Plan
+- [ ] 支持对象不均匀分配的算法（Crush抽签算法）
+- [ ] Node支持本地的KV数据库
+- [ ] 线程池并发写入磁盘
+- [ ] 更加完善的性能测试
+- [ ] 支持一键部署
+- [ ] SDK支持跨语言(Java、Python)
+- [ ] SDK支持更多协议传输（S3、FTP）
 
 ## Requirements
 
@@ -76,7 +81,9 @@ nacos安装
 
 2. 项目启动
 
-`cd cloud-can`
+`git clone git@github.com:llzcx/cloud-can.git`
+
+`cd cloud-can-mater`
 
 `mvn clean install`
 

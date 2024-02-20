@@ -23,11 +23,22 @@ public class ObjectMeta implements Serializable {
      * 第几块
      */
     private Bitmap bitmap;
+    /**
+     * 引用数量
+     */
+    private Integer count;
+
+    public ObjectMeta() {
+
+    }
 
     public ObjectMeta(String key, EncryptionEnum secret) {
         this.key = key;
         this.secret = secret;
         bitmap = new Bitmap();
+        count = 1;
     }
+
+
 
 }

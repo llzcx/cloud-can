@@ -47,12 +47,8 @@ public class RegisterConstant {
     /**
      * Redis服务地址
      */
-    public static String REDIS_HOST;
+    public static String LEVEL_DB;
 
-    /**
-     * Redis服务端口
-     */
-    public static Integer REDIS_PORT;
     /**
      * Nacos服务IP
      */

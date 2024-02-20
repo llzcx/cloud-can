@@ -46,9 +46,8 @@ public class ArgInitialize {
         RegisterConstant.NACOS_PORT = Integer.valueOf(map.get(MustParamsKey.NACOS_PORT));
         RegisterConstant.NACOS_ADDR = IpUtils.getAddr(RegisterConstant.NACOS_HOST, RegisterConstant.NACOS_PORT);
 
-        //redis
-        RegisterConstant.REDIS_HOST = map.get(MustParamsKey.REDIS_HOST);
-        RegisterConstant.REDIS_PORT = Integer.valueOf(map.get(MustParamsKey.REDIS_PORT));
+        //leveldb
+        RegisterConstant.LEVEL_DB = Paths.get(RegisterConstant.LOG_DISK, "leveldb").toString();
 
         //rs
         RegisterConstant.DATA_SHARDS = Integer.valueOf(map.get(MustParamsKey.DATA_SHARDS));

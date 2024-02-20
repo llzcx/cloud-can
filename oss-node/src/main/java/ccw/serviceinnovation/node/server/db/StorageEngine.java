@@ -7,6 +7,7 @@ import ccw.serviceinnovation.node.calculate.EncryptAndSplitByteHandlerImpl;
 import ccw.serviceinnovation.node.index.EtagIndexHashMapImpl;
 import ccw.serviceinnovation.node.index.Index;
 import ccw.serviceinnovation.node.index.IndexContext;
+import ccw.serviceinnovation.node.index.LevelDbIndexImpl;
 import ccw.serviceinnovation.node.partition.PartitionSelector;
 import ccw.serviceinnovation.node.partition.SurplusPartitionSelectorIMpl;
 import ccw.serviceinnovation.node.server.constant.ArgInitialize;
@@ -96,7 +97,7 @@ public class StorageEngine {
         byteHandler.initialize();
 
         //索引
-        index = new EtagIndexHashMapImpl();
+        index = new LevelDbIndexImpl();
         IndexContext.index = index;
         index.load();
 
