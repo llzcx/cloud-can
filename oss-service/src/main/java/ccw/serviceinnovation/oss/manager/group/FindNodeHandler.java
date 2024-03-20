@@ -17,18 +17,8 @@ public class FindNodeHandler {
     @Autowired
     RaftClient raftClient;
 
-    LoadBalancer loadBalancer = new ConsistentHashLoadBalancer();
 
     public OssGroup find(String etag) {
-        List<OssGroup> list = raftClient.getList();
-        if (list.size() == 0) {
-            throw new OssException(ResultCode.SERVER_EXCEPTION);
-        } else if (list.size() == 1) {
-            return list.get(0);
-        } else {
-            List<Server> serverList = list.stream().map(ossGroup -> (Server) ossGroup)
-                    .collect(Collectors.toList());
-            return (OssGroup) loadBalancer.select(serverList, new Invocation(etag));
-        }
+        return raftClient.find(etag);
     }
 }

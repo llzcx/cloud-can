@@ -2,7 +2,7 @@ package ccw.serviceinnvation.nodeclient;
 
 import ccw.serviceinnovation.common.exception.OssException;
 import ccw.serviceinnovation.common.request.ResultCode;
-import ccw.serviceinnovation.loadbalance.OssGroup;
+import ccw.serviceinnovation.loadbalance.*;
 import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
@@ -33,6 +33,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 @Data
 @Slf4j
@@ -43,6 +44,8 @@ public class RaftClient {
     private NamingService namingService;
 
     private final ReentrantReadWriteLock mainLock = new ReentrantReadWriteLock();
+
+    LoadBalancer loadBalancer = new ConsistentHashLoadBalancer();
 
     // groupName -> groupMap
     private List<OssGroup> groupList = new ArrayList<>();
@@ -183,6 +186,7 @@ public class RaftClient {
 
     /**
      * RPC传输
+     *
      * @param outputStream
      * @param groupName
      * @param objectKey
@@ -214,6 +218,34 @@ public class RaftClient {
         //TODO 关闭数据流事件
         sync(clientService, leader, new ReadDelEventRequest(eventId), ResultCode.SERVER_EXCEPTION);
         outputStream.close();
+    }
+
+
+    /**
+     * 调整Key
+     *
+     * @param newGroupName
+     */
+    public void balanceAdjustment(String newGroupName) {
+
+    }
+
+    /**
+     * 寻找存储节点
+     * @param etag
+     * @return
+     */
+    public OssGroup find(String etag) {
+        List<OssGroup> list = getList();
+        if (list.size() == 0) {
+            throw new OssException(ResultCode.SERVER_EXCEPTION);
+        } else if (list.size() == 1) {
+            return list.get(0);
+        } else {
+            List<Server> serverList = list.stream().map(ossGroup -> (Server) ossGroup)
+                    .collect(Collectors.toList());
+            return (OssGroup) loadBalancer.select(serverList, new Invocation(etag));
+        }
     }
 
     public static void main(String[] args) throws InterruptedException {

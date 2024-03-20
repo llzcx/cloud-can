@@ -8,7 +8,9 @@ import ccw.serviceinnovation.node.server.constant.RegisterConstant;
 import ccw.serviceinnvation.encryption.consant.EncryptionEnum;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class LevelDbIndexImpl implements Index {
@@ -58,5 +60,12 @@ public class LevelDbIndexImpl implements Index {
             levelDb.delete(uniqueKey);
         }
         return true;
+    }
+
+    public Map<String, ObjectMeta> iterator() {
+        Map<String, ObjectMeta> map = new HashMap<>();
+        List<String> keys = levelDb.getKeys();
+        for (String key : keys) map.put(key, get(key));
+        return map;
     }
 }

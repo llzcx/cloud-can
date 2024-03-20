@@ -15,7 +15,7 @@ public class Example {
         ossRestfulClient.login();
         String bucketName = "test";
         String objectName = "2.jpg";
-        Path path = Paths.get("D:\\IDEProJect\\springcloudalibaba\\oss-example\\src\\main\\java\\ccw\\serviceinnvation\\2.jpg");
+        Path path = Paths.get("D:\\test\\对象存储测试数据\\2.jpg");
 //        ossRestfulClient.createBucket(bucketName);
         ossRestfulClient.upload(bucketName,path.toString());
         Checksum deserialize = etagHandler.deserialize("0");
