@@ -35,9 +35,8 @@ public class IdentityAuthentication {
         String account = JwtUtil.getUsername(token);
         String secret = JwtUtil.getSecret(token);
         Long id = JwtUtil.getID(token);
-        log.info("userinfo is {}",id.toString());
+        if (id != null) log.info("userId is {}", id);
         User user = userMapper.selectById(id);
-        log.info(user.toString());
         if(user!=null && user.getUsername().equals(account) && user.getPassword().equals(secret)) {
             return user;
         }else{

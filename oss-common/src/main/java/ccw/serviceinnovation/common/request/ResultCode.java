@@ -1,5 +1,7 @@
 package ccw.serviceinnovation.common.request;
 
+import java.io.Serializable;
+
 /**
  * @Author: 陈翔
  * @Description: 返回码定义
@@ -11,7 +13,7 @@ package ccw.serviceinnovation.common.request;
  * #3001～3999 区间表示接口异常
  * @Date Create in 2022/10/20 19:28
  */
-public enum ResultCode {
+public enum ResultCode implements Serializable {
     /* 成功 */
     SUCCESS(200, "成功"),
 
@@ -92,6 +94,11 @@ public enum ResultCode {
     OFFSET_LIMIT(3044,"偏移量越界"),
 
     FRAGMENT_SIZE_ERROR(3045,"文件分片大小不为4KB"),
+
+
+    KEY_IS_NULL(4001,"[Data layer error] object key is not exist."),
+
+    OBJECT_IS_IN_USER(4002,"object is in use.");
 
     ;
     private Integer code;

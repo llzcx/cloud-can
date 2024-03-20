@@ -50,9 +50,9 @@ import static ccw.serviceinnovation.oss.constant.ObjectConstant.CHUNK_SIZE;
 /**
  * @author 陈翔
  */
-@Service
+//@Service
 @Slf4j
-@Transactional(rollbackFor = {Exception.class, RuntimeException.class})
+//@Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> implements IObjectService {
 
     @Autowired
@@ -351,7 +351,7 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
         //TODO 数据层处理
         OssGroup ossGroup = findNodeHandler.find(NodeObjectKeyUtil.getObjectKey(etag));
         String groupName = ossGroup.getGroupName();
-        WriteEventRequest writeEventRequest = new WriteEventRequest(NodeObjectKeyUtil.getObjectKey(etag), eventId, size);
+        WriteEventRequest writeEventRequest = new WriteEventRequest(NodeObjectKeyUtil.getObjectKey(etag), eventId, size,null);
         raftClient.sync(groupName, writeEventRequest, ResultCode.SERVER_EXCEPTION);
         //TODO 保存事件元数据
         if (objectAcl == null) objectAcl = ACLEnum.DEFAULT.getCode();
@@ -376,7 +376,7 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
         etagHandler.update(deserialize, bytes, 0, bytes.length);
         //TODO 保存到数据服务
         if (bytes.length != CHUNK_SIZE) throw new OssException(ResultCode.FRAGMENT_SIZE_ERROR);
-        WriteFragmentRequest writeFragmentRequest = new WriteFragmentRequest(eventId, bytes, off);
+        WriteFragmentRequest writeFragmentRequest = new WriteFragmentRequest(eventId, bytes, off,null);
         raftClient.sync(groupName, writeFragmentRequest, ResultCode.SERVER_EXCEPTION);
         //TODO 保存元数据
         chunkRedisService.saveChunkBit(eventId, chunk);

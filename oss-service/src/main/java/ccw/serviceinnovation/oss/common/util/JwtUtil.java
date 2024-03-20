@@ -83,7 +83,6 @@ public class JwtUtil {
         }
         try {
             DecodedJWT jwt = JWT.decode(token);
-            log.info("token = " + jwt.getToken());
             return jwt.getClaim(USERNAME).asString();
         } catch (JWTDecodeException e) {
             return null;
@@ -97,7 +96,6 @@ public class JwtUtil {
      * @return 加密的token
      */
     public static String sign(Long id,String username,String password) {
-        log.info("JwtUtil==sign--->");
         Map<String, Object> header = new HashMap<>();
         header.put("type","Jwt");
         header.put("alg","HS256");
@@ -115,7 +113,6 @@ public class JwtUtil {
                 .withClaim(ID,id.toString())
                 .withClaim(CURRENT_TIME, currentTimeMillis + EXPIRE_TIME)
                 .sign(algorithm);
-        log.info("JwtUtil==sign--->sign = " + sign);
         return sign;
     }
     /**

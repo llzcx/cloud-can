@@ -1,4 +1,5 @@
 package service.raft.request;
 
-public interface JRaftRpcReq {
+public interface JRaftRpcReq extends UniqueKey{
+
 }

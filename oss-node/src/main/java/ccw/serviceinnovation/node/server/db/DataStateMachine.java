@@ -17,6 +17,9 @@
 package ccw.serviceinnovation.node.server.db;
 
 
+import ccw.serviceinnovation.node.server.db.apply.OnApplyHandler;
+import ccw.serviceinnovation.node.server.db.queue.HandlerQueue;
+import ccw.serviceinnovation.node.server.db.queue.RPCTaskQueueImpl;
 import com.alipay.remoting.exception.CodecException;
 import com.alipay.remoting.serialization.SerializerManager;
 import com.alipay.sofa.jraft.Iterator;
@@ -30,16 +33,17 @@ import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-
 /**
- * Counter state machine.
- *
- * @author boyan (boyan@alibaba-inc.com)
- * <p>
- * 2018-Apr-09 4:52:31 PM
+ * @author 陈翔
  */
 public class DataStateMachine extends StateMachineAdapter {
 
+
+    private OnApplyHandler applyHandler;
+
+    public DataStateMachine(OnApplyHandler applyHandler) {
+        this.applyHandler = applyHandler;
+    }
 
     private static final Logger LOG = LoggerFactory.getLogger(DataStateMachine.class);
     /**
@@ -52,48 +56,12 @@ public class DataStateMachine extends StateMachineAdapter {
         return this.leaderTerm.get() > 0;
     }
 
-
     @Override
     public void onApply(final Iterator iter) {
-
-        while (iter.hasNext()) {
-            Object returnData = null;
-            DataOperation dataOperation = null;
-            DataClosure closure = null;
-            if (iter.done() != null) {
-                // This task is applied by this node, get value from closure to avoid additional parsing.
-                closure = (DataClosure) iter.done();
-                dataOperation = closure.getDataOperation();
-            } else {
-                // Have to parse FetchAddRequest from this user log.
-                final ByteBuffer data = iter.getData();
-                try {
-                    dataOperation = SerializerManager.getSerializer(SerializerManager.Hessian2).deserialize(data.array(),
-                            DataOperation.class.getName());
-                } catch (final CodecException e) {
-                    LOG.error("Fail to decode DataRequest", e);
-                }
-                // follower ignore read operation
-                if (dataOperation != null && dataOperation.isRead()) {
-                    iter.next();
-                    continue;
-                }
-            }
-            if (dataOperation != null) {
-                try {
-                    returnData = ServiceHandler.invoke(dataOperation.request);
-                    if (closure != null) {
-                        closure.success(returnData);
-                        closure.run(Status.OK());
-                    }
-                } catch (Exception e) {
-                    if (closure != null) {
-                        closure.failure("ERROR");
-                    }
-                    e.printStackTrace();
-                }
-            }
-            iter.next();
+        try {
+            applyHandler.batching(iter);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

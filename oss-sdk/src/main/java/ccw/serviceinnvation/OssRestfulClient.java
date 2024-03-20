@@ -4,6 +4,8 @@ package ccw.serviceinnvation;
 
 import ccw.serviceinnovation.hash.checksum.Crc32EtagHandlerAdapter;
 import ccw.serviceinnovation.hash.checksum.EtagHandler;
+import ccw.serviceinnovation.hash.directcalculator.EtagDirectCalculator;
+import ccw.serviceinnovation.hash.directcalculator.MD5EtagDirectCalculatorAdapter;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import okhttp3.*;
@@ -15,7 +17,6 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.Checksum;
 
 import static com.alibaba.fastjson.JSON.parseObject;
 import static com.alibaba.fastjson.JSON.toJSONString;
@@ -30,6 +31,8 @@ public class OssRestfulClient {
     private Headers headers;
 
     public final EtagHandler etagHandler = new Crc32EtagHandlerAdapter();
+
+    public final EtagDirectCalculator etagDirectCalculator = new MD5EtagDirectCalculatorAdapter();
 
     private final OkHttpClient client;
 
@@ -107,11 +110,9 @@ public class OssRestfulClient {
     public void upload(String bucketName, String path) throws IOException {
         Path pat = Paths.get(path);
         byte[] bytes = Files.readAllBytes(pat);
-        String url = this.url + "/ossObject/putSmallObject";
+        String url = this.url + "/ossObject/upload";
         String objectName = pat.getFileName().toString();
-        Checksum deserialize = etagHandler.deserialize("0");
-        etagHandler.update(deserialize,bytes,0,bytes.length);
-        String etag = etagHandler.serialize(deserialize);
+        String etag = etagDirectCalculator.get(pat);
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("bucketName", bucketName)

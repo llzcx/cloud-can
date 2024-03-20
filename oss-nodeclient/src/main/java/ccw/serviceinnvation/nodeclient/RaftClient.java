@@ -20,6 +20,8 @@ import service.raft.request.JRaftRpcReq;
 import service.raft.request.ReadDelEventRequest;
 import service.raft.request.ReadEventRequest;
 import service.raft.request.ReadFragmentRequest;
+import service.raft.response.ReadEventResponse;
+import service.raft.response.ReadFragmentResponse;
 import service.raft.rpc.DataGrpcHelper;
 import service.raft.rpc.RpcResponse;
 
@@ -135,14 +137,15 @@ public class RaftClient {
     }
 
 
-    public Object sync(final String groupName, JRaftRpcReq request,ResultCode resultCode) throws RemotingException, InterruptedException {
+    public Object sync(final String groupName, JRaftRpcReq request, ResultCode resultCode) throws RemotingException, InterruptedException {
         CliClientServiceImpl cliClientService = getGroupClient(groupName);
         PeerId leader = getLeader(groupName);
-        return sync(cliClientService,leader,request,resultCode);
+        return sync(cliClientService, leader, request, resultCode);
     }
-    public Object sync(final CliClientServiceImpl cliClientService,PeerId leader,JRaftRpcReq request,ResultCode resultCode) throws RemotingException, InterruptedException {
+
+    public Object sync(final CliClientServiceImpl cliClientService, PeerId leader, JRaftRpcReq request, ResultCode resultCode) throws RemotingException, InterruptedException {
         RpcResponse rpcResponse = (RpcResponse) cliClientService.getRpcClient().invokeSync(leader.getEndpoint(), request, 5000000);
-        if(!rpcResponse.getSuccess()){
+        if (!rpcResponse.getSuccess()) {
             throw new OssException(resultCode);
         }
         return rpcResponse.getData();
@@ -174,29 +177,43 @@ public class RaftClient {
         }
     }
 
-    public String getEventId(){
+    public String getEventId() {
         return UUID.randomUUID().toString();
     }
 
-    public void transferTo(ServletOutputStream outputStream,String groupName,String objectKey,long off,long size) throws RemotingException, InterruptedException, IOException {
+    /**
+     * RPC传输
+     * @param outputStream
+     * @param groupName
+     * @param objectKey
+     * @param off
+     * @param size
+     * @throws RemotingException
+     * @throws InterruptedException
+     * @throws IOException
+     */
+    public void transferTo(ServletOutputStream outputStream, String groupName, String objectKey, long off, long size) throws RemotingException, InterruptedException, IOException {
         CliClientServiceImpl clientService = getGroupClient(groupName);
         PeerId leader = getLeader(groupName);
         String eventId = getEventId();
         //TODO 开启数据流事件
-        Long realSize = (Long) sync(clientService,leader, new ReadEventRequest(true, eventId,objectKey), ResultCode.SERVER_EXCEPTION);
-        if(size > realSize) throw new OssException(ResultCode.OFFSET_LIMIT);
-        if(size == -1) size = realSize;
-        if(off >= size){
+        ReadEventResponse response = (ReadEventResponse) sync(clientService, leader, new ReadEventRequest(eventId, objectKey), ResultCode.SERVER_EXCEPTION);
+        Long realSize = response.getRealSize();
+        if (size > realSize) throw new OssException(ResultCode.OFFSET_LIMIT);
+        if (size == -1) size = realSize;
+        if (off >= size) {
             throw new IOException("offset exceeds limit.");
         }
         //TODO 传输数据流
-        int TRANSFER_SIZE = 10*1024;
-        for (long i = off; i < size; i+=TRANSFER_SIZE) {
-            byte[] fragment = (byte[]) sync(clientService,leader,new ReadFragmentRequest(true,eventId,i,TRANSFER_SIZE),ResultCode.SERVER_EXCEPTION);
+        int TRANSFER_SIZE = 10 * 1024;
+        for (long i = off; i < size; i += TRANSFER_SIZE) {
+            ReadFragmentResponse readFragmentResponse = (ReadFragmentResponse) sync(clientService, leader, new ReadFragmentRequest(true, eventId, i, TRANSFER_SIZE), ResultCode.SERVER_EXCEPTION);
+            byte[] fragment = readFragmentResponse.getData();
             outputStream.write(fragment);
         }
         //TODO 关闭数据流事件
-        sync(clientService,leader,new ReadDelEventRequest(true,eventId),ResultCode.SERVER_EXCEPTION);
+        sync(clientService, leader, new ReadDelEventRequest(eventId), ResultCode.SERVER_EXCEPTION);
+        outputStream.close();
     }
 
     public static void main(String[] args) throws InterruptedException {

@@ -9,6 +9,7 @@ import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.oss.manager.authority.bucketacl.BucketAclService;
 import ccw.serviceinnovation.oss.mapper.BucketMapper;
 import ccw.serviceinnovation.oss.mapper.OssObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author 陈翔
  */
 @Component
+@Slf4j
 public class ObjectAclService {
 
     @Autowired
@@ -69,7 +71,7 @@ public class ObjectAclService {
         if(bucket==null){
             throw new OssException(ResultCode.BUCKET_IS_DEFECT);
         }
-
+        log.info("bucket is "+bucket.getName());
         OssObject ossObject = ossObjectMapper.selectObjectByName(bucket.getName(), objectName);
         if(ossObject==null){
             throw new OssException(ResultCode.OBJECT_IS_DEFECT);

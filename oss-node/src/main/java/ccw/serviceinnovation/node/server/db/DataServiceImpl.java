@@ -16,17 +16,13 @@
  */
 package ccw.serviceinnovation.node.server.db;
 
-import ccw.serviceinnovation.common.entity.LocationVo;
-import ccw.serviceinnovation.node.index.IndexContext;
-import ccw.serviceinnovation.node.server.constant.RegisterConstant;
+
 import com.alipay.remoting.exception.CodecException;
 import com.alipay.remoting.serialization.SerializerManager;
 import com.alipay.sofa.jraft.Status;
 import com.alipay.sofa.jraft.closure.ReadIndexClosure;
 import com.alipay.sofa.jraft.entity.Task;
 import com.alipay.sofa.jraft.error.RaftError;
-import com.alipay.sofa.jraft.rhea.StoreEngineHelper;
-import com.alipay.sofa.jraft.rhea.options.StoreEngineOptions;
 import com.alipay.sofa.jraft.util.BytesUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -36,11 +32,10 @@ import service.raft.request.*;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
-import java.util.concurrent.Executor;
 
 
 /**
- * @author likun (saimu.msm@antfin.com)
+ * @author 陈翔
  */
 public class DataServiceImpl implements DataService {
     private static final Logger LOG = LoggerFactory.getLogger(DataServiceImpl.class);
@@ -48,16 +43,9 @@ public class DataServiceImpl implements DataService {
 
     private final DataServer dataServer;
 
-    private final Executor readIndexExecutor;
 
     public DataServiceImpl(DataServer neServer) {
         this.dataServer = neServer;
-        this.readIndexExecutor = createReadIndexExecutor();
-    }
-
-    private Executor createReadIndexExecutor() {
-        final StoreEngineOptions opts = new StoreEngineOptions();
-        return StoreEngineHelper.createReadIndexExecutor(opts.getReadIndexCoreThreads());
     }
 
     private boolean isLeader() {
@@ -87,25 +75,7 @@ public class DataServiceImpl implements DataService {
         }
     }
 
-    private void handlerNotLeaderError(final DataClosure closure) {
-        closure.failure(getRedirect());
-        closure.run(new Status(RaftError.EPERM, "Not leader"));
-    }
-
-
-    @Override
-    public void readDelEvent(ReadDelEventRequest readDelEventRequest, DataClosure closure) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        boolean readOnlySafe = readDelEventRequest.isReadOnSafe();
-        if (!readOnlySafe) {
-            //非线性读直接读取结果
-            ServiceHandler.invoke(readDelEventRequest);
-            return;
-        }
-        indexReadOrApplyToStateMachine(readDelEventRequest,closure);
-    }
-
-    public void indexReadOrApplyToStateMachine(JRaftRpcReq req,DataClosure closure){
-        //线性读取readIndex
+    public void readOnlySafe(JRaftRpcReq req, DataClosure closure) {
         this.dataServer.getNode().readIndex(BytesUtil.EMPTY_BYTES, new ReadIndexClosure() {
             @Override
             public void run(Status status, long index, byte[] reqCtx) {
@@ -114,48 +84,51 @@ public class DataServiceImpl implements DataService {
                     try {
                         res = ServiceHandler.invoke(req);
                     } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                        e.printStackTrace();
                         throw new RuntimeException(e);
                     }
                     closure.success(res);
                     closure.run(Status.OK());
-                    return;
+                } else {
+                    // 特定情况下，比如发生选举，该读请求将失败
+                    closure.failure(status.getErrorMsg());
                 }
-                DataServiceImpl.this.readIndexExecutor.execute(() -> {
-                    if (isLeader()) {
-                        LOG.debug("Fail to get value with 'ReadIndex': {}, try to applying to the state machine.", status);
-                        applyOperation(DataOperation.create(req), closure);
-                    } else {
-                        handlerNotLeaderError(closure);
-                    }
-                });
             }
         });
     }
 
+    private void handlerNotLeaderError(final DataClosure closure) {
+        closure.failure(getRedirect());
+        closure.run(new Status(RaftError.EPERM, "Not leader"));
+    }
+
+
+    @Override
+    public void readDelEvent(ReadDelEventRequest readDelEventRequest, DataClosure closure) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        applyOperation(new DataOperation(readDelEventRequest), closure);
+    }
+
     @Override
     public void readEvent(ReadEventRequest readEventRequest, DataClosure closure) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        boolean readOnlySafe = readEventRequest.isReadOnSafe();
-        if (!readOnlySafe) {
-            //非线性读直接读取结果
-            ServiceHandler.invoke(readEventRequest);
-            return;
-        }
-        indexReadOrApplyToStateMachine(readEventRequest,closure);
+        applyOperation(new DataOperation(readEventRequest), closure);
     }
 
     @Override
     public void readFragment(ReadFragmentRequest readFragmentRequest, DataClosure closure) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        boolean readOnlySafe = readFragmentRequest.isReadOnSafe();
-        if (!readOnlySafe) {
-            //非线性读直接读取结果
-            ServiceHandler.invoke(readFragmentRequest);
-            return;
-        }
-        indexReadOrApplyToStateMachine(readFragmentRequest,closure);
+        if (readFragmentRequest.isReadOnSafe())
+            readOnlySafe(readFragmentRequest, closure);
+        else
+            applyOperation(new DataOperation(readFragmentRequest), closure);
     }
 
+    @Override
+    public void read(ReadRequest readRequest, DataClosure closure) {
+        if (readRequest.getReadOnlySafe())
+            readOnlySafe(readRequest, closure);
+        else
+            applyOperation(new DataOperation(readRequest), closure);
+    }
 
-    //其他请求都需要应用到状态机
 
     @Override
     public void del(DelRequest delRequest, DataClosure closure) {

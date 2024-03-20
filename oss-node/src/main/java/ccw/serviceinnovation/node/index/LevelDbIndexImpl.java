@@ -13,19 +13,12 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class LevelDbIndexImpl implements Index {
 
-    /**
-     * 分段锁思想
-     */
-    private static final int SEGMENTS = 20;
     LevelDb levelDb;
-
-    ReentrantLock[] locks = new ReentrantLock[SEGMENTS];
 
     HashStrategy hashStrategy = new CRCHashStrategy();
 
     public LevelDbIndexImpl() {
         levelDb = new LevelDb(RegisterConstant.LEVEL_DB);
-        for (int i = 0; i < SEGMENTS; i++) locks[i] = new ReentrantLock();
     }
 
     @Override
@@ -45,32 +38,24 @@ public class LevelDbIndexImpl implements Index {
 
     @Override
     public boolean incr(String uniqueKey) {
-        ReentrantLock lock = locks[hashStrategy.getHashCode(uniqueKey) % SEGMENTS];
-        lock.lock();
-        try {
-            ObjectMeta objectMeta = get(uniqueKey);
-            if (objectMeta == null) throw new NullPointerException("uniqueKey is null");
-            Integer count = objectMeta.getCount();
-            objectMeta.setCount(count + 1);
-            levelDb.put(uniqueKey, objectMeta);
-        } finally {
-            lock.unlock();
-        }
+        ObjectMeta objectMeta = get(uniqueKey);
+        if (objectMeta == null) return false;
+        Integer count = objectMeta.getCount();
+        objectMeta.setCount(count + 1);
+        levelDb.put(uniqueKey, objectMeta);
         return true;
     }
 
     @Override
     public boolean decr(String uniqueKey) {
-        ReentrantLock lock = locks[hashStrategy.getHashCode(uniqueKey) % SEGMENTS];
-        lock.lock();
-        try {
-            ObjectMeta objectMeta = get(uniqueKey);
-            if (objectMeta == null) throw new NullPointerException("uniqueKey is null");
-            Integer count = objectMeta.getCount();
+        ObjectMeta objectMeta = get(uniqueKey);
+        if (objectMeta == null) return false;
+        Integer count = objectMeta.getCount();
+        if (count != 1) {
             objectMeta.setCount(count - 1);
             levelDb.put(uniqueKey, objectMeta);
-        } finally {
-            lock.unlock();
+        } else {
+            levelDb.delete(uniqueKey);
         }
         return true;
     }

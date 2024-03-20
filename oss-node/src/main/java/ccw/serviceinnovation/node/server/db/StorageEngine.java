@@ -4,17 +4,16 @@ import ccw.serviceinnovation.disk.FileChannelSyncDiskImpl;
 import ccw.serviceinnovation.disk.SyncDisk;
 import ccw.serviceinnovation.node.calculate.ByteHandler;
 import ccw.serviceinnovation.node.calculate.EncryptAndSplitByteHandlerImpl;
-import ccw.serviceinnovation.node.index.EtagIndexHashMapImpl;
 import ccw.serviceinnovation.node.index.Index;
 import ccw.serviceinnovation.node.index.IndexContext;
 import ccw.serviceinnovation.node.index.LevelDbIndexImpl;
 import ccw.serviceinnovation.node.partition.PartitionSelector;
-import ccw.serviceinnovation.node.partition.SurplusPartitionSelectorIMpl;
+import ccw.serviceinnovation.node.partition.PartitionSelectorImpl;
 import ccw.serviceinnovation.node.server.constant.ArgInitialize;
 import ccw.serviceinnovation.node.server.constant.RegisterConstant;
 import ccw.serviceinnovation.node.server.nacos.NacosConfig;
 import com.alibaba.nacos.api.exception.NacosException;
-import com.alipay.sofa.jraft.rhea.util.concurrent.NamedThreadFactory;
+import com.alipay.sofa.jraft.util.NamedThreadFactory;
 import com.alipay.sofa.jraft.util.ThreadPoolUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -102,7 +101,7 @@ public class StorageEngine {
         index.load();
 
         //磁盘分区选择器
-        partitionSelector = new SurplusPartitionSelectorIMpl(PARTITION_DISK);
+        partitionSelector = new PartitionSelectorImpl(PARTITION_DISK);
 
 
         /*-----------------服务注册-------------------*/

@@ -34,6 +34,7 @@ cloud-can 是一个分布式对象存储系统(object storage system)。
 
 
 ### Plan
+- [ ] Node支持snapshot
 - [ ] 利用Nacos配置中心进行Node配置
 - [ ] 支持对象不均匀分配的算法（Crush抽签算法）
 - [ ] 线程池并发写入磁盘

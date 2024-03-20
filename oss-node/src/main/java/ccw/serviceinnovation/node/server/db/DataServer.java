@@ -17,12 +17,17 @@
 package ccw.serviceinnovation.node.server.db;
 
 import ccw.serviceinnovation.node.server.constant.RegisterConstant;
+import ccw.serviceinnovation.node.server.db.apply.ReadWriteSeparationImpl;
+import ccw.serviceinnovation.node.server.db.apply.SerialApplyImpl;
 import ccw.serviceinnovation.node.server.db.processor.*;
 import com.alipay.sofa.jraft.Node;
 import com.alipay.sofa.jraft.RaftGroupService;
 import com.alipay.sofa.jraft.conf.Configuration;
 import com.alipay.sofa.jraft.entity.PeerId;
+import com.alipay.sofa.jraft.option.ApplyTaskMode;
 import com.alipay.sofa.jraft.option.NodeOptions;
+import com.alipay.sofa.jraft.option.RaftOptions;
+import com.alipay.sofa.jraft.option.ReadOnlyOption;
 import com.alipay.sofa.jraft.rpc.RaftRpcServerFactory;
 import com.alipay.sofa.jraft.rpc.RpcServer;
 import lombok.extern.slf4j.Slf4j;
@@ -43,9 +48,9 @@ import java.io.IOException;
 @Slf4j
 public class DataServer {
 
-    private RaftGroupService raftGroupService;
-    private Node node;
-    private DataStateMachine fsm;
+    private final RaftGroupService raftGroupService;
+    private final Node node;
+    private final DataStateMachine fsm;
 
     public DataServer(final String dataPath, final String groupId, final PeerId serverId, final NodeOptions nodeOptions)
             throws IOException {
@@ -61,10 +66,10 @@ public class DataServer {
         // register business processor
         DataService dataService = new DataServiceImpl(this);
 
-
         rpcServer.registerProcessor(new ReadEventRequestProcessor(dataService));
         rpcServer.registerProcessor(new ReadFragmentRequestProcessor(dataService));
         rpcServer.registerProcessor(new ReadDelEventRequestProcessor(dataService));
+        rpcServer.registerProcessor(new ReadRequestProcessor(dataService));
 
         rpcServer.registerProcessor(new UploadRequestProcessor(dataService));
 
@@ -75,7 +80,8 @@ public class DataServer {
         rpcServer.registerProcessor(new WriteDelEventRequestProcessor(dataService));
         rpcServer.registerProcessor(new WriteMergeRequestProcessor(dataService));
         // init state machine
-        this.fsm = new DataStateMachine();
+        this.fsm = new DataStateMachine(new ReadWriteSeparationImpl(2,3,1));
+//        this.fsm = new DataStateMachine(new SerialApplyImpl());
         // set fsm to nodeOptions
         nodeOptions.setFsm(this.fsm);
         // set storage path (log,meta,snapshot)
@@ -126,14 +132,19 @@ public class DataServer {
         final String serverIdStr = RegisterConstant.ADDR;
         final String initConfStr = RegisterConstant.GROUP_CLUSTER;
         final Long electionTimeoutMs = RegisterConstant.ELECTION_TIMEOUT;
-        log.info("GroupName is {},NodeList is {}", groupId, serverIdStr);
+        log.info("GroupName is {},Node is {}", groupId, serverIdStr);
         final NodeOptions nodeOptions = new NodeOptions();
-        // for test, modify some params
-        // set election timeout to 1s
+        // 选举超时时间
         nodeOptions.setElectionTimeoutMs(Math.toIntExact(electionTimeoutMs));
-        // disable CLI service。
+        // disable CLI service。客户端命令行服务
         nodeOptions.setDisableCli(false);
-        // parse server address
+        // 线性一致读 Lease Read
+        RaftOptions raftOptions = new RaftOptions();
+        raftOptions.setReadOnlyOptions(ReadOnlyOption.ReadOnlyLeaseBased);
+        nodeOptions.setRaftOptions(raftOptions);
+        // 反压策略
+        nodeOptions.setApplyTaskMode(ApplyTaskMode.NonBlocking);
+        // 服务列表
         final PeerId serverId = new PeerId();
         if (!serverId.parse(serverIdStr)) {
             throw new IllegalArgumentException("Fail to parse serverId:" + serverIdStr);

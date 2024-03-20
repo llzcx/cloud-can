@@ -1,10 +1,11 @@
 package service.raft.request;
 
 import lombok.Data;
+import service.raft.request.type.Write;
 
 import java.io.Serializable;
 @Data
-public class WriterMergeRequest implements Serializable,JRaftRpcReq {
+public class WriterMergeRequest implements Serializable,JRaftRpcReq, Write {
     private static final long serialVersionUID = -6597003954824547294L;
 
 
@@ -16,4 +17,9 @@ public class WriterMergeRequest implements Serializable,JRaftRpcReq {
     private String eventId;
 
     private String objectKey;
+
+    @Override
+    public String key() {
+        return objectKey;
+    }
 }

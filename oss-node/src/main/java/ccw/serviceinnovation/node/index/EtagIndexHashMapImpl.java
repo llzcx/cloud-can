@@ -3,7 +3,7 @@ package ccw.serviceinnovation.node.index;
 import ccw.serviceinnovation.node.bo.FNameBo;
 import ccw.serviceinnovation.node.bo.ObjectMeta;
 import ccw.serviceinnovation.node.server.constant.RegisterConstant;
-import ccw.serviceinnovation.node.util.Bitmap;
+import ccw.serviceinnovation.node.util.Bitmap32;
 import ccw.serviceinnovation.node.util.FNameUtil;
 import ccw.serviceinnvation.encryption.consant.EncryptionEnum;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,6 @@ public class EtagIndexHashMapImpl extends ConcurrentHashMap<String, ObjectMeta> 
     @Override
     public void add(String uniqueKey, EncryptionEnum encryptionEnum) {
         ObjectMeta objectMeta = new ObjectMeta(uniqueKey,encryptionEnum);
-        objectMeta.getBitmap().setAll();
         map.put(uniqueKey,objectMeta);
     }
 
@@ -49,8 +48,6 @@ public class EtagIndexHashMapImpl extends ConcurrentHashMap<String, ObjectMeta> 
                     String key = read.getKey();
                     EncryptionEnum encryption = read.getEncryptionEnum();
                     ObjectMeta objectMeta = map.computeIfAbsent(key, k -> new ObjectMeta(key, encryption));
-                    Bitmap bitmap = objectMeta.getBitmap();
-                    bitmap.setBit(read.getOff());
                     return FileVisitResult.CONTINUE;
                 }
             });

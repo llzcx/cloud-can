@@ -1,5 +1,7 @@
 package ccw.serviceinnovation.node.partition;
 
+import ccw.serviceinnovation.hash.select.ItemSelector;
+
 import java.nio.file.Path;
 
 /**

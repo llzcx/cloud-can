@@ -28,16 +28,18 @@ public class FileChannelSyncDiskImpl extends SyncDisk {
         }
     }
 
-    public byte[] read(Path path, long start, int size,byte[] buffer) throws IOException {
+    public byte[] read(Path path, long start, int size, byte[] buffer) throws IOException {
         // 从文件的start位置处读取size字节到buffer中
         try (FileChannel fileChannel = FileChannel.open(path, StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE)) {
-            if(size == -1) buffer = new byte[(int) fileChannel.size()];
+            if (size == -1) {
+                size = (int) fileChannel.size();
+                buffer = new byte[size];
+            }
             ByteBuffer byteBuffer = ByteBuffer.wrap(buffer, 0, size);
             fileChannel.read(byteBuffer, start);
         }
         return buffer;
     }
-
 
 
 }

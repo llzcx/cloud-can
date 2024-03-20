@@ -1,11 +1,9 @@
 package ccw.serviceinnovation.node.util;
 
-import java.util.Iterator;
-
-public class Bitmap {
+public class Bitmap32 {
     private int bitmap;
 
-    public Bitmap() {
+    public Bitmap32() {
         this.bitmap = 0;
     }
 
@@ -33,14 +31,14 @@ public class Bitmap {
     }
 
     public static void main(String[] args) {
-        Bitmap bitmap = new Bitmap();
-        bitmap.setBit(0);
-        bitmap.setBit(2);
-        bitmap.setBit(5);
-        System.out.println(bitmap); // 输出：101001
-        System.out.println(bitmap.getBit(2)); // 输出：1
-        bitmap.clearBit(2);
-        System.out.println(bitmap); // 输出：100001
-        System.out.println(bitmap.getBit(2)); // 输出：0
+        Bitmap32 bitmap32 = new Bitmap32();
+        bitmap32.setBit(0);
+        bitmap32.setBit(2);
+        bitmap32.setBit(5);
+        System.out.println(bitmap32); // 输出：101001
+        System.out.println(bitmap32.getBit(2)); // 输出：1
+        bitmap32.clearBit(2);
+        System.out.println(bitmap32); // 输出：100001
+        System.out.println(bitmap32.getBit(2)); // 输出：0
     }
 }

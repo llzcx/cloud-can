@@ -29,7 +29,7 @@ public interface DataService {
     void readDelEvent(ReadDelEventRequest readDelEventRequest, DataClosure closure) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
     void readEvent(ReadEventRequest readEventRequest, DataClosure closure) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException;
     void readFragment(ReadFragmentRequest readFragmentRequest, DataClosure closure) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException;
-
+    void read(ReadRequest readRequest,DataClosure closure) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException;
 
     void upload(UploadRequest uploadRequest,DataClosure closure);
 
