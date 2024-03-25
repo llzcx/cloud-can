@@ -70,7 +70,9 @@ public class ReadWriteSeparationImpl implements OnApplyHandler {
                         } catch (Exception e) {
                             e.printStackTrace();
                             if (finalClosure != null) {
+                                System.out.println("发送回应：失败");
                                 finalClosure.failure("ERROR");
+                                finalClosure.run(Status.OK());
                             }
                             throw new RuntimeException("apply error");
                         }

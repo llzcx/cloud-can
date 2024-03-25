@@ -1,28 +1,18 @@
 package ccw.serviceinnvation;
+import ccw.serviceinnvation.sdk.CloudCan;
+import ccw.serviceinnvation.sdk.CloudCanClientBuilder;
+import ccw.serviceinnvation.sdk.exception.CloudCanDownLoadException;
 
-import ccw.serviceinnovation.hash.checksum.EtagHandler;
-
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.zip.Checksum;
-
 public class Example {
     public static void main(String[] args) throws IOException {
-        OssRestfulClient ossRestfulClient = new OssRestfulClient("localhost", 8080, "root", "123456");
-        EtagHandler etagHandler = ossRestfulClient.etagHandler;
-        ossRestfulClient.login();
+        CloudCan cloudCan = new CloudCanClientBuilder()
+                .build("localhost:8080","root","123456");
         String bucketName = "test";
         String objectName = "2.jpg";
-        Path path = Paths.get("D:\\test\\对象存储测试数据\\2.jpg");
 //        ossRestfulClient.createBucket(bucketName);
-        ossRestfulClient.upload(bucketName,path.toString());
-        Checksum deserialize = etagHandler.deserialize("0");
-        byte[] bytes = Files.readAllBytes(path);
-        deserialize.update(bytes,0,bytes.length);
-        System.out.println(deserialize.getValue());
-        ossRestfulClient.download(bucketName,objectName, "D:\\oss\\test\\");
-
+        cloudCan.putObject(bucketName,objectName,new File("D:\\test\\对象存储测试数据\\2.jpg"));
+//        cloudCan.getObject(bucketName,objectName, "D:\\oss\\test\\");
     }
 }

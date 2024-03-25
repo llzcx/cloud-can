@@ -83,8 +83,7 @@ public class DataServiceImpl implements DataService {
                     Object res;
                     try {
                         res = ServiceHandler.invoke(req);
-                    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                        e.printStackTrace();
+                    }catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                     closure.success(res);

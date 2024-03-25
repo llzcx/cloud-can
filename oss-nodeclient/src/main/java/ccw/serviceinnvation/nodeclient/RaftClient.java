@@ -148,9 +148,7 @@ public class RaftClient {
 
     public Object sync(final CliClientServiceImpl cliClientService, PeerId leader, JRaftRpcReq request, ResultCode resultCode) throws RemotingException, InterruptedException {
         RpcResponse rpcResponse = (RpcResponse) cliClientService.getRpcClient().invokeSync(leader.getEndpoint(), request, 5000000);
-        if (!rpcResponse.getSuccess()) {
-            throw new OssException(resultCode);
-        }
+        if (!rpcResponse.getSuccess()) throw new OssException(resultCode);
         return rpcResponse.getData();
     }
 

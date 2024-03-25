@@ -197,7 +197,12 @@ public class DecentralizationOssServiceImpl extends ServiceImpl<OssObjectMapper,
         String etag = ossObject.getEtag();
         ServletOutputStream outputStream = response.getOutputStream();
         OssGroup ossGroup = findNodeHandler.find(etag);
-        client.transferTo(outputStream, ossGroup.getGroupName(), etag, 0, -1);
+        try {
+            client.transferTo(outputStream, ossGroup.getGroupName(), etag, 0, -1);
+        }catch (Exception e){
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
     }
 
     @Override

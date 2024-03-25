@@ -1,4 +1,4 @@
-package ccw.serviceinnvation;
+package ccw.serviceinnvation.sdk;
 
 import java.io.IOException;
 import java.nio.file.Files;

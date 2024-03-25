@@ -11,6 +11,6 @@ public class HashCodeSelectorImpl<T> implements ItemSelector<T>{
     }
     @Override
     public T select(String key) {
-        return list.get(key.hashCode() % list.size());
+        return list.get(Math.abs(key.hashCode()) % list.size());
     }
 }

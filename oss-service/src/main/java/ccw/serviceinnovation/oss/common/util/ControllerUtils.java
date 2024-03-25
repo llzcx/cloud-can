@@ -55,7 +55,7 @@ public class ControllerUtils {
      * @param httpServletResponse
      * @param resultCode
      */
-    public static Boolean writeIfReturn(HttpServletResponse httpServletResponse, ResultCode resultCode, Boolean flag)throws Exception{
+    public static Boolean writeIfReturn(HttpServletResponse httpServletResponse, ResultCode resultCode, Boolean flag)throws IOException{
         if (flag) {
             return true;
         } else {

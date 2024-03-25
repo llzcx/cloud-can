@@ -39,7 +39,7 @@ public abstract class ServiceHandler {
     //合并【写】
     public abstract WriterMergeResponse writemerge(WriterMergeRequest writerMergeRequest) throws IOException;
 
-    public static Object invoke(JRaftRpcReq request) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public static Object invoke(JRaftRpcReq request) throws Exception {
         //反射调用
         Class<? extends JRaftRpcReq> req =request.getClass();
         String methodName = StringUtil.getBetweenLastTwoDots(req.getName());

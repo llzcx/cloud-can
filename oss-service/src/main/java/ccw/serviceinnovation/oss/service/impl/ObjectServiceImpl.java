@@ -10,6 +10,7 @@ import ccw.serviceinnovation.common.util.object.ObjectUtil;
 import ccw.serviceinnovation.hash.checksum.Crc32EtagHandlerAdapter;
 import ccw.serviceinnovation.hash.checksum.EtagHandler;
 import ccw.serviceinnovation.loadbalance.OssGroup;
+import ccw.serviceinnovation.oss.common.util.ControllerUtils;
 import ccw.serviceinnovation.oss.common.util.MPUtil;
 import ccw.serviceinnovation.oss.manager.authority.AuthContext;
 import ccw.serviceinnovation.oss.manager.group.FindNodeHandler;
@@ -23,6 +24,7 @@ import ccw.serviceinnovation.oss.pojo.vo.*;
 import ccw.serviceinnovation.oss.service.IObjectService;
 import ccw.serviceinnvation.nodeclient.RaftClient;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.http.HttpStatus;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.sofa.jraft.error.RemotingException;
@@ -485,7 +487,13 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
         String etag = ossObject.getEtag();
         ServletOutputStream outputStream = response.getOutputStream();
         String group = norDuplicateRemovalService.getGroup(etag);
-        raftClient.transferTo(outputStream, group, NodeObjectKeyUtil.getObjectKey(etag), 0, -1);
+        try {
+            raftClient.transferTo(outputStream, group, NodeObjectKeyUtil.getObjectKey(etag), 0, -1);
+        }catch (OssException e){
+            e.printStackTrace();
+            response.setStatus(HttpStatus.HTTP_NOT_FOUND);
+            ControllerUtils.writeIfReturn(response,e.getResultCode(),false);
+        }
     }
 
 

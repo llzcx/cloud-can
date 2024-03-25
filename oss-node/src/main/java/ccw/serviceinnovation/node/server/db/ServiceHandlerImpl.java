@@ -108,7 +108,6 @@ public class ServiceHandlerImpl extends ServiceHandler {
 
     @Override
     public UploadResponse upload(UploadRequest uploadRequest) throws IOException {
-        System.out.println("写入！");
         //TODO 小文件上层做校验
         byte[] data = uploadRequest.getData();
         String key = uploadRequest.getNodeObjectKey();
