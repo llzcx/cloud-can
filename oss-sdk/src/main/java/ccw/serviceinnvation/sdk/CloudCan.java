@@ -10,8 +10,8 @@ import java.io.OutputStream;
 public interface CloudCan {
     void putObject(String bucketName, String objName, File file) throws IOException;
 
-    void putObject(String bucketName, String objName, InputStream inputStream);
-
+    void putObject(String bucketName, String objName, InputStream inputStream) throws IOException;
+    void putObject(String bucketName, String objName, byte[] bytes) throws IOException;
     void createBucket(String bucketName) throws IOException;
 
     void getObject(String bucketName, String objName, OutputStream outputStream) throws IOException, CloudCanDownLoadException;

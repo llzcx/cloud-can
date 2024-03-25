@@ -1,0 +1,8 @@
+server:
+  port: 8888
+
+cloud-can:
+  endpoint: localhost:8080
+  username: root
+  password: 123456
+  bucket: test

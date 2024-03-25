@@ -8,10 +8,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import okhttp3.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,12 +28,17 @@ public class CloudCanClient implements CloudCan {
     public final EtagDirectCalculator etagDirectCalculator;
     private final CloudCanReqUtil cloudCanReqUtil;
 
-    public CloudCanClient(String endpoint, String username, String password) {
+    public CloudCanClient(String endpoint, String username, String password)  {
         this.url = "http://" + endpoint + "/";
         this.userName = username;
         this.password = password;
         cloudCanReqUtil = new CloudCanReqUtil();
         etagDirectCalculator = new MD5EtagDirectCalculatorAdapter();
+        try{
+            enableLogin();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void login() throws IOException {
@@ -90,23 +92,39 @@ public class CloudCanClient implements CloudCan {
     public void putObject(String bucketName, String objName, File file) throws IOException {
         Path pat = Paths.get(file.getAbsolutePath());
         byte[] bytes = Files.readAllBytes(pat);
-        String url = this.url + "/ossObject/upload";
-        String objectName = pat.getFileName().toString();
-        String etag = etagDirectCalculator.get(pat);
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("bucketName", bucketName)
-                .addFormDataPart("objectName", objectName)
-                .addFormDataPart("etag", etag)
-                .addFormDataPart("file", objectName,
-                        RequestBody.create(STREAM, bytes))
-                .build();
-        JSONObject sync = sync(url, "put", headers, requestBody);
+        putObject(bucketName,objName,bytes);
     }
 
     @Override
-    public void putObject(String bucketName, String objName, InputStream inputStream) {
+    public void putObject(String bucketName, String objName, InputStream inputStream) throws IOException {
+        String url = this.url + "/ossObject/upload";
+        byte[] byteArray = toByteArray(inputStream);
+        putObject(bucketName,objName,byteArray);
+    }
+    private static byte[] toByteArray(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        int nRead;
+        byte[] data = new byte[16384]; // 使用一个适当大小的缓冲区
+        while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
+        buffer.flush();
+        return buffer.toByteArray();
+    }
 
+    @Override
+    public void putObject(String bucketName, String objName, byte[] bytes) throws IOException {
+        String url = this.url + "/ossObject/upload";
+        String etag = etagDirectCalculator.get(bytes);
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("bucketName", bucketName)
+                .addFormDataPart("objectName", objName)
+                .addFormDataPart("etag", etag)
+                .addFormDataPart("file", objName,
+                        RequestBody.create(STREAM, bytes))
+                .build();
+        JSONObject sync = sync(url, "put", headers, requestBody);
     }
 
     @Override
