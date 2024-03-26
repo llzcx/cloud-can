@@ -13,6 +13,7 @@ import com.alipay.sofa.jraft.conf.Configuration;
 import com.alipay.sofa.jraft.entity.PeerId;
 import com.alipay.sofa.jraft.error.RemotingException;
 import com.alipay.sofa.jraft.option.CliOptions;
+import com.alipay.sofa.jraft.rpc.CliClientService;
 import com.alipay.sofa.jraft.rpc.impl.cli.CliClientServiceImpl;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -27,9 +28,7 @@ import service.raft.rpc.RpcResponse;
 
 import javax.servlet.ServletOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -47,8 +46,11 @@ public class RaftClient {
 
     LoadBalancer loadBalancer = new ConsistentHashLoadBalancer();
 
+    private final static int REFRESH_TIMEOUT = 1000;
+
     // groupName -> groupMap
     private List<OssGroup> groupList = new ArrayList<>();
+    private HashMap<String, OssGroup> groupMap = new HashMap<>();
     private ConcurrentHashMap<String, CliClientServiceImpl> rpcClientMap = new ConcurrentHashMap<>();
 
     public RaftClient() {
@@ -73,23 +75,23 @@ public class RaftClient {
                 namingService = NacosFactory.createNamingService(nacos);
                 namingService.subscribe("oss", "raft", event -> {
                     if (event instanceof NamingEvent) {
+                        log.info("oss raft server changed.");
                         ReentrantReadWriteLock.WriteLock writeLock = mainLock.writeLock();
                         try {
                             writeLock.lock();
-                            groupList.clear();
+                            groupMap.clear();
                             rpcClientMap.clear();
                             NamingEvent namingEvent = (NamingEvent) event;
-                            log.info("oss raft server changed.");
                             if (namingEvent.getInstances().size() != 0) {
+                                double weight = namingEvent.getInstances().get(0).getWeight();
                                 for (Instance instance : namingEvent.getInstances()) {
                                     String groupName = instance.getClusterName();
-                                    OssGroup ossGroup = new OssGroup(groupName, new ArrayList<>());
+                                    OssGroup ossGroup = groupMap.computeIfAbsent(groupName, k -> new OssGroup(groupName, new ArrayList<>()));
+                                    ossGroup.setWight(weight);
                                     ossGroup.getNodeList().add(instance.getIp() + ":" + instance.getPort());
-                                    groupList.add(ossGroup);
                                 }
-                                groupList.forEach(ossGroup -> {
+                                groupMap.forEach((groupName, ossGroup) -> {
                                     final Configuration conf = new Configuration();
-                                    String groupName = ossGroup.getGroupName();
                                     if (!conf.parse(ossGroup.getConf())) {
                                         throw new IllegalArgumentException("Fail to parse conf:");
                                     }
@@ -97,7 +99,7 @@ public class RaftClient {
                                     final CliClientServiceImpl cliClientService = new CliClientServiceImpl();
                                     cliClientService.init(new CliOptions());
                                     try {
-                                        RouteTable.getInstance().refreshLeader(cliClientService, groupName, 1000).isOk();
+                                        RouteTable.getInstance().refreshLeader(cliClientService, groupName, REFRESH_TIMEOUT).isOk();
                                     } catch (InterruptedException | TimeoutException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -119,7 +121,18 @@ public class RaftClient {
         }).start();
     }
 
+    public boolean refresh(String groupName){
+        try {
+            CliClientServiceImpl cliClientService = rpcClientMap.get(groupName);
+            return RouteTable.getInstance().refreshLeader(cliClientService,groupName,REFRESH_TIMEOUT).isOk();
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public PeerId getLeader(String groupName) {
+        if(refresh(groupName)) throw new CloudCanClientException();
         ReentrantReadWriteLock.ReadLock readLock = mainLock.readLock();
         try {
             readLock.lock();
@@ -162,17 +175,17 @@ public class RaftClient {
         ReentrantReadWriteLock.ReadLock readLock = mainLock.readLock();
         try {
             readLock.lock();
-            return groupList.size();
+            return groupMap.size();
         } finally {
             readLock.unlock();
         }
     }
 
-    public List<OssGroup> getList() {
+    public Map<String, OssGroup> getList() {
         ReentrantReadWriteLock.ReadLock readLock = mainLock.readLock();
         try {
             readLock.lock();
-            return groupList;
+            return groupMap;
         } finally {
             readLock.unlock();
         }
@@ -230,18 +243,18 @@ public class RaftClient {
 
     /**
      * 寻找存储节点
+     *
      * @param etag
      * @return
      */
     public OssGroup find(String etag) {
-        List<OssGroup> list = getList();
-        if (list.size() == 0) {
+        Map<String, OssGroup> map = getList();
+        if (map.size() == 0) {
             throw new OssException(ResultCode.SERVER_EXCEPTION);
-        } else if (list.size() == 1) {
-            return list.get(0);
+        } else if (map.size() == 1) {
+            return map.entrySet().iterator().next().getValue();
         } else {
-            List<Server> serverList = list.stream().map(ossGroup -> (Server) ossGroup)
-                    .collect(Collectors.toList());
+            List<Server> serverList = new ArrayList<>(map.values());
             return (OssGroup) loadBalancer.select(serverList, new Invocation(etag));
         }
     }

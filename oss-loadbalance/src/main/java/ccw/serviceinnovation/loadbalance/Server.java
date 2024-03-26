@@ -6,6 +6,7 @@ package ccw.serviceinnovation.loadbalance;
  */
 public interface Server {
 
-    String getStringFormat();
+    String getId();
 
+    Double getWight();
 }

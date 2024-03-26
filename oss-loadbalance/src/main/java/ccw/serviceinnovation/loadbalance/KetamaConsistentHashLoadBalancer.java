@@ -26,12 +26,23 @@ public class KetamaConsistentHashLoadBalancer implements LoadBalancer {
     private final static int VIRTUAL_NODE_SIZE = 12;
     private final static String VIRTUAL_NODE_SUFFIX = "-";
 
+    private TreeMap<Long, Server> ring;
+
     @Override
     public Server select(List<Server> servers, Invocation invocation) {
         long invocationHashCode = getHashCode(invocation.getHashKey());
         TreeMap<Long, Server> ring = buildConsistentHashRing(servers);
-        Server server = locate(ring, invocationHashCode);
-        return server;
+        return locate(ring, invocationHashCode);
+    }
+
+    @Override
+    public void preheat(List<Server> servers) {
+        ring = buildConsistentHashRing(servers);
+    }
+
+    @Override
+    public Server select(Invocation invocation) {
+        return locate(ring, getHashCode(invocation.getHashKey()));
     }
 
     private Server locate(TreeMap<Long, Server> ring, Long invocationHashCode) {
@@ -48,7 +59,7 @@ public class KetamaConsistentHashLoadBalancer implements LoadBalancer {
         TreeMap<Long, Server> virtualNodeRing = new TreeMap<>();
         for (Server server : servers) {
             for (int i = 0; i < VIRTUAL_NODE_SIZE / 4; i++) {
-                byte[] digest = computeMd5(server.getStringFormat() + VIRTUAL_NODE_SUFFIX + i);
+                byte[] digest = computeMd5(server.getId() + VIRTUAL_NODE_SUFFIX + i);
                 for (int h = 0; h < 4; h++) {
                     Long k = ((long) (digest[3 + h * 4] & 0xFF) << 24)
                             | ((long) (digest[2 + h * 4] & 0xFF) << 16)

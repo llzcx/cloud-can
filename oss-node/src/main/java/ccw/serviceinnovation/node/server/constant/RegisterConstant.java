@@ -79,4 +79,6 @@ public class RegisterConstant {
      * 加密
      */
     public static EncryptionEnum ENCRYPT;
+
+    public static Double WIGHT;
 }

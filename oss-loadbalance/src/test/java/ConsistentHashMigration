@@ -1,0 +1,19 @@
+V10:
+add node mobility:0.03
+remove node mobility:0.16
+
+V30
+add node mobility:0.06
+remove node mobility:0.09
+
+V50:
+add node mobility:0.09
+remove node mobility:0.09
+
+V100:
+add node mobility:0.09
+remove node mobility:0.08
+
+V1000:
+add node mobility:0.09
+remove node mobility:0.11

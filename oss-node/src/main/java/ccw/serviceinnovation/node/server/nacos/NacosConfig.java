@@ -22,7 +22,7 @@ public class NacosConfig {
     }
 
     public void connect() throws NacosException {
-        namingService = NamingFactory.createNamingService("127.0.0.1:8848");
+        namingService = NamingFactory.createNamingService(RegisterConstant.NACOS_ADDR);
         String ip = RegisterConstant.HOST;
         Integer port = RegisterConstant.PORT;
         Instance instance = new Instance();
@@ -30,6 +30,7 @@ public class NacosConfig {
         instance.setInstanceId(RegisterConstant.GROUP_NAME + RegisterConstant.HOST + RegisterConstant.PORT);
         instance.setPort(port);
         instance.setClusterName(RegisterConstant.GROUP_NAME);
+        instance.setWeight(RegisterConstant.WIGHT);
         namingService.registerInstance("oss", "raft", instance);
         log.debug("nacos connect success.");
     }

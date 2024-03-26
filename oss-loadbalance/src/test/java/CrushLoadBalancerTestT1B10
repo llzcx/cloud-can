@@ -1,0 +1,94 @@
+Classification Result:
+serverName: group1,wight is 0.10, count is 41653, rate is 4.17%.
+serverName: group2,wight is 0.11, count is 42501, rate is 4.25%.
+serverName: group3,wight is 0.12, count is 42951, rate is 4.30%.
+serverName: group4,wight is 0.13, count is 44206, rate is 4.42%.
+serverName: group5,wight is 0.14, count is 44808, rate is 4.48%.
+serverName: group6,wight is 0.15, count is 45554, rate is 4.56%.
+serverName: group7,wight is 0.16, count is 46786, rate is 4.68%.
+serverName: group8,wight is 0.17, count is 47459, rate is 4.75%.
+serverName: group9,wight is 0.18, count is 48482, rate is 4.85%.
+serverName: group10,wight is 0.19, count is 49328, rate is 4.93%.
+serverName: group11,wight is 0.20, count is 50661, rate is 5.07%.
+serverName: group12,wight is 0.21, count is 51744, rate is 5.17%.
+serverName: group13,wight is 0.22, count is 52262, rate is 5.23%.
+serverName: group14,wight is 0.23, count is 53151, rate is 5.32%.
+serverName: group15,wight is 0.24, count is 53643, rate is 5.36%.
+serverName: group16,wight is 0.25, count is 55159, rate is 5.52%.
+serverName: group17,wight is 0.26, count is 55935, rate is 5.59%.
+serverName: group18,wight is 0.27, count is 56862, rate is 5.69%.
+serverName: group19,wight is 0.28, count is 58040, rate is 5.80%.
+serverName: group20,wight is 0.29, count is 58815, rate is 5.88%.
+need time:5078
+
+
+Classification Result:
+serverName: group1,wight is 0.10, count is 34384, rate is 3.44%.
+serverName: group2,wight is 0.12, count is 36008, rate is 3.60%.
+serverName: group3,wight is 0.14, count is 37244, rate is 3.72%.
+serverName: group4,wight is 0.16, count is 38654, rate is 3.87%.
+serverName: group5,wight is 0.18, count is 40137, rate is 4.01%.
+serverName: group6,wight is 0.20, count is 41946, rate is 4.19%.
+serverName: group7,wight is 0.22, count is 43840, rate is 4.38%.
+serverName: group8,wight is 0.24, count is 45277, rate is 4.53%.
+serverName: group9,wight is 0.26, count is 47006, rate is 4.70%.
+serverName: group10,wight is 0.28, count is 48776, rate is 4.88%.
+serverName: group11,wight is 0.30, count is 50435, rate is 5.04%.
+serverName: group12,wight is 0.32, count is 52176, rate is 5.22%.
+serverName: group13,wight is 0.34, count is 54221, rate is 5.42%.
+serverName: group14,wight is 0.36, count is 56150, rate is 5.62%.
+serverName: group15,wight is 0.38, count is 57394, rate is 5.74%.
+serverName: group16,wight is 0.40, count is 59258, rate is 5.93%.
+serverName: group17,wight is 0.42, count is 61310, rate is 6.13%.
+serverName: group18,wight is 0.44, count is 63152, rate is 6.32%.
+serverName: group19,wight is 0.46, count is 65372, rate is 6.54%.
+serverName: group20,wight is 0.48, count is 67260, rate is 6.73%.
+need time:4921
+
+
+Classification Result:
+serverName: group1,wight is 0.10, count is 29054, rate is 2.91%.
+serverName: group2,wight is 0.13, count is 30581, rate is 3.06%.
+serverName: group3,wight is 0.16, count is 32249, rate is 3.22%.
+serverName: group4,wight is 0.19, count is 34324, rate is 3.43%.
+serverName: group5,wight is 0.22, count is 36153, rate is 3.62%.
+serverName: group6,wight is 0.25, count is 38106, rate is 3.81%.
+serverName: group7,wight is 0.28, count is 40550, rate is 4.06%.
+serverName: group8,wight is 0.31, count is 42779, rate is 4.28%.
+serverName: group9,wight is 0.34, count is 45334, rate is 4.53%.
+serverName: group10,wight is 0.37, count is 47704, rate is 4.77%.
+serverName: group11,wight is 0.40, count is 50249, rate is 5.02%.
+serverName: group12,wight is 0.43, count is 52997, rate is 5.30%.
+serverName: group13,wight is 0.46, count is 55357, rate is 5.54%.
+serverName: group14,wight is 0.49, count is 58095, rate is 5.81%.
+serverName: group15,wight is 0.52, count is 60985, rate is 6.10%.
+serverName: group16,wight is 0.55, count is 63422, rate is 6.34%.
+serverName: group17,wight is 0.58, count is 66161, rate is 6.62%.
+serverName: group18,wight is 0.61, count is 69400, rate is 6.94%.
+serverName: group19,wight is 0.64, count is 71976, rate is 7.20%.
+serverName: group20,wight is 0.67, count is 74524, rate is 7.45%.
+need time:5927
+
+
+Classification Result:
+serverName: group1,wight is 0.10, count is 20083, rate is 2.01%.
+serverName: group2,wight is 0.15, count is 22455, rate is 2.25%.
+serverName: group3,wight is 0.20, count is 24408, rate is 2.44%.
+serverName: group4,wight is 0.25, count is 26609, rate is 2.66%.
+serverName: group5,wight is 0.30, count is 29493, rate is 2.95%.
+serverName: group6,wight is 0.35, count is 32564, rate is 3.26%.
+serverName: group7,wight is 0.40, count is 35315, rate is 3.53%.
+serverName: group8,wight is 0.45, count is 38502, rate is 3.85%.
+serverName: group9,wight is 0.50, count is 42025, rate is 4.20%.
+serverName: group10,wight is 0.55, count is 45729, rate is 4.57%.
+serverName: group11,wight is 0.60, count is 49349, rate is 4.93%.
+serverName: group12,wight is 0.65, count is 52960, rate is 5.30%.
+serverName: group13,wight is 0.70, count is 57347, rate is 5.73%.
+serverName: group14,wight is 0.75, count is 61653, rate is 6.17%.
+serverName: group15,wight is 0.80, count is 66072, rate is 6.61%.
+serverName: group16,wight is 0.85, count is 70119, rate is 7.01%.
+serverName: group17,wight is 0.90, count is 74581, rate is 7.46%.
+serverName: group18,wight is 0.95, count is 78869, rate is 7.89%.
+serverName: group19,wight is 1.00, count is 83918, rate is 8.39%.
+serverName: group20,wight is 1.05, count is 87949, rate is 8.79%.
+need time:5208

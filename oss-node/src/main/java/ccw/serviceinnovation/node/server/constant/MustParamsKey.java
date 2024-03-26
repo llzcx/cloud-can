@@ -21,4 +21,5 @@ public interface MustParamsKey {
     String PARITY_SHARDS = "parity_shards";
     String ENCRYPT = "encrypt";
 
+    String WIGHT = "wight";
 }

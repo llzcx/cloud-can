@@ -57,6 +57,9 @@ public class ArgInitialize {
         log.debug("RS data_shards:"+RegisterConstant.DATA_SHARDS);
         log.debug("RS parity_shards:"+RegisterConstant.PARITY_SHARDS);
 
+        //负载均衡
+        RegisterConstant.WIGHT = Double.valueOf(map.get(MustParamsKey.WIGHT));
+
         //encrypt
         if(map.get(MustParamsKey.ENCRYPT)!=null){
             RegisterConstant.ENCRYPT = EncryptionEnum.getEnum(map.get(MustParamsKey.ENCRYPT));

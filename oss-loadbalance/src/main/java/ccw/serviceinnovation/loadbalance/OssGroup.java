@@ -15,14 +15,27 @@ public class OssGroup implements Server {
 
     private List<String> nodeList;
 
+    private Double wight;
+
     public OssGroup(String groupName, List<String> nodeList) {
         this.groupName = groupName;
         this.nodeList = nodeList;
     }
 
+    public OssGroup(String groupName, List<String> nodeList, Double wight) {
+        this.groupName = groupName;
+        this.nodeList = nodeList;
+        this.wight = wight;
+    }
+
     @Override
-    public String getStringFormat() {
+    public String getId() {
         return groupName;
+    }
+
+    @Override
+    public Double getWight() {
+        return wight;
     }
 
     public String getConf(){

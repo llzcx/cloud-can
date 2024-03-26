@@ -11,18 +11,30 @@ import java.util.TreeMap;
 /**
  * 陈翔
  */
-public class ConsistentHashLoadBalancer implements LoadBalancer{
+public class ConsistentHashLoadBalancer implements LoadBalancer {
 
     private HashStrategy hashStrategy = new FnvHashStrategy();
 
-    private final static int VIRTUAL_NODE_SIZE = 10;
+    private final static int VIRTUAL_NODE_SIZE = 30;
     private final static String VIRTUAL_NODE_SUFFIX = "&&";
+
+    private TreeMap<Integer, Server> ring;
 
     @Override
     public Server select(List<Server> servers, Invocation invocation) {
         int invocationHashCode = hashStrategy.getHashCode(invocation.getHashKey());
         TreeMap<Integer, Server> ring = buildConsistentHashRing(servers);
         return locate(ring, invocationHashCode);
+    }
+
+    @Override
+    public void preheat(List<Server> servers) {
+        ring = buildConsistentHashRing(servers);
+    }
+
+    @Override
+    public Server select(Invocation invocation) {
+        return locate(ring, hashStrategy.getHashCode(invocation.getHashKey()));
     }
 
     private Server locate(TreeMap<Integer, Server> ring, int invocationHashCode) {
@@ -40,7 +52,7 @@ public class ConsistentHashLoadBalancer implements LoadBalancer{
         for (Server server : servers) {
             for (int i = 0; i < VIRTUAL_NODE_SIZE; i++) {
                 // 新增虚拟节点的方式如果有影响，也可以抽象出一个由物理节点扩展虚拟节点的类
-                virtualNodeRing.put(hashStrategy.getHashCode(server.getStringFormat() + VIRTUAL_NODE_SUFFIX + i), server);
+                virtualNodeRing.put(hashStrategy.getHashCode(server.getId() + VIRTUAL_NODE_SUFFIX + i), server);
             }
         }
         return virtualNodeRing;
