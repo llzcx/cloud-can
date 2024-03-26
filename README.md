@@ -16,8 +16,6 @@ cloud-can 是一个分布式对象存储系统(object storage system)。
 
 **高性能**：允许高并发访问和快速读写操作，适用于高并发场景。
 
-**超大文件**：支持传输超大文件。
-
 **存储效率高**：采用分布式存储技术和先进的共识算法，维护数据和元数据的效率和一致性高。
 
 存储桶（Bucket）： 存储桶是对象存储系统中用于组织和管理对象的容器。存储桶可以看作是文件系统中的文件夹，用于对对象进行逻辑分组和管理。存储桶具有**唯一**的名称，每个用户可以创建至多1000个存储桶，一个或多个对象可以存储在同一个存储桶中。
@@ -38,7 +36,12 @@ cloud-can 是一个分布式对象存储系统(object storage system)。
 - [x] Bucket内支持文件夹逻辑（文件夹可以理解为一个只有元数据的空对象）
 - [x] 支持对象标签
 - [x] 支持用户收藏Bucket功能
-- [X] 提供SDK进行客户端访问
+- [X] 提供SDK进行客户端访问，可与SpringBoot应用结合使用
+
+### Plan
+
+- [ ] SDK支持跨语言(Java、Python)
+- [ ] SDK支持更多协议（S3、FTP）
 
 ### Storage Layer Features
 - [x] 提供NodeClient对所有存储节点进行管理
@@ -54,18 +57,14 @@ cloud-can 是一个分布式对象存储系统(object storage system)。
 ### Storage Layer Optimize
 
 - [X] 采用Lease Read提供强一致性读，减少RPC和落盘开销
-- [X] 存储层减少对于中间件的依赖，对象的部分元数据采用分
-- [X] 
+- [X] 存储层减少对于中间件的依赖，元数据采用去中心化的方式存储
+- [X] 优化状态机apply方法从串行到并行，减少IO等待
 
 ### Plan
+
 - [ ] Node支持snapshot
 - [ ] 利用Nacos配置中心进行Node配置
-- [ ] 支持对象不均匀分配的算法（Crush抽签算法）
-- [ ] 更加完善的性能测试
 - [ ] 支持一键部署
-- [ ] SDK支持跨语言(Java、Python)
-- [ ] SDK更好的支持SpringBoot应用
-- [ ] SDK支持更多协议传输（S3、FTP）
 
 ## Requirements
 
@@ -95,15 +94,6 @@ nacos安装
 `chmod 755 redis-install.sh && sh redis-install.sh 4.0.10`
 
 `chmod 755 mysql-install.sh && sh mysql-install.sh`
-
-
-2. sofa-jraft 安装
-
-`git clone --branch v1.3.13 https://github.com/sofastack/sofa-jraft.git`
-
-`cd sofa-jraft`
-
-`mvn clean install`
 
 2. 项目启动
 

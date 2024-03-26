@@ -13,16 +13,16 @@ public class LoadBalancerTest {
     }
 
     public static void main(String[] args) {
-        int count = 10;
-        double base = 1;
-        double speed = 0.001;
+        int count = 20;
+        double base = 0.1;
+        double speed = 0.05;
         loadBalancer(count, base, speed);
     }
 
     public static void loadBalancer(int count, double base, double speed) {
-        String title = "count:" + count + ",base:" + base + "speed:" + speed;
+        String title = "count:" + count + ",base:" + base + ",speed:" + speed;
         // 创建服务器列表
-        List<Server> servers = LoadBalancerUtils.createServers(20, 0.1, 0.03);
+        List<Server> servers = LoadBalancerUtils.createServers(count, base, speed);
         long time = System.currentTimeMillis();
 
         // 创建 CrushLoadBalancer 对象

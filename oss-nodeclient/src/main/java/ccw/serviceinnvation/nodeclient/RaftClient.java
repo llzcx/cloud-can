@@ -105,6 +105,7 @@ public class RaftClient {
                                     }
                                     rpcClientMap.put(groupName, cliClientService);
                                 });
+                                loadBalancer.preheat(new ArrayList<>(groupMap.values()));
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
