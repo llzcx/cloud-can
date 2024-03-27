@@ -28,16 +28,6 @@ import static ccw.serviceinnovation.node.server.constant.RegisterConstant.PARTIT
 
 @Slf4j
 public class StorageEngine {
-    private static ThreadPoolExecutor executor   = ThreadPoolUtil
-            .newBuilder()
-            .poolName("STORAGE_ENGINE_EXECUTOR")
-            .enableMetric(true)
-            .coreThreads(3)
-            .maximumThreads(5)
-            .keepAliveSeconds(60L)
-            .workQueue(new SynchronousQueue<>())
-            .threadFactory(
-                    new NamedThreadFactory("JRaft-Executor-", true)).build();
     private StorageEngine(){}
     /**
      * 状态机实现
