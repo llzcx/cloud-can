@@ -74,6 +74,7 @@ cloud-can 是一个分布式对象存储系统(object storage system)。
 
 ## How To Start
 
+### Server
 nacos安装
 
 `wget https://github.com/alibaba/nacos/releases/download/2.0.4/nacos-server-2.0.4.tar.gz`
@@ -124,7 +125,7 @@ wight与Group配置成正比。
 注：Group内节点配置数目建议为3、5个。
 
 node运行参数
-```
+```shell
 --host=127.0.0.1
 --port=8021
 --group_name=cxoss
@@ -141,7 +142,7 @@ node运行参数
 ```
 ![img_2.png](doc/img/noderun.png)
 service运行参数
-```
+```shell
 --server.address=0.0.0.0
 --server.port=8080
 --nacos.addr=127.0.0.1:8848
@@ -155,6 +156,46 @@ service运行参数
 ```
 ![img.png](doc/img/servicerun.png)
 
+### Client
+
+```xml
+        <dependency>
+            <groupId>ccw.serviceinnovation</groupId>
+            <artifactId>oss-sdk</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+```
+
+```java
+CloudCan cloudCan = new CloudCanClientBuilder()
+        .build("localhost:8080","root","123456");
+String bucketName = "test";
+String objectName = "2.jpg";
+cloudCan.createBucket(bucketName);
+cloudCan.putObject(bucketName,objectName,new File("D:\\test\\对象存储测试数据\\2.jpg"));
+cloudCan.getObject(bucketName,objectName, "D:\\oss\\test\\");
+```
+
+```java
+@Configuration
+public class CloudCanConfig {
+
+    @Value("${cloud-can.endpoint}")
+    private String endpoint;
+
+    @Value("${cloud-can.username}")
+    private String username;
+
+    @Value("${cloud-can.password}")
+    private String password;
+
+    @Bean
+    public CloudCan cloudCan() {
+        return new CloudCanClientBuilder()
+                .build(endpoint, username, password);
+    }
+}
+```
 
 ## Documents
 

@@ -27,7 +27,6 @@ public class CloudCanController {
             return "Please select a file to upload";
         }
         try {
-            // 获取文件的字节数组
             cloudCan.putObject(Constant.BUCKET,file.getName(),file.getInputStream());
             return Constant.RES_OK;
         } catch (IOException e) {

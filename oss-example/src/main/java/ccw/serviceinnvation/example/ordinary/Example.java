@@ -12,8 +12,8 @@ public class Example {
                 .build("localhost:8080","root","123456");
         String bucketName = "test";
         String objectName = "2.jpg";
-//        ossRestfulClient.createBucket(bucketName);
-//        cloudCan.putObject(bucketName,objectName,new File("D:\\test\\对象存储测试数据\\2.jpg"));
+        cloudCan.createBucket(bucketName);
+        cloudCan.putObject(bucketName,objectName,new File("D:\\test\\对象存储测试数据\\2.jpg"));
         cloudCan.getObject(bucketName,objectName, "D:\\oss\\test\\");
     }
 }
