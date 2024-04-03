@@ -1,6 +1,7 @@
-package ccw.serviceinnvation.example.bootdemo;
+package ccw.serviceinnvation.example.bootdemo.cloudcan;
 
 import ccw.serviceinnvation.sdk.CloudCan;
+import ccw.serviceinnvation.sdk.CloudCanClient;
 import ccw.serviceinnvation.sdk.CloudCanClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -20,7 +21,8 @@ public class CloudCanConfig {
 
     @Bean
     public CloudCan cloudCan() {
-        return new CloudCanClientBuilder()
-                .build(endpoint, username, password);
+//        return new CloudCanClientBuilder()
+//                .build(endpoint, username, password);
+        return null;
     }
 }

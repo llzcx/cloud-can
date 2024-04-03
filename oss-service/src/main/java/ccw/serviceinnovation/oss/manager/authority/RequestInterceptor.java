@@ -132,7 +132,7 @@ public class RequestInterceptor implements HandlerInterceptor {
             /*-------------------验证bucketAcl-------------------*/
             Bucket bucket = bucketAclService.getBucketFromParam(request, params);
             authInfo.setBucket(bucket);
-            log.info("bucket is {}",bucket.getName());
+            log.debug("bucket is {}",bucket.getName());
             return ControllerUtils.writeIfReturn(response, ResultCode.BUCKET_ACL_BLOCK,
                     bucketAclService.checkBucketAcl(user, readAndWriteType, bucket));
         }else if(ossApi.target().equals(API_OBJECT)){
@@ -164,7 +164,7 @@ public class RequestInterceptor implements HandlerInterceptor {
                     return true;
                 }
             }
-            log.info("object is {}",ossObject.getName());
+            log.debug("object is {}",ossObject.getName());
             Bucket bucket = bucketMapper.selectById(ossObject.getBucketId());
             /*-------------------判断bucketPolicy-------------------*/
             String accessPath = ossObject.getName();
@@ -200,6 +200,6 @@ public class RequestInterceptor implements HandlerInterceptor {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         AuthContext.remove();
-        log.info("-------------------------Request end:"+request.getRequestURI());
+        log.debug("-------------------------Request end:"+request.getRequestURI());
     }
 }

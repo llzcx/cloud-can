@@ -208,6 +208,11 @@ public class ObjectServiceImpl extends ServiceImpl<OssObjectMapper, OssObject> i
         return list;
     }
 
+    @Override
+    public Boolean deleteAll(String bucketName) throws Exception {
+        return null;
+    }
+
 
     @Override
     public Boolean deleteObject(String bucketName, String objectName) throws Exception {

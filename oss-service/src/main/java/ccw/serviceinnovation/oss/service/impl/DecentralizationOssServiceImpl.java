@@ -8,6 +8,7 @@ import ccw.serviceinnovation.common.request.ResultCode;
 import ccw.serviceinnovation.common.util.object.ObjectUtil;
 import ccw.serviceinnovation.hash.directcalculator.EtagDirectCalculator;
 import ccw.serviceinnovation.loadbalance.OssGroup;
+import ccw.serviceinnovation.oss.common.util.MPUtil;
 import ccw.serviceinnovation.oss.manager.authority.AuthContext;
 import ccw.serviceinnovation.oss.manager.group.FindNodeHandler;
 import ccw.serviceinnovation.oss.manager.redis.ChunkRedisService;
@@ -135,7 +136,7 @@ public class DecentralizationOssServiceImpl extends ServiceImpl<OssObjectMapper,
         if (chunk > chunks) throw new OssException(ResultCode.OFFSET_LIMIT);
         Long off = CHUNK_SIZE * chunk;
         //TODO 保存到数据服务
-        WriteFragmentRequest writeFragmentRequest = new WriteFragmentRequest(eventId, data, off,chunk);
+        WriteFragmentRequest writeFragmentRequest = new WriteFragmentRequest(eventId, data, off, chunk);
         WriteFragmentResponse writeFragmentResponse = (WriteFragmentResponse) client.sync(groupName, writeFragmentRequest, ResultCode.SERVER_EXCEPTION);
         return true;
     }
@@ -199,7 +200,7 @@ public class DecentralizationOssServiceImpl extends ServiceImpl<OssObjectMapper,
         OssGroup ossGroup = findNodeHandler.find(etag);
         try {
             client.transferTo(outputStream, ossGroup.getGroupName(), etag, 0, -1);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
@@ -253,6 +254,20 @@ public class DecentralizationOssServiceImpl extends ServiceImpl<OssObjectMapper,
     @Override
     public List<BackupObjectVo> listBackupObjects(String bucketName, String objectName) {
         return null;
+    }
+
+    @Override
+    public Boolean deleteAll(String bucketName) throws Exception {
+        Bucket bucket = AuthContext.context().get().getBucket();
+        List<OssObject> objectList = ossObjectMapper.selectByMap(MPUtil.getMap("bucket_id", bucket.getId()));
+        for (OssObject ossObject : objectList) {
+            String etag = ossObject.getEtag();
+            OssGroup ossGroup = client.find(etag);
+            DelRequest delRequest = new DelRequest(etag);
+            DelResponse delResponse = (DelResponse) client.sync(ossGroup.getGroupName(), delRequest, ResultCode.DELETE_ERROR);
+            if (delResponse.getDelSuccess()) ossObjectMapper.deleteById(ossObject.getId());
+        }
+        return true;
     }
 
     public Long saveFolder(Long bucketId, String objectName, Long parentId) {

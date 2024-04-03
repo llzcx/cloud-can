@@ -133,7 +133,7 @@ public class RaftClient {
     }
 
     public PeerId getLeader(String groupName) {
-        if(refresh(groupName)) throw new CloudCanClientException();
+        if(!refresh(groupName)) throw new CloudCanClientException();
         ReentrantReadWriteLock.ReadLock readLock = mainLock.readLock();
         try {
             readLock.lock();

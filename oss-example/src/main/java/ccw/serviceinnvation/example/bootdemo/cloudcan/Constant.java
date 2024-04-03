@@ -1,4 +1,4 @@
-package ccw.serviceinnvation.example.bootdemo;
+package ccw.serviceinnvation.example.bootdemo.cloudcan;
 
 
 import org.springframework.beans.factory.annotation.Autowired;

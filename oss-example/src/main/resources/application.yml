@@ -6,3 +6,16 @@ cloud-can:
   username: root
   password: 123456
   bucket: test
+
+# 设置单个文件大小
+spring:
+  servlet:
+    multipart:
+      max-file-size: 50MB
+
+# minio文件服务器配置
+s3:
+  url: http://localhost:9001
+  accessKey: vYi3OcXk18vwI9oJ8ei9
+  secretKey: xlWAlPZ7G5xHS9npYD8ryETTweXPlpETwtFVlJeg
+  bucketName: test

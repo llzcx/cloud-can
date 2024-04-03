@@ -1,4 +1,4 @@
-package ccw.serviceinnvation.example.bootdemo;
+package ccw.serviceinnvation.example.bootdemo.cloudcan;
 
 import ccw.serviceinnvation.sdk.CloudCan;
 import ccw.serviceinnvation.sdk.exception.CloudCanDownLoadException;
@@ -13,7 +13,7 @@ import java.io.IOException;
 @RequestMapping("/test")
 public class CloudCanController {
 
-    @Autowired
+    @Autowired(required = false)
     CloudCan cloudCan;
     @PostMapping("/create/{bucketName}")
     public String createBucket(@PathVariable String bucketName) throws IOException {

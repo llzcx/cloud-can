@@ -181,6 +181,19 @@ public class OssObjectController {
     }
 
     /**
+     * 删除桶内全部对象
+     *
+     * @param bucketName 桶名
+     * @return 返回添加的桶对象
+     * @throws Exception
+     */
+    @DeleteMapping("/deleteAll")
+    @OssApi(target = API_BUCKET, type = AuthorityConstant.API_WRITER, name = "deleteAll", description = "删除所有对象")
+    public ApiResp<Boolean> deleteAll(@RequestParam("bucketName") String bucketName) throws Exception {
+        return ApiResp.ifResponse(objectService.deleteAll(bucketName), null, ResultCode.COMMON_FAIL);
+    }
+
+    /**
      * 获取对象列表
      *
      * @param bucketName     桶名

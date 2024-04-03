@@ -169,5 +169,11 @@ public class CloudCanClient implements CloudCan {
         getObject(bucketName, objName, outputStream);
     }
 
+    @Override
+    public void deletetAll(String bucketName) throws IOException {
+        String url = this.url + "/ossObject/download?"+"bucketName=" + bucketName;
+        cloudCanReqUtil.getResponse(url, "delete", headers, null);
+    }
+
 
 }

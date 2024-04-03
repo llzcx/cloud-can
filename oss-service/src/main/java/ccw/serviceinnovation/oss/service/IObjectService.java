@@ -38,4 +38,6 @@ public interface IObjectService extends IService<OssObject> {
 
     Boolean batchDeletion(String bucketName, BatchDeletionObjectDto batchDeletionObjectDto) throws Exception;
     List<BackupObjectVo> listBackupObjects(String bucketName, String objectName);
+
+    Boolean deleteAll(String bucketName) throws Exception;
 }

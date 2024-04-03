@@ -69,12 +69,13 @@ public class ReadWriteSeparationImpl implements OnApplyHandler {
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
+                            String errorInfo = null;
                             if (finalClosure != null) {
-                                System.out.println("发送回应：失败");
-                                finalClosure.failure("ERROR");
+                                errorInfo = "error to handle req " + request.getClass();
+                                finalClosure.failure(errorInfo);
                                 finalClosure.run(Status.OK());
                             }
-                            throw new RuntimeException("apply error");
+                            throw new RuntimeException(errorInfo);
                         }
                     }
                 };

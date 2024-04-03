@@ -17,4 +17,6 @@ public interface CloudCan {
     void getObject(String bucketName, String objName, OutputStream outputStream) throws IOException, CloudCanDownLoadException;
 
     void getObject(String bucketName, String objName, String path) throws IOException, CloudCanDownLoadException;
+
+    void deletetAll(String bucketName) throws IOException;
 }
