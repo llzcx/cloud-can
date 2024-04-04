@@ -50,7 +50,7 @@ cloud-can 是一个分布式对象存储系统(object storage system)。
 - [x] Node层支持强一致性读和弱一致性读
 - [x] 可进行存储容量水平扩容
 - [X] 利用反射机制解耦合状态机和处理实现
-- [x] Node索引支持本地的KV数据库实现（leveldb）
+- [x] Node索引支持本地的KV数据库（leveldb）
 - [x] 支持高并发访问
 - [X] 支持多种对象的Unique Key计算（MD5、CRC32）
 
@@ -59,6 +59,7 @@ cloud-can 是一个分布式对象存储系统(object storage system)。
 - [X] 采用Lease Read提供强一致性读，减少RPC和落盘开销
 - [X] 存储层减少对于中间件的依赖，元数据采用去中心化的方式存储
 - [X] 优化状态机apply方法从串行到并行，减少IO等待
+- [X] 支持buffer+顺序IO进行落盘
 
 ### Plan
 
@@ -70,7 +71,7 @@ cloud-can 是一个分布式对象存储系统(object storage system)。
 
 中间件: Mysql 8+ 、Redis 3+ and Ncos 2.0.4 .
 
-编译: JDK 8+ and Maven 3.2.5+ .
+编译: JDK 1.8 and Maven 3.2.5+ .
 
 ## How To Start
 
@@ -122,9 +123,11 @@ encrypt为加密方式，NULL为不加密，目前支持SM4加密
 
 wight与Group配置成正比。
 
-注：Group内节点配置数目建议为3、5个。
+注：启动项目前需要启动Nacos、Redis和Mysql服务。Group内节点配置数目建议为1、3、5个。配置为单个节点时自动识别为单机部署。
 
-node运行参数
+#### node运行参数(java -jar命令运行需要的参数)
+
+1. 多机多磁盘
 ```shell
 --host=127.0.0.1
 --port=8021
@@ -140,8 +143,61 @@ node运行参数
 --encrypt=NULL
 --wight=1
 ```
+
+```shell
+--host=127.0.0.1
+--port=8022
+--group_name=cxoss
+--group_cluster=127.0.0.1:8021,127.0.0.1:8022,127.0.0.1:8023
+--election_timeout=1000
+--log_disk=D:\\oss\\n2\\log
+--partition_disk=D:\\oss\\n2\\1,D:\\oss\\n2\\2,D:\\oss\\n2\\3,D:\\oss\\n2\\4,D:\\oss\\n2\\5,D:\\oss\\n2\\6
+--data_shards=4
+--parity_shards=2
+--nacos_host=127.0.0.1
+--nacos_port=8848
+--encrypt=NULL
+--wight=1
+```
+
+```shell
+--host=127.0.0.1
+--port=8023
+--group_name=cxoss
+--group_cluster=127.0.0.1:8021,127.0.0.1:8022,127.0.0.1:8023
+--election_timeout=1000
+--log_disk=D:\\oss\\n3\\log
+--partition_disk=D:\\oss\\n3\\1,D:\\oss\\n3\\2,D:\\oss\\n3\\3,D:\\oss\\n3\\4,D:\\oss\\n3\\5,D:\\oss\\n3\\6
+--data_shards=4
+--parity_shards=2
+--nacos_host=127.0.0.1
+--nacos_port=8848
+--encrypt=NULL
+--wight=1
+```
+
+
+2. 单机多磁盘
+```shell
+--host=127.0.0.1
+--port=8024
+--group_name=single
+--group_cluster=127.0.0.1:8024
+--election_timeout=1000
+--log_disk=D:\\oss\\n1\log
+--partition_disk=D:\\oss\\n1\\1,D:\\oss\\n1\\2,D:\\oss\\n1\\3,D:\\oss\\n1\\4,D:\\oss\\n1\\5,D:\\oss\\n1\\6
+--data_shards=4
+--parity_shards=2
+--nacos_host=127.0.0.1
+--nacos_port=8848
+--encrypt=NULL
+--wight=1
+```
 ![img_2.png](doc/img/noderun.png)
-service运行参数
+#### service运行参数
+
+service负责上层业务
+
 ```shell
 --server.address=0.0.0.0
 --server.port=8080
@@ -152,12 +208,12 @@ service运行参数
 --redis.port=6379
 --mysql.addr=127.0.0.1:3306
 --mysql.username=root
---mysql.password=chenxiang
+--mysql.password=123456
 ```
 ![img.png](doc/img/servicerun.png)
 
 ### Client
-
+mvn install到本地仓库以后即可使用
 ```xml
         <dependency>
             <groupId>ccw.serviceinnovation</groupId>
