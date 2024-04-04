@@ -22,4 +22,6 @@ public interface MustParamsKey {
     String ENCRYPT = "encrypt";
 
     String WIGHT = "wight";
+
+    String CLEAR_BEFORE_RUNNING = "clear_before_running";
 }

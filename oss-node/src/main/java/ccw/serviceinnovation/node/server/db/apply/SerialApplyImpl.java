@@ -36,7 +36,7 @@ public class SerialApplyImpl implements OnApplyHandler{
                     log.error("Fail to decode DataRequest", e);
                 }
                 // follower ignore read operation
-                if (dataOperation != null && dataOperation.isRead()) {
+                if (dataOperation instanceof Readable && dataOperation.isRead()) {
                     iter.next();
                     continue;
                 }

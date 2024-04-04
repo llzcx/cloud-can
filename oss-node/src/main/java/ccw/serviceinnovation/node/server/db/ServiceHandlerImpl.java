@@ -45,14 +45,14 @@ public class ServiceHandlerImpl extends ServiceHandler {
         objectThreadBlockReadWriteLock.writeLock(key);
         try {
             ObjectMeta objectMeta = index.get(key);
-            if (objectMeta == null) return new DelResponse(false, ResultCode.KEY_IS_NULL);
-            if (objectMeta.getCount() == 1) delFromDisk(key);
+            if (objectMeta == null) return new DelResponse(true, ResultCode.KEY_IS_NULL);
+            if (objectMeta.getCount() == 1) ossWriterRead.delete(objectMeta);
             index.decr(key);
             return new DelResponse(true, null);
         } catch (Exception e) {
             throw new IOException("del error.");
         } finally {
-            objectThreadBlockReadWriteLock.readRelease(key);
+            objectThreadBlockReadWriteLock.writeRelease(key);
         }
     }
 
@@ -70,7 +70,11 @@ public class ServiceHandlerImpl extends ServiceHandler {
         String key = readEventRequest.getObjectKey();
         objectThreadBlockReadWriteLock.readLock(key);
         try {
-            byte[] bytes = readAndDecode(eventId, key);
+            ObjectMeta objectMeta = index.get(key);
+            if (objectMeta == null) throw new IOException("object key is not exist.");
+            byte[] bytes = ossWriterRead.read(objectMeta);
+            Path tempFile = FNameUtil.getReadTempFile(TMP_LOG_DISK, eventId);
+            syncDisk.save(tempFile, 0, bytes, 0, bytes.length);
             return new ReadEventResponse((long) bytes.length);
         } catch (Exception e) {
             e.printStackTrace();
@@ -97,7 +101,9 @@ public class ServiceHandlerImpl extends ServiceHandler {
         String key = readRequest.getNodeObjectKey();
         objectThreadBlockReadWriteLock.readLock(key);
         try {
-            return new ReadResponse(readAndDecode(null, key));
+            ObjectMeta objectMeta = index.get(key);
+            if (objectMeta == null) throw new IOException("object key is not exist.");
+            return new ReadResponse(ossWriterRead.read(objectMeta));
         } catch (Exception e) {
             e.printStackTrace();
             throw new IOException("read error.");
@@ -115,7 +121,7 @@ public class ServiceHandlerImpl extends ServiceHandler {
         try {
             if (!index.incr(key)) {
                 //TODO 自增失败，落盘
-                encoderAndDisk(key, data);
+                index.add(key, ossWriterRead.write(key, data));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -185,7 +191,7 @@ public class ServiceHandlerImpl extends ServiceHandler {
             if (!Objects.equals(etag, key)) return new WriterMergeResponse(false, ResultCode.FILE_CHECK_ERROR);
             //TODO 落盘
             byte[] buffer = syncDisk.read(writeTempFile, 0, -1, null);
-            encoderAndDisk(key, buffer);
+            index.add(key, ossWriterRead.write(key, buffer));
             return new WriterMergeResponse(true, null);
         }  catch (Exception e) {
             e.printStackTrace();
@@ -194,61 +200,4 @@ public class ServiceHandlerImpl extends ServiceHandler {
             objectThreadBlockReadWriteLock.writeRelease(key);
         }
     }
-
-    /**
-     * 小对象编码并落盘
-     *
-     * @param key
-     * @param buffer
-     * @throws IOException
-     */
-    private void encoderAndDisk(String key, byte[] buffer) throws IOException {
-        byte[][] encoder = byteHandler.encoder(buffer);
-        int num = encoder.length;
-        for (int i = 0; i < num; i++) {
-            Path parent = partitionSelector.get(key, i);
-            Path fileName = FNameUtil.toFileName(parent, key, ENCRYPT, i);
-            if (Files.exists(fileName)) continue;
-            syncDisk.save(fileName, 0, encoder[i], 0, encoder[i].length);
-        }
-        index.add(key, ENCRYPT);
-    }
-
-    /**
-     * 小对象解码并落盘
-     *
-     * @param eventId 事件id(决定是否落盘)
-     * @param key     key
-     */
-    private byte[] readAndDecode(String eventId, String key) throws IOException {
-        ObjectMeta objectMeta = index.get(key);
-        if (objectMeta == null) throw new IOException("object key is not exist.");
-        byte[][] bytes = new byte[TOTAL_SHARDS][];
-        for (int i = 0; i < TOTAL_SHARDS; i++) {
-            Path parent = partitionSelector.get(key, i);
-            Path fileName = FNameUtil.toFileName(parent, key, ENCRYPT, i);
-            bytes[i] = syncDisk.read(fileName, 0, -1, null);
-        }
-        byte[] decoder = byteHandler.decoder(bytes);
-        if (eventId != null) {
-            Path tempFile = FNameUtil.getReadTempFile(TMP_LOG_DISK, eventId);
-            syncDisk.save(tempFile, 0, decoder, 0, decoder.length);
-        }
-        return decoder;
-    }
-
-    /**
-     * 删除
-     *
-     * @param key
-     * @throws IOException
-     */
-    private void delFromDisk(String key) throws IOException {
-        for (int i = 0; i < TOTAL_SHARDS; i++) {
-            Path parent = partitionSelector.get(key, i);
-            Path fileName = FNameUtil.toFileName(parent, key, ENCRYPT, i);
-            syncDisk.del(fileName);
-        }
-    }
-
 }

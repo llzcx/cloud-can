@@ -1,4 +1,4 @@
-package ccw.serviceinnovation.node.partition;
+package ccw.serviceinnovation.node.select;
 
 import ccw.serviceinnovation.hash.select.HashCodeSelectorImpl;
 import ccw.serviceinnovation.hash.select.ItemSelector;

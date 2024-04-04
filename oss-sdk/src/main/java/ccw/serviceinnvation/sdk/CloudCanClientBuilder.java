@@ -19,7 +19,7 @@ public class CloudCanClientBuilder implements CloudCanBuilder{
 
     @Override
     public CloudCan build(String var1, String var2) {
-        return null;
+        return new CloudCanClient(var1, var2);
     }
 
     public CloudCan build(String endpoint, String username, String password) {

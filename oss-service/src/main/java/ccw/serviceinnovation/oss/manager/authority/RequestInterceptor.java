@@ -110,7 +110,7 @@ public class RequestInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        log.info("-------------------------Request start:"+request.getRequestURI());
+        log.debug("-------------------------Request start:"+request.getRequestURI());
         response.setContentType("application/json; charset=utf-8");
         /*-------------------是否为可放行资源-------------------*/
         if(checkCanPassByStatic(request,handler)){

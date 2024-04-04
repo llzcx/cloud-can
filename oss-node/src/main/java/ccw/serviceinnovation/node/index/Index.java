@@ -14,7 +14,7 @@ public interface Index {
      */
     ObjectMeta get(String uniqueKey);
 
-    void add(String uniqueKey, EncryptionEnum encryptionEnum);
+    void add(String uniqueKey, ObjectMeta objectMeta);
 
     /**
      * 索引加载

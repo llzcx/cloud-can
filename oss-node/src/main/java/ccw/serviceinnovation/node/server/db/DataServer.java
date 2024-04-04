@@ -80,8 +80,8 @@ public class DataServer {
         rpcServer.registerProcessor(new WriteDelEventRequestProcessor(dataService));
         rpcServer.registerProcessor(new WriteMergeRequestProcessor(dataService));
         // init state machine
-        this.fsm = new DataStateMachine(new ReadWriteSeparationImpl(2,3,1));
-//        this.fsm = new DataStateMachine(new SerialApplyImpl());
+//        this.fsm = new DataStateMachine(new ReadWriteSeparationImpl(2,3,1));
+        this.fsm = new DataStateMachine(new SerialApplyImpl());
         // set fsm to nodeOptions
         nodeOptions.setFsm(this.fsm);
         // set storage path (log,meta,snapshot)

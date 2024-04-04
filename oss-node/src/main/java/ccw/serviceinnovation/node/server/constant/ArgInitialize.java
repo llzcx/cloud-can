@@ -5,7 +5,9 @@ import ccw.serviceinnovation.node.bo.RsParam;
 import ccw.serviceinnovation.node.util.MainParamsUtil;
 import ccw.serviceinnvation.encryption.consant.EncryptionEnum;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.file.Paths;
@@ -66,6 +68,13 @@ public class ArgInitialize {
             log.debug("encrypt:"+RegisterConstant.ENCRYPT);
         }
 
+        //清空
+        if (map.get(MustParamsKey.CLEAR_BEFORE_RUNNING)!=null &&
+                Boolean.parseBoolean(map.get(MustParamsKey.CLEAR_BEFORE_RUNNING))){
+            FileUtils.forceDelete(new File(RegisterConstant.LOG_DISK));
+            for (String pat : RegisterConstant.PARTITION_DISK) FileUtils.forceDelete(new File(pat));
+            log.info("clear disk is ok.");
+        }
 
         log.debug("param init success.");
     }

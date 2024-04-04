@@ -3,13 +3,18 @@ package ccw.serviceinnvation.sdk.util;
 import okhttp3.*;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class CloudCanReqUtil {
 
     private final OkHttpClient client;
 
     public CloudCanReqUtil() {
-        this.client = new OkHttpClient();
+        this.client = new OkHttpClient.Builder()
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .writeTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .build();
     }
 
     public Response getResponse(String url, String way, Headers headers, RequestBody requestBody) throws IOException {

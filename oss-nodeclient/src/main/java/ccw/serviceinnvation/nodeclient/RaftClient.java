@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 
 @Data
 @Slf4j
-public class RaftClient {
+public class RaftClient implements GroupSentinel{
 
     private String nacos;
 
@@ -133,7 +133,7 @@ public class RaftClient {
     }
 
     public PeerId getLeader(String groupName) {
-        if(!refresh(groupName)) throw new CloudCanClientException();
+//        if(!refresh(groupName)) throw new CloudCanClientException();
         ReentrantReadWriteLock.ReadLock readLock = mainLock.readLock();
         try {
             readLock.lock();
@@ -213,7 +213,7 @@ public class RaftClient {
         PeerId leader = getLeader(groupName);
         String eventId = getEventId();
         //TODO 开启数据流事件
-        ReadEventResponse response = (ReadEventResponse) sync(clientService, leader, new ReadEventRequest(eventId, objectKey), ResultCode.SERVER_EXCEPTION);
+        ReadEventResponse response = (ReadEventResponse) sync(clientService, leader, new ReadEventRequest(eventId, objectKey), ResultCode.OBJECT_IS_DEFECT);
         Long realSize = response.getRealSize();
         if (size > realSize) throw new OssException(ResultCode.OFFSET_LIMIT);
         if (size == -1) size = realSize;
@@ -261,8 +261,9 @@ public class RaftClient {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        RaftClient raftClient = new RaftClient("localhost:8848");
+        GroupSentinel raftClient = new RaftClient("localhost:8848");
         raftClient.listenChange();
         Thread.sleep(1000 * 1000);
+
     }
 }

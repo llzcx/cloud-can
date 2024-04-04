@@ -46,7 +46,7 @@ public abstract class ServiceHandler {
         assert methodName != null;
         //截断后缀Request,变成小写
         methodName = methodName.substring(0, methodName.length() - 7).toLowerCase();
-        log.info("invoke RPC:{}",methodName);
+        //log.trace("invoke RPC:{}",methodName);
         Method myMethod = StorageEngine.serviceHandler.getClass().getDeclaredMethod(methodName, req);
         myMethod.setAccessible(true);
         return myMethod.invoke(StorageEngine.serviceHandler,request);

@@ -29,8 +29,8 @@ public class LevelDbIndexImpl implements Index {
     }
 
     @Override
-    public void add(String uniqueKey, EncryptionEnum encryptionEnum) {
-        levelDb.put(uniqueKey, new ObjectMeta(uniqueKey, encryptionEnum));
+    public void add(String uniqueKey, ObjectMeta objectMeta) {
+        levelDb.put(uniqueKey, objectMeta);
     }
 
     @Override

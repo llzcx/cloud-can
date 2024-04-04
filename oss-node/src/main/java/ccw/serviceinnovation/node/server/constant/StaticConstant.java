@@ -1,7 +1,10 @@
 package ccw.serviceinnovation.node.server.constant;
 
 public interface StaticConstant {
-    String STANDARD = "standard_";
+    String RS = "rs_";
+
+    String ORD = "ord_";
+
 
     String WRITE_TEMPORARY = "w_temporary_";
 

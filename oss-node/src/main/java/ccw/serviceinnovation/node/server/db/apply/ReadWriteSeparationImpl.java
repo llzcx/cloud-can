@@ -91,6 +91,7 @@ public class ReadWriteSeparationImpl implements OnApplyHandler {
             iter.next();
         }
         try {
+            log.info("Batch size is {}",list.size());
             FutureUtil.await(list);
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();

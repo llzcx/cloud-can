@@ -19,7 +19,7 @@ public class ByteHandlerTest {
     @Test
     public void Test() throws IOException {
         RegisterConstant.ENCRYPT = EncryptionEnum.SM4;
-        ByteHandler<byte[]> byteHandler = new EncryptAndSplitByteHandlerImpl();
+        ByteHandler<byte[][]> byteHandler = new EncryptAndSplitByteHandlerImpl();
         EncryptDecodeHandler encryptDecodeHandler = new SM4DecryptHandlerImpl();
         EncryptEncodeHandler encryptEncodeHandler = new SM4EncryptHandlerImpl();
         SplitHandlerFactory.initialize(4, 2);

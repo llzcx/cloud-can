@@ -1,6 +1,7 @@
 package ccw.serviceinnovation.oss.service.impl;
 
 import ccw.serviceinnovation.common.constant.ACLEnum;
+import ccw.serviceinnovation.common.constant.FileTypeConstant;
 import ccw.serviceinnovation.common.entity.Bucket;
 import ccw.serviceinnovation.common.entity.OssObject;
 import ccw.serviceinnovation.common.exception.OssException;
@@ -218,7 +219,18 @@ public class DecentralizationOssServiceImpl extends ServiceImpl<OssObjectMapper,
 
     @Override
     public RPage<ObjectVo> listObjects(String bucketName, Integer pageNum, Integer size, String key, Long parentObjectId, Boolean isImages) {
-        return null;
+        Integer offset = null;
+        if (pageNum != null) {
+            offset = (pageNum - 1) * size;
+        }
+        Integer type = null;
+        if (isImages != null) {
+            type = FileTypeConstant.IMG;
+        }
+        List<ObjectVo> list = ossObjectMapper.selectObjectList(bucketName, offset, size, key, parentObjectId, type);
+        RPage<ObjectVo> rPage = new RPage<>(pageNum, size, list);
+        rPage.setTotalCountAndTotalPage(ossObjectMapper.selectObjectListLength(bucketName, key, parentObjectId, type));
+        return rPage;
     }
 
     @Override

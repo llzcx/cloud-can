@@ -1,6 +1,8 @@
 package ccw.serviceinnvation.sdk;
 
 import ccw.serviceinnvation.sdk.exception.CloudCanDownLoadException;
+import com.alibaba.fastjson.JSONObject;
+import okhttp3.Response;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,4 +21,6 @@ public interface CloudCan {
     void getObject(String bucketName, String objName, String path) throws IOException, CloudCanDownLoadException;
 
     void deletetAll(String bucketName) throws IOException;
+
+    JSONObject listObject(String bucketName, Integer pageNum, Integer pageSIze) throws IOException;
 }

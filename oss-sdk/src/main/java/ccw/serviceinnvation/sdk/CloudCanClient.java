@@ -41,6 +41,19 @@ public class CloudCanClient implements CloudCan {
         }
     }
 
+    public CloudCanClient(String endpoint,String token)  {
+        this.url = "http://" + endpoint + "/";
+        this.userName = null;
+        this.password = null;
+        cloudCanReqUtil = new CloudCanReqUtil();
+        etagDirectCalculator = new MD5EtagDirectCalculatorAdapter();
+        try{
+            this.headers = new Headers.Builder().add("Authorization", token).build();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     private void login() throws IOException {
         String url = this.url + "/user/login";
         Map<String, String> loginParams = new HashMap<>();
@@ -52,7 +65,7 @@ public class CloudCanClient implements CloudCan {
         response = sync(url, "post", null, requestBody);
         if (response != null) {
             String token = response.getString("token");
-            System.out.println("令牌:" + token);
+            System.out.println("令牌:\n" + token);
             this.headers = new Headers.Builder().add("Authorization", token).build();
         }
     }
@@ -171,8 +184,15 @@ public class CloudCanClient implements CloudCan {
 
     @Override
     public void deletetAll(String bucketName) throws IOException {
-        String url = this.url + "/ossObject/download?"+"bucketName=" + bucketName;
+        String url = this.url + "/ossObject/deleteAll?"+"bucketName=" + bucketName;
         cloudCanReqUtil.getResponse(url, "delete", headers, null);
+    }
+
+    @Override
+    public JSONObject listObject(String bucketName,Integer pageNum,Integer pageSIze) throws IOException {
+        String url = this.url + "/ossObject/listObjects?"+"bucketName=" + bucketName + "&pagenum="+pageNum+"&size="+pageSIze;;
+        return sync(url, "get", headers, null);
+
     }
 
 

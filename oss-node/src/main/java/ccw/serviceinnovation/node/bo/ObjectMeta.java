@@ -1,6 +1,5 @@
 package ccw.serviceinnovation.node.bo;
 
-import ccw.serviceinnovation.node.util.Bitmap32;
 import ccw.serviceinnvation.encryption.consant.EncryptionEnum;
 import lombok.Data;
 
@@ -24,6 +23,11 @@ public class ObjectMeta implements Serializable {
      */
     private Integer count;
 
+    /**
+     * 位置信息
+     */
+    private Position position;
+
     public ObjectMeta() {
 
     }
@@ -35,5 +39,10 @@ public class ObjectMeta implements Serializable {
     }
 
 
-
+    public ObjectMeta(String key, EncryptionEnum secret,Position position) {
+        this.key = key;
+        this.secret = secret;
+        count = 1;
+        this.position = position;
+    }
 }
