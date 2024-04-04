@@ -22,6 +22,10 @@ cloud-can 是一个分布式对象存储系统(object storage system)。
 
 对象（Object）： 对象是存储在对象存储系统中的基本单位。每个对象都由数据本身和与之关联的元数据组成。
 
+架构图如下：
+
+[architecture.png](doc/img/architecture.png)
+
 ## Features and Plan
 
 ### Application Layer Features
