@@ -24,7 +24,7 @@ cloud-can 是一个分布式对象存储系统(object storage system)。
 
 架构图如下：
 
-[architecture.png](doc/img/architecture.png)
+![architecture.png](doc/img/architecture.png)
 
 ## Features and Plan
 
